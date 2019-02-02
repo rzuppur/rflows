@@ -17,7 +17,7 @@ npm install
 # set up file watcher for /src/main.styl
 
 # serve with hot reload at localhost:8080
-npm run dev
+npm run serve
 
 # build for production with minification
 # => /dist
