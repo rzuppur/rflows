@@ -1,0 +1,127 @@
+@import url('https://rsms.me/inter/inter-ui.css')
+
+body, .button, .input
+  font-family 'Inter UI', BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+
+a:hover
+  color #3273dc
+  text-decoration underline
+
+.text-muted
+  color $color-gray-text
+
+.text-error
+  color $color-red-text
+
+.text-small
+  text-regular-13()
+
+b.text-small
+  text-bold-13()
+
+.label
+  text-bold-16()
+  color $color-text
+
+  &:not(:last-child)
+    margin-bottom 4px
+
+  .description
+    text-regular-13()
+    color $color-gray-text
+
+h3
+  text-bold-24()
+
+h4
+  text-uppercase-13()
+
+p:not(:last-child)
+  text-regular-16()
+
+.note-content, .ProseMirror
+  text-regular-16()
+
+  h1, h2, h3
+    margin-bottom 10px
+
+  h1
+    text-bold-40()
+
+  h2
+    text-bold-30()
+
+  h3
+    text-bold-24()
+
+  p:not(:last-child)
+    text-regular-16()
+    margin-bottom 0.5em
+
+  img
+    vertical-align middle
+    max-width 100%
+    &.ProseMirror-selectednode
+      box-shadow 0 0 0 3px alpha($color-blue, 0.8 )
+
+  pre, code
+    text-regular-13()
+    background  $color-light-blue-background
+    border-radius $border-radius
+    line-height 1.1
+
+  pre
+    margin 10px 0
+    padding 10px
+
+  blockquote
+    padding 5px 20px 5px 10px
+    border-left 4px solid rgba(0,0,0,0.15)
+    margin 8px 0
+    font-style italic
+
+  ul, ol
+    list-style initial !important
+    margin-bottom 20px !important
+    margin-left 17px !important
+    padding 0 !important
+
+  ol
+    list-style decimal !important
+
+  table
+    border-collapse collapse
+    table-layout fixed
+    width 100%
+
+    td, th
+      padding 4px 8px
+      border 1px solid $color-gray-border
+
+    th
+      background $color-light-blue-background
+      border-color darken($color-light-blue-background, 20)
+
+    .selectedCell
+      background #f2f2f2
+
+  .ProseMirror-gapcursor
+    display: none;
+    pointer-events: none;
+    position: absolute;
+
+  .ProseMirror-gapcursor:after
+    content: "";
+    display: block;
+    position: absolute;
+    top: -2px;
+    width: 30px;
+    border-top: 2px solid alpha(#000, 0.5);
+    animation: ProseMirror-cursor-blink 0.9s steps(2, start) infinite
+
+@keyframes ProseMirror-cursor-blink
+  to
+    visibility hidden
+
+.ProseMirror-focused .ProseMirror-gapcursor
+  display block

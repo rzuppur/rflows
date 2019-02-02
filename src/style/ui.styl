@@ -1,0 +1,52 @@
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration
+  -webkit-appearance none
+
+img.avatar
+  border-radius 100px
+  width 42px
+  height 56px
+  &.avatar-small
+    width 30px
+    height 40px
+
+.user-with-name
+  display flex
+  align-items center
+  overflow hidden
+
+  .avatar
+    margin-right 10px
+
+  .text
+    overflow hidden
+
+  .name
+    text-title-20()
+
+  .button
+    background transparent
+    border-color transparent
+    align-self flex-start
+    margin-top 4px
+    margin-left 10px
+    color alpha(#000, 0.5)
+
+    &:hover
+      background alpha(#000, 0.05)
+
+.loading-dots:after
+  content "..."
+  animation loadingDots 0.5s infinite alternate
+
+@keyframes loadingDots
+  0%
+    content ""
+  25%
+    content "."
+  50%
+    content ".."
+  75%
+    content "..."

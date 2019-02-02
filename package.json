@@ -1,0 +1,49 @@
+{
+  "name": "rflows",
+  "version": "1.0.0",
+  "description": "Reino Contriber Flowsi klient",
+  "author": "Reino Zuppur <reino@reinozuppur.com>",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@clampy-js/vue-clampy": "^1.0.6",
+    "auto-bind": "^1.2.1",
+    "dayjs": "^1.7.8",
+    "fuse.js": "^3.3.0",
+    "sockjs-client": "^1.3.0",
+    "tiptap": "^1.7.0",
+    "tiptap-extensions": "^1.7.0",
+    "v-tooltip": "^2.0.0-rc.33",
+    "vue": "^2.5.21",
+    "vue-images-loaded": "^1.1.2",
+    "webstomp-client": "^1.2.6"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.2.0",
+    "@vue/cli-service": "^3.2.0",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "tiptap-commands": "latest",
+    "vue-stash": "^2.0.1-beta",
+    "vue-template-compiler": "^2.5.21"
+  },
+  "engines": {
+    "node": ">= 8.11.0",
+    "npm": ">= 6.0.0"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
