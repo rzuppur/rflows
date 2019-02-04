@@ -268,13 +268,14 @@
       .note-content
         opacity 0.4
     &.message-unread
-      background alpha($color-gold, 0.1)
+      background alpha($color-unread-background, 0.1)
     &:hover
-      background alpha( $color-light-blue-background, 0.6)
+      background alpha($color-light-blue-background, 0.6)
       .reply-original
         background  $color-light-blue-background
       &.message-unread
-        background blend(alpha($color-gold, 0.30), alpha( $color-light-blue-background, 0.25))
+        background blend(alpha($color-unread-background, 0.25), alpha($color-light-blue-background, 0.25))
+        background alpha($color-light-blue-background, 0.6)
     &.message-saved
       background alpha(#409df1, 0.05)
       &:hover
