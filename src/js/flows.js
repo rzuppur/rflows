@@ -224,10 +224,10 @@ class Flows {
     _debug("Connecting...");
     const openFrame = await this._openSocket();
     if (openFrame.error) {
-      _debug("! Error while connecting", openFrame.errorData);
+      _debug("! Error while connecting");
       return false;
     }
-    if (!openFrame.alreadyOpen) _debug("Socket opened", openFrame);
+    if (!openFrame.alreadyOpen) _debug("Socket opened");
 
     // check if log in required
     if (!openFrame["user-name"]) {
