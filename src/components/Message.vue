@@ -108,7 +108,7 @@
   export default {
     name: "Message",
     components: {MessagePreview, Editor},
-    props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead"],
+    props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead", "firstUnreadMessageId"],
     store: ["currentUser"],
     data() {
       return {
@@ -126,7 +126,8 @@
           noauthor: (this.i > 0)
             && this.sortedMessages[this.i - 1]
             && (this.sortedMessages[this.i - 1].creatorUserId === this.message.creatorUserId)
-            && this.utils.datesAreSameDay(this.sortedMessages[this.i - 1].createDate, this.message.createDate),
+            && this.utils.datesAreSameDay(this.sortedMessages[this.i - 1].createDate, this.message.createDate)
+            && this.firstUnreadMessageId !== this.message.id,
           'message-highlight': this.replyToId === this.message.id,
           'message-unread': this.message.unread,
           'message-edit': this.editMode,

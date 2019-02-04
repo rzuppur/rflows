@@ -32,6 +32,7 @@
             :sortedMessages="sortedMessages"
             :isAdmin="isAdmin"
             :autoMarkAsRead="flows.autoMarkAsRead"
+            :firstUnreadMessageId="firstUnreadMessageId"
             :key="message.id"
             :ref="'message-' + message.id"
             @replyStart="replyStart($event)"
