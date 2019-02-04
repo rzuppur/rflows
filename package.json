@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "stylus src/main.styl -o src/assets/main.css && vue-cli-service build"
   },
   "dependencies": {
     "@clampy-js/vue-clampy": "^1.0.6",
