@@ -306,7 +306,7 @@
           const isHTML = /<[a-z][\s\S]*>/i.test(textCleared);
           this.flows.sendChatMessage({
             type: isHTML ? "NOTE" : "CHAT",
-            text: isHTML ? text : textCleared,
+            text: isHTML ? text : this.utils.unEscapeHTML(textCleared),
             referenceFromTopicItemId: replyToId,
           });
         }

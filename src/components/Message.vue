@@ -196,7 +196,7 @@
 
         this.editBackup = {...this.message};
         let editedMessage = {...this.message};
-        editedMessage.text = isHTML ? text : textCleared;
+        editedMessage.text = isHTML ? text : this.utils.unEscapeHTML(textCleared);
 
         this.$nextTick(() => {
           this.flows.editChatMessage(editedMessage)

@@ -11,7 +11,7 @@ const utils = {
    */
 
   escapeHTML(text) {
-    /** From lodash .escape() */
+    // From lodash .escape()
     const htmlEscapes = {
       '&': '&amp',
       '<': '&lt',
@@ -23,6 +23,17 @@ const utils = {
     const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
 
     return (text && reHasUnescapedHtml.test(text)) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text
+  },
+
+  unEscapeHTML(text) {
+    text = text.toString();
+    const htmlUnEscapes = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>'
+    };
+    const reEscapedHtml = /(&lt;|&gt;|&amp;)/g;
+    return text.replace(reEscapedHtml , (chr) => htmlUnEscapes[chr]);
   },
 
   textToHTML(text) {
