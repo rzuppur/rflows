@@ -354,6 +354,7 @@
         margin-left 25px
     .content-container
       width 100%
+      min-width 0
       & /deep/ .message-at
         background rgba(255, 31, 75, 0.05)
         color #c15d71

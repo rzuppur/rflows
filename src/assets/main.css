@@ -1,8 +1,9 @@
 /*
 Use file watcher, compile to /assets/main.css
 
-Arguments: $FileName$ --out assets
-Pattern: file:src/main.styl||file[rflows]:src/style/*.styl||file:src/shared.styl
+IntelliJ conf:
+  Arguments: $FileName$ --out assets
+  Pattern: file:src/main.styl||file:src/shared.styl||file:src/style/*.styl
 */
 #fixAnchor {
   position: fixed;

@@ -598,23 +598,27 @@ class Flows {
   MESSAGES
    */
 
+  /**
+   * Returns a message only if it exists in store
+   *
+   * @param messageId
+   * @returns {Object}
+   */
   getChatMessage(messageId) {
-    /*
-    Returns a message only if it exists already
-     */
     if (this.store.topics.TopicItem) {
       const message = this.store.topics.TopicItem.find(TopicItem => TopicItem.id === messageId);
       if (message) return message;
     }
   }
 
+  /**
+   * Sends a message to currently open chat
+   * Creates a shadow message instantly that is deleted when real message is saved in server
+   * If sending message fails, sets shadow message status as error
+   *
+   * @param message {Object}
+   */
   sendChatMessage(message) {
-    /*
-    Sends a message to currently open chat
-
-    Creates a shadow message instantly that is deleted when real message is saved in server
-    If sending message fails, sets shadow message status as error
-     */
     message.creatorUserId = this.store.currentUser.id;
     message.topicId = this.store.currentChatId;
 
@@ -645,10 +649,12 @@ class Flows {
     this._debug("Shadow message created (" + this.shadowMessageId + ")");
   }
 
+  /**
+   * Replace local copy of message instantly (used for editing)
+   *
+   * @param newMessage {Object}
+   */
   replaceLocalMessage(newMessage) {
-    /*
-    Replace local copy of message instantly
-     */
     const messageIndex = this.store.topics.TopicItem
       .findIndex(message => message.id === newMessage.id);
     Vue.set(this.store.topics.TopicItem, messageIndex, {...newMessage});
