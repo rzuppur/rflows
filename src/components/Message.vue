@@ -276,13 +276,9 @@
       &.message-unread
         background blend(alpha($color-gold, 0.30), alpha( $color-light-blue-background, 0.25))
     &.message-saved
-      margin 0 13px
-      padding 5px 7px
-      border-radius $border-radius
-      z-index 10
-      box-shadow 0 0 0 1px alpha(#409df1, 0.8), 0 0 0 2px alpha(#409df1, 0.2)
+      background alpha(#409df1, 0.05)
       &:hover
-        background alpha(#409df1, 0.05)
+        background alpha(#409df1, 0.08)
     &.message-highlight
       box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(68, 85, 114, 0.2)
       margin 0 13px
