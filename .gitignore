@@ -1,7 +1,7 @@
 .DS_Store
 node_modules/
 /dist/
-Rubbish
+/src/assets/main.css
 
 # local env files
 .env.local
