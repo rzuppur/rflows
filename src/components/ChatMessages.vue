@@ -78,7 +78,7 @@
     .sidebar.scrollbar-style(style="overflow-y: auto; height: 100%;")
       .flagged(v-if="!hidden && flaggedMessageIds")
         h4 #[i.fas.fa-thumbtack.has-text-info] Saved messages
-        div(v-for="messageIds, userId in flaggedMessageIds" v-if="userId === currentUser.id")
+        div(v-for="messageIds, userId in flaggedMessageIds" v-if="+userId === currentUser.id")
           message-preview.sidebar-saved(
           v-for="messageId in messageIds.sort()"
           :messageId="messageId"
