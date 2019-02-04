@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "stylus src/main.styl -o src/assets/main.css && vue-cli-service build"
+    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && vue-cli-service build"
   },
   "dependencies": {
     "@clampy-js/vue-clampy": "^1.0.6",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",
     "@vue/cli-service": "^3.2.0",
+    "mkdirp": "^0.5.1",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
     "stylus": "^0.54.5",
