@@ -25,7 +25,8 @@ class Flows {
 
   _debug(text, ...extra) {
     if (this.debug) {
-      const caller = new Error().stack.split('\n')[2].replace(/(\s.+at [^.]+.| \(.+)/g, "");
+      //const caller = new Error().stack.split('\n')[2].replace(/(\s.+at [^.]+.| \(.+)/g, "");
+      const caller = new Error().stack.split('\n')[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
       this._logDebug(text, caller);
       if (extra) console.log(...extra);
     }
@@ -79,11 +80,9 @@ class Flows {
         ? this.store.topics[frameType].find(topic => topic.id === frameBody.id)
         : false;
       if (old) {
-        this._debug(frameType + " updating id:" + old.id);
         let index = this.store.topics[frameType].indexOf(old);
         Vue.set(this.store.topics[frameType], index, frameBody);
       } else {
-        this._debug(frameType + " adding id:" + frameBody.id);
         if (!this.store.topics[frameType]) Vue.set(this.store.topics, frameType, []);
         this.store.topics[frameType].push(frameBody);
       }
@@ -93,6 +92,10 @@ class Flows {
       } else {
         this._debug("! UNHANDLED MESSAGE: " + frameType, frame.headers, frameBody);
       }
+    }
+
+    if (["TopicItem", "TopicItemRead", "TopicItemUserProperty", "TopicUser"].indexOf(type) > -1) {
+      this.store.lastUpdateChat = frame.headers["message-id"];
     }
   }
 
@@ -525,6 +528,11 @@ class Flows {
     return this.socket.message("/app/TopicItemUserProperty.findByTopic", {id: chatId, filter: filter}, true);
   }
 
+  /**
+   * Sets typing status of currently open chat
+   *
+   * @param typing {boolean}
+   */
   setTypingStatus(typing) {
     if (this.store.currentChatId) {
       this.socket.message("/app/Topic.setMyStatus", {
@@ -534,6 +542,10 @@ class Flows {
     }
   }
 
+  /**
+   * @param chatId {number}
+   * @returns {string}
+   */
   getChatName(chatId) {
     if (this.store.topics.Topic && this.store.topics.Topic.length) {
       const chat = this.store.topics.Topic.find(chat => chat.id === +chatId);
@@ -567,9 +579,9 @@ class Flows {
       let favs = this.store.topics.UserProperty.find(userProperty => userProperty.name === "favorites");
       if (!favs) favs = {name: "favorites", orgId: null, userId: this.store.currentUser.id, value: []};
       const favIds = favs.value.map(v => v.id);
-      if (favIds.indexOf(chatId) > -1) return;
+      if (favIds.indexOf(+chatId) > -1) return;
       delete favs.modifiedDate;
-      favs.value.push({type: "MEETING", id: chatId});
+      favs.value.push({type: "MEETING", id: +chatId});
       return this.socket.message("/app/UserProperty.save", favs, true);
     }
   }
@@ -577,7 +589,7 @@ class Flows {
   removeChatFromStarred(chatId) {
     if (this.store.topics.UserProperty) {
       let favs = this.store.topics.UserProperty.find(userProperty => userProperty.name === "favorites");
-      const index = favs.value.map(v => v.id).indexOf(chatId);
+      const index = favs.value.map(v => v.id).indexOf(+chatId);
       if (index < 0) return;
       delete favs.modifiedDate;
       favs.value.splice(index, 1);
@@ -588,13 +600,85 @@ class Flows {
   removeChatFromRecents(chatId) {
     if (this.store.topics.UserProperty) {
       let recents = this.store.topics.UserProperty.find(userProperty => userProperty.name === "recentTools");
-      const index = recents.value.map(v => v.id).indexOf(chatId);
+      const index = recents.value.map(v => v.id).indexOf(+chatId);
       if (index < 0) return;
       delete recents.modifiedDate;
       recents.value.splice(index, 1);
       return this.socket.message("/app/UserProperty.save", recents, true);
     }
   }
+
+  chatMessages() {
+    const currentChatId = this.store.currentChatId;
+    if (currentChatId && this.chatMessagesCached) {
+      const id = this.store.lastUpdateChat + "-" + currentChatId;
+      if (id === this.chatMessagesCached.id) {
+        this._debug("Returning cached chat messages (" + id + ")");
+        return JSON.parse(this.chatMessagesCached.messages);
+      }
+    }
+
+    let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const chatMessagesRead = this.chatMessagesRead();
+    const chatMessagesFlagged = this.chatMessagesFlagged();
+    if (messages && currentChatId) {
+      this._debug("Getting currently open chat messages");
+      messages = messages.filter(message => !message.deleted && !message.parentTopicId && message.topicId === currentChatId);
+      messages.sort((a, b) => a.id - b.id);
+
+      if (chatMessagesRead) {
+        messages = messages.map(message => {
+          message.unread = !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
+          return message;
+        });
+      }
+      if (chatMessagesFlagged && currentUserId) {
+        messages = messages.map(message => {
+          message.flagged = chatMessagesFlagged[currentUserId].indexOf(message.id) > -1;
+          return message;
+        });
+      }
+
+      this.chatMessagesCached =  {
+        messages: JSON.stringify(messages),
+        id: this.store.lastUpdateChat + "-" + currentChatId,
+      };
+      return messages;
+    }
+  }
+
+  chatMessagesRead() {
+    const read = this.store.topics.TopicItemRead;
+    const currentChatId = this.store.currentChatId;
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+
+    if (read && currentChatId && currentUserId) {
+      return read.filter(TopicItemRead => TopicItemRead.topicId === currentChatId && TopicItemRead.userId === currentUserId);
+    }
+  }
+
+  chatMessagesFlagged() {
+    const prop = this.store.topics.TopicItemUserProperty;
+    const currentChatId = this.store.currentChatId;
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+
+    if (prop && currentChatId && currentUserId) {
+      let flagged = {};
+      flagged[currentUserId] = prop
+        .filter(userProperty => userProperty.flag && userProperty.topicId === currentChatId && userProperty.userId === currentUserId)
+        .map(userProperty => userProperty.itemId)
+        .sort();
+
+      return flagged;
+    }
+  }
+
+  chatUsers() {
+
+  }
+
+
 
   /*
   MESSAGES
@@ -648,7 +732,8 @@ class Flows {
     message.shadow = true;
     this.store.topics.TopicItem.push(message);
     this.eventBus.$emit("messagesScrollUpdate");
-    this._debug("Shadow message created (" + this.shadowMessageId + ")");
+    this._debug("Shadow message created (" + shadowId + ")");
+    this.store.lastUpdateChat = shadowId;
   }
 
   /**

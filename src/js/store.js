@@ -17,6 +17,8 @@ const store = {
     });
     return topics;
   }(),
+
+  lastUpdateChat: null,  // for reactivity, stores the latest chat related update id
 };
 
 export default store;

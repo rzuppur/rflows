@@ -35,7 +35,7 @@ Vue.mixin({
   methods: {
     _debug(text, ...extra) {
       if (this.DEBUG) {
-        const caller = new Error().stack.split('\n')[2].replace(/(\s.+at [^.]+.| \(.+)/g, "");
+        const caller = new Error().stack.split('\n')[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
         this._logDebug(text, caller);
         if (extra) console.log(...extra);
       }
