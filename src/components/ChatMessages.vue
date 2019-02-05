@@ -48,7 +48,7 @@
           .field.is-grouped.flex1
             .control.is-expanded(v-show="!uploadExpanded")
               editor(ref="editor"
-              showButtons="ALWAYS"
+              :showButtons="editorToolbar ? 'ALWAYS' : 'HIDE'"
               :onlyText="false"
               :placeholder="messageInputPlaceholder"
               :initEmpty="true"
@@ -57,6 +57,12 @@
               @focus="editorFocused = true"
               @blur="editorFocused = false"
               @keydown.38.native.exact.capture="editLastMessage")
+
+            .control
+              button.expand-button(
+                :class="{ expanded: editorToolbar }"
+                @click="editorToolbar = !editorToolbar"
+                v-tooltip="editorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
             file-upload(
               ref="fileUpload"
@@ -123,6 +129,7 @@
         },
         isTyping: false,
         editorFocused: false,
+        editorToolbar: false,
         uploadExpanded: false,
         unreadId: null, // for autoUnread to keep new indicator in place
       }
@@ -326,6 +333,7 @@
       editorClear() {
         if (this.$refs.editor) this.$refs.editor.empty();
         this.isTyping = false;
+        this.editorToolbar = false;
         this.flows.setTypingStatus(false);
       },
       replyStart(id) {
@@ -588,6 +596,10 @@
         .field
           min-width 0
           margin-bottom 0
+
+          .expand-button
+            margin-left 0
+            margin-right 0
 
       .file-upload
         @media (max-width: $hide-file-upload)

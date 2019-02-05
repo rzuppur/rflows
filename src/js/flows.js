@@ -433,7 +433,9 @@ class Flows {
         // TODO: an ugly hack pls remove
         setTimeout(() => {this.store.currentChatName = this.getChatName(this.store.currentChatId);}, 500);
         setTimeout(() => {this.store.currentChatName = this.getChatName(this.store.currentChatId);}, 1500);
+        setTimeout(() => {this.store.currentChatName = this.getChatName(this.store.currentChatId);}, 5000);
         setTimeout(() => {this.store.currentChatName = this.getChatName(this.store.currentChatId);}, 10000);
+        setTimeout(() => {this.store.currentChatName = this.getChatName(this.store.currentChatId);}, 20000);
       } catch (error) {
         this._debug("! Error opening chat");
         console.log(error);

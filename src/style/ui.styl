@@ -50,3 +50,51 @@ img.avatar
     content ".."
   75%
     content "..."
+
+
+.expand-button
+  $_size = 34px
+  margin 1px
+  width $_size
+  height $_size
+  border 1px solid $color-gray-border
+  background none
+  outline none
+  border-radius ($_size / 2)
+  vertical-align middle
+  position relative
+  cursor pointer
+
+  &:hover
+    background $color-light-gray-background
+
+  &:focus
+    box-shadow 0 0 0 0.125em rgba(50,115,220,.25)
+    border-color #3273dc
+
+
+  &:before,
+  &:after
+    transition all 0.12s
+    content ""
+    width 2px
+    height 16px
+    background $color-gray-text
+    position absolute
+
+  &:before
+    left ($_size / 2) - 2
+    top ($_size / 2) - 8.5
+    transform rotate(90deg)
+
+  &:after
+    left ($_size / 2) - 2
+    top ($_size / 2) - 8.5
+
+  &.expanded
+    &:before
+      transform rotate(45deg)
+    &:after
+        transform rotate(-45deg)
+
+
