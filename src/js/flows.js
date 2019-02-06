@@ -618,7 +618,7 @@ class Flows {
       }
     }
 
-    let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
+    let messages = this.store.topics.TopicItem;
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     const chatMessagesRead = this.chatMessagesRead();
     const chatMessagesFlagged = this.chatMessagesFlagged();
