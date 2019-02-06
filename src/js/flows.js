@@ -627,9 +627,9 @@ class Flows {
       messages = messages.filter(message => !message.deleted && !message.parentTopicId && message.topicId === currentChatId);
       messages.sort((a, b) => a.id - b.id);
 
-      if (chatMessagesRead) {
+      if (chatMessagesRead && currentUserId) {
         messages = messages.map(message => {
-          message.unread = !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
+          message.unread = message.creatorUserId !== currentUserId && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
           return message;
         });
       }
