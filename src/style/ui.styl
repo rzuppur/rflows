@@ -65,12 +65,13 @@ img.avatar
   position relative
   cursor pointer
 
-  &:hover
-    background $color-light-gray-background
+  @media all and (hover)
+    &:hover
+      background $color-light-gray-background
 
-  &:focus
-    box-shadow 0 0 0 0.125em rgba(50,115,220,.25)
-    border-color #3273dc
+    &:focus
+      box-shadow 0 0 0 0.125em rgba(50,115,220,.25)
+      border-color #3273dc
 
 
   &:before,
@@ -96,5 +97,6 @@ img.avatar
       transform rotate(45deg)
     &:after
         transform rotate(-45deg)
+
 
 

@@ -62,7 +62,8 @@
             .control
               button.expand-button(
                 :class="{ expanded: editorToolbar }"
-                @click="editorToolbar = !editorToolbar"
+                @pointerdown.prevent
+                @pointerup="editorToolbar = !editorToolbar"
                 v-tooltip="editorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
             file-upload(

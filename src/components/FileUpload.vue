@@ -17,7 +17,7 @@
           v-on:keydown.enter.prevent)
 
       .control
-        label.button.is-outlined(for="fileInput" v-tooltip="expanded ? 'Change file' :  'Upload file'")
+        label.button.is-outlined(type="button" for="fileInput" v-tooltip="expanded ? 'Change file' :  'Upload file'")
           span.icon.is-small
             i.fas.fa-paperclip
         input#fileInput(
@@ -30,6 +30,7 @@
 
       .control(v-if="expanded && formData")
         button.button(
+          type="button"
           @click="_reset()") Cancel
 
       .control(v-show="expanded")

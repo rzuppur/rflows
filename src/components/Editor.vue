@@ -3,7 +3,8 @@
 
     button.button.is-small(
     :class=(hasActive ? "{ 'is-active': isActive."+command+" }" : "")
-    @click.stop="commands."+command
+    @pointerdown.prevent
+    @pointerup="commands."+command
     v-tooltip.top="{ content: '"+tooltip+"', popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
     )
       block
