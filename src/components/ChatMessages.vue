@@ -73,10 +73,10 @@
               v-on:expandChange="uploadExpanded = $event")
 
             .control(v-if="replyToId" v-show="!uploadExpanded")
-              button.button.is-outlined(@click="replyCancel()") Cancel
-              //- TODO: on mobile buttons above each other
+              button.button.is-outlined(@pointerdown.prevent @pointerup="replyCancel()") Cancel
+              //- TODO: on mobile buttons use only icons
             .control(v-show="!uploadExpanded")
-              button.button(:class="{ 'is-primary':  replyToId}" @click="sendChatMessage()") Send
+              button.button(:class="{ 'is-primary':  replyToId}" @pointerdown.prevent @pointerup="sendChatMessage()") Send
 
 
         .has-text-grey.text-small.bottom-info-text(v-if="!editorFocused && flowsEmail")
