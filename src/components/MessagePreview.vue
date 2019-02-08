@@ -1,5 +1,5 @@
 <template lang="pug">
-  .message-preview(@click="scrollToMessage()" :class="{ clickable: clickable }")
+  .message-preview(@click="scrollToMessage()" @keyup.enter="e => e.target.click()" :class="{ clickable: clickable }" :tabindex="clickable ? 0 : -1")
     .name(v-if="!message") ?
     template(v-else)
       .name
@@ -81,8 +81,10 @@
     &.clickable
       cursor pointer
 
-    &.clickable:hover
-      background darken($color-light-blue-background, 1)
+      &:hover,
+      &:focus
+        background darken($color-light-blue-background, 1)
+        outline none
 
     &.sidebar-saved
       margin-bottom 7px
@@ -90,7 +92,13 @@
     &.reply-original
       border-left 4px solid #71aee3
 
-    .name, .date
+      &:focus
+        .name,
+        .date
+          text-decoration underline
+
+    .name,
+    .date
       display inline-block
       text-regular-13()
 
