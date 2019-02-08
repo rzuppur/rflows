@@ -271,7 +271,8 @@
         opacity 0.4
     &.message-unread
       background alpha($color-unread-background, 0.1)
-    &:hover
+    &:hover,
+    &:focus-within
       background alpha($color-light-blue-background, 0.6)
       .reply-original
         background  $color-light-blue-background
@@ -298,12 +299,15 @@
         overflow hidden
     &.message-error
       background alpha($color-red, 0.05)
-      &:hover
+      &:hover,
+      &:focus-within
         background alpha($color-red, 0.08)
-    &:hover .buttons-container
-      display block
-      .field
-        opacity 1
+    &:hover,
+    &:focus-within
+      .buttons-container
+        display block
+        .field
+          opacity 1
     .buttons-container
       margin-top -3px
       margin-bottom -3px
@@ -374,7 +378,8 @@
       color $color-gray-text
       font-style italic
     &.noauthor
-      &:hover
+      &:hover,
+      &:focus-within
         .avatar-container
           .date
             display block
@@ -412,8 +417,13 @@
       border-radius $border-radius
       overflow hidden
       max-width $message-item-max-width
-      &:hover
+      &:hover,
+      &:focus
         background darken( $color-light-blue-background, 1)
+      &:focus
+        outline none
+        .file-title
+          text-decoration underline
       .file-title
         padding 5px 10px
       .image-preview
