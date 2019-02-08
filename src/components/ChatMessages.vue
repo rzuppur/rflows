@@ -74,16 +74,22 @@
               v-on:expandChange="uploadExpanded = $event")
 
             .control(v-if="replyToId" v-show="!uploadExpanded")
-              button.button.is-outlined(@pointerdown.prevent @pointerup="replyCancel()") Cancel
-              //- TODO: on mobile buttons use only icons
+              button.button.is-outlined(@pointerdown.prevent @pointerup="replyCancel()" @keyup.enter="replyCancel()")
+                span(v-if="!mqMobile") Cancel
+                span.icon(v-if="mqMobile")
+                  i.fas.fa-times
             .control(v-show="!uploadExpanded")
-              button.button(:class="{ 'is-primary':  replyToId}" @pointerdown.prevent @pointerup="sendChatMessage()") Send
+              button.button(:class="{ 'is-primary':  replyToId}" @pointerdown.prevent @pointerup="sendChatMessage()" @keyup.enter="sendChatMessage()")
+                span(v-if="!mqMobile") Send
+                span.icon(v-if="mqMobile")
+                  i.fas.fa-paper-plane
 
 
-        .has-text-grey.text-small.bottom-info-text(v-if="!editorFocused && flowsEmail")
-          | Forward emails to chat:&nbsp;
-          span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
-        .has-text-grey.text-small.bottom-info-text(v-if="editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
+        template(v-if="!mqMobile")
+          .has-text-grey.text-small.bottom-info-text(v-if="!editorFocused && flowsEmail")
+            | Forward emails to chat:&nbsp;
+            span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
+          .has-text-grey.text-small.bottom-info-text(v-if="editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
     .sidebar.scrollbar-style(style="overflow-y: auto; height: 100%;")
       .flagged(v-if="!hidden && flaggedMessageIds")

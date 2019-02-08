@@ -32,6 +32,11 @@ Vue.mixin({
       return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
+  computed: {
+    mqMobile() {
+      return this.$root.mqMobile;
+    },
+  },
   methods: {
     _debug(text, ...extra) {
       if (this.DEBUG) {
@@ -67,7 +72,8 @@ function alwaysFullHeightSetSize(fixAnchor) {
 new Vue({
   data: {
     flows: null,
-    store: store
+    store: store,
+    mqMobile: false,
   },
   directives: {
     clampy
@@ -83,6 +89,14 @@ new Vue({
       clearTimeout(alwaysFullHeightTimeout);
       alwaysFullHeightTimeout = setTimeout(this.updateFullHeight, RESIZE_DEBOUNCE_TIME);
     });
+
+    this.mq = window.matchMedia("(max-width: 600px)");
+    this.mqListener = (q) => this.mqMobile = q.matches;
+    this.mq.addListener(this.mqListener);
+    this.mqMobile = this.mq.matches;
+  },
+  destroyed() {
+    this.mq.removeListener(this.mqListener);
   },
   render: h => h(App),
 }).$mount('#app');

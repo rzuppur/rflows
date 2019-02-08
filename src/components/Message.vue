@@ -182,7 +182,8 @@
         this.cancelEdit();
 
         if (text.replace(/<p>|<\/p>/g, "").trim() === "") {
-          this.flows.deleteChatMessage(this.message.id);
+          this.flows.deleteChatMessage(this.message.id)
+            .then(() => this.eventBus.$emit("notify", "Message deleted"));
           return;
         }
         const textCleared = text.replace(/<p>/g, "").replace(/<br>|<\/p>/g, "\n").trim();
@@ -221,7 +222,8 @@
       },
       deleteChatMessage(instant) {
         if (instant || window.confirm("Delete message? You can ctrl+click for instant delete.")) {
-          this.flows.deleteChatMessage(this.message.id);
+          this.flows.deleteChatMessage(this.message.id)
+            .then(() => this.eventBus.$emit("notify", "Message deleted"));
         }
       },
       getMessage(messageId) {
