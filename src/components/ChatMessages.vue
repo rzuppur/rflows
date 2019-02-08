@@ -64,6 +64,7 @@
                 :class="{ expanded: editorToolbar }"
                 @pointerdown.prevent
                 @pointerup="editorToolbar = !editorToolbar"
+                @keyup.enter="editorToolbar = !editorToolbar"
                 v-tooltip="editorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
             file-upload(
@@ -487,7 +488,7 @@
     box-shadow inset 3px 0 3px -3px rgba(0, 0, 0, 0.1)
     position relative
     z-index 200
-    @media (max-width: $chat-sidebar-hide)
+    @media (max-width $chat-sidebar-hide)
       display none
     .flagged
       margin-bottom 10px
@@ -629,7 +630,7 @@
             margin-right 0
 
       .file-upload
-        @media (max-width: $hide-file-upload)
+        @media (max-width $hide-file-upload)
             display none
 
       .control.is-expanded

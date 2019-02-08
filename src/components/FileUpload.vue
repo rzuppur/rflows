@@ -17,7 +17,7 @@
           v-on:keydown.enter.prevent)
 
       .control
-        label.button.is-outlined(type="button" for="fileInput" v-tooltip="expanded ? 'Change file' :  'Upload file'")
+        label.button.is-outlined(tabindex="0" for="fileInput" @keyup.enter="e => e.target.click()" v-tooltip="expanded ? 'Change file' :  'Upload file'")
           span.icon.is-small
             i.fas.fa-paperclip
         input#fileInput(

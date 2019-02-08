@@ -162,7 +162,7 @@
       overflow hidden
       color #fff
 
-      @media (max-width: 800px)
+      @media (max-width 800px)
         flex 0 0 40px
 
       .sidebar-content

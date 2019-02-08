@@ -5,6 +5,7 @@
     :class=(hasActive ? "{ 'is-active': isActive."+command+" }" : "")
     @pointerdown.prevent
     @pointerup="commands."+command
+    @keyup.enter="commands."+command
     v-tooltip.top="{ content: '"+tooltip+"', popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
     )
       block

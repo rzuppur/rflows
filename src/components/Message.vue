@@ -145,8 +145,7 @@
       },
       canDelete() {
         if (this.currentUser) {
-          return ((false && this.isAdmin) || this.message.creatorUserId === this.currentUser.id)
-            && ['EVENT'].indexOf(this.message.type) < 0;
+          return this.message.creatorUserId === this.currentUser.id && this.message.type !== "EVENT";
         }
       },
       imagePreviewUrl() {
@@ -308,7 +307,7 @@
       margin-bottom -3px
       margin-left 10px
       display block
-      @media (max-width: $buttons-switch-to-mobile)
+      @media (max-width $buttons-switch-to-mobile)
         top -29px
         right 15px
         position absolute
@@ -318,7 +317,7 @@
         .button.is-small
           font-size 16px
       .field
-        @media (min-width: $buttons-switch-to-mobile+1px)
+        @media (min-width $buttons-switch-to-mobile+1px)
           position sticky
           top 20px
           margin-top 10px
@@ -385,7 +384,7 @@
       .avatar-container .saved-icon
         display block
       .buttons-container .field
-        @media (min-width: $buttons-switch-to-mobile+1px)
+        @media (min-width $buttons-switch-to-mobile+1px)
           margin-top 0
           margin-bottom 0
     .unread-separator + &.noauthor
