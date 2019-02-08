@@ -624,7 +624,7 @@ class Flows {
     const chatMessagesFlagged = this.chatMessagesFlagged();
     if (messages && currentChatId) {
       this._debug("Getting currently open chat messages");
-      messages = messages.filter(message => !message.deleted && !message.parentTopicId && message.topicId === currentChatId);
+      messages = messages.filter(message => !message.deleted && !message.parentTopicItemId && message.topicId === currentChatId);
       messages.sort((a, b) => a.id - b.id);
 
       if (chatMessagesRead && currentUserId) {
