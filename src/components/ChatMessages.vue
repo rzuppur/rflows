@@ -59,7 +59,7 @@
               @blur="editorFocused = false"
               @keydown.38.native.exact.capture="editLastMessage")
 
-            .control
+            .control(v-show="!uploadExpanded")
               button.expand-button(
                 :class="{ expanded: editorToolbar }"
                 @pointerdown.prevent
