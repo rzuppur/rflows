@@ -1,0 +1,10 @@
+{
+  "colons": "never",
+  "indentPref": 2,
+  "namingConvention": "lowercase-dash",
+  "namingConventionStrict": true,
+  "none": "always",
+  "parenSpace": "never",
+  "quotePref": "double",
+  "sortOrder": false
+}

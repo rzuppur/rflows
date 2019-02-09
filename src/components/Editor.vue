@@ -238,24 +238,30 @@
       background #fff
       border-radius $border-radius
       border 1px solid $color-gray-border
+
     .ProseMirror-focused
       outline none
       border 1px solid $color-focus-blue
       box-shadow 0 0 0 2px alpha($color-focus-blue, 0.15)
+
     .ProseMirror-selectednode
       outline 1px solid $color-focus-blue
       box-shadow 0 0 0 3px alpha($color-focus-blue, 0.15)
+
     p.is-empty:first-child
       white-space nowrap
       text-overflow ellipsis
+
       &::before
         content var(--message-placeholder)
         float left
         color $color-gray-text-light
         pointer-events none
         height 0
+
       code
         background #fff
+
       code::after
         content var(--message-placeholder)
         color $color-gray-text-light

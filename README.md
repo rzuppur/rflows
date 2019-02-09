@@ -28,5 +28,12 @@ npm run build --report
 ```
 
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Stylus linter for WebStorm / IntelliJ
+
+https://github.com/SimenB/stylint
+
+``` bash
+npm install -g stylint stylint-json-reporter
+```
+
+Install and enable Stylint plugin.

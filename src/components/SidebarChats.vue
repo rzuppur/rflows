@@ -117,14 +117,17 @@
     &.unread
       color #fff
       text-bold-16()
+
       .chat-unread
         display block
 
     &:hover
       background rgba(255, 255, 255, 0.05)
+
       &.recentChat:not(.unread)
         .chat-unread
           display none
+
         .chat-removerecent
           display block
 
@@ -140,8 +143,10 @@
       align-self center
       padding 0 10px 0
       margin-right -4px
+
       &:hover
         background rgba(255,255,255,0.1)
+
       .fa
         font-size 12px
         color #fff
@@ -159,13 +164,16 @@
       line-height 1.55
       height 20px
       align-self center
+
       &.important
         background alpha($color-red, 0.35)
+
         &.atme
           background $color-red
 
     &.active
-      .chat-unread, .chat-unread.atme
+      .chat-unread,
+      .chat-unread.atme
         background rgba(0, 0, 0, 0.2)
 
 </style>

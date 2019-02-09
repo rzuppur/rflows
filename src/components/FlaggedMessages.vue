@@ -123,9 +123,8 @@
       background #fff
       box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
 
-    .chat
-      &:not(:last-child)
-        margin-bottom 20px
+    .chat:not(:last-child)
+      margin-bottom 20px
 
     .chat-title
       text-title-20()

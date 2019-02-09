@@ -34,7 +34,7 @@ Vue.mixin({
   },
   computed: {
     mqMobile() {
-      return this.$root.mqMobile;
+      return this.$root.mqMobileMatches;
     },
   },
   methods: {
@@ -73,7 +73,7 @@ new Vue({
   data: {
     flows: null,
     store: store,
-    mqMobile: false,
+    mqMobileMatches: false,
   },
   directives: {
     clampy
@@ -91,9 +91,9 @@ new Vue({
     });
 
     this.mq = window.matchMedia("(max-width: 600px)");
-    this.mqListener = (q) => this.mqMobile = q.matches;
+    this.mqListener = (q) => this.mqMobileMatches = q.matches;
     this.mq.addListener(this.mqListener);
-    this.mqMobile = this.mq.matches;
+    this.mqMobileMatches = this.mq.matches;
   },
   destroyed() {
     this.mq.removeListener(this.mqListener);

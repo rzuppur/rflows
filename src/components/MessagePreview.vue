@@ -119,4 +119,5 @@
       margin-bottom 2px
       overflow hidden
       white-space pre-line
+
 </style>
