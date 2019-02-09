@@ -240,7 +240,7 @@ class Flows {
         await this.socket.message("/app/Login.login", this.loginData, true);
       } catch (error) {
         _debug("! Log in error: " + error.body.shortName);
-        this.logout();
+        if (error.body.description !== "You are already logged in. Please logoff or disconnect first (refreshing the page helps)!") this.logout();
         return false;
       }
 
@@ -618,7 +618,7 @@ class Flows {
       }
     }
 
-    let messages = this.store.topics.TopicItem;
+    let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     const chatMessagesRead = this.chatMessagesRead();
     const chatMessagesFlagged = this.chatMessagesFlagged();

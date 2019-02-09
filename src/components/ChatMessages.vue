@@ -157,36 +157,6 @@
       this.$root.updateFullHeight();
     },
     computed: {
-      /*sortedMessages() {
-
-        if (this.topics.TopicItem && this.currentUser) {
-          for (let i = 0; i < sorted.length; i++) {
-
-            // Load referenced messages
-            if (!sorted[i].refsLoaded && sorted[i].referenceFromTopicItemId) {
-              sorted[i].refsLoaded = true;
-              setTimeout(() => {
-                this.findOrLoadMessage(sorted[i].referenceFromTopicItemId);
-              }, 2000);
-            }
-
-            // Check if message is flagged
-            sorted[i].flagged = false;
-            if (this.flaggedMessageIds && this.flaggedMessageIds[this.currentUser.id] && this.flaggedMessageIds[this.currentUser.id].length) {
-              const flagged = this.flaggedMessageIds[this.currentUser.id].find(messageId => messageId === sorted[i].id);
-              if (flagged) sorted[i].flagged = true;
-            }
-
-          }
-          return sorted;
-        }
-      },
-      messagesRead() {
-        this.scrollUpdate();
-        return this.topics.TopicItemRead.filter(TopicItemRead => {
-          return TopicItemRead.topicId === this.currentChatId && TopicItemRead.userId === this.currentUser.id;
-        });
-      },*/
       firstUnreadMessageId() {
         if (this.messagesRead && this.sortedMessages) {
           if (this.flows.autoMarkAsRead) {
@@ -202,26 +172,6 @@
           }
         }
       },
-      /*flaggedMessageIds() {
-        if (this.topics.TopicItemUserProperty && this.topicUsers) {
-          let flagged = {};
-          this.topics.TopicItemUserProperty
-            .filter(x => x.flag && x.topicId === this.currentChatId)
-            .forEach(flaggedMessage => {
-              const userId = flaggedMessage.userId;
-              if (this.topicUsers.map(user => user.userId).indexOf(userId) >= 0) {
-                const messageId = flaggedMessage.itemId;
-                this.$nextTick(() => this.findOrLoadMessage(messageId));
-                if (flagged[userId]) {
-                  flagged[userId].push(messageId);
-                } else {
-                  flagged[userId] = [messageId];
-                }
-              }
-            });
-          return flagged;
-        }
-      },*/
       topicUsers() {
         if (this.topics.TopicUser && this.topics.User) {
           return this.topics.TopicUser.filter(topicUser => topicUser.topicId === this.currentChatId).sort((a, b) => a.createDate - b.createDate);
@@ -229,7 +179,7 @@
       },
       messageInputPlaceholder() {
         if (this.replyToId) {
-          const message = this.topics.TopicItem.find(ti => ti.id === this.replyToId);
+          const message = this.flows.chatMessages().find(ti => ti.id === this.replyToId);
           return 'Reply to ' + (message.creatorUserId
             ? this.flows.getFullName(message.creatorUserId)
             : this.currentChatName);

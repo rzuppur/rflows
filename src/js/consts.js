@@ -37,7 +37,7 @@ export const CHAT_TOPICS = [
 
 export const ALL_TOPICS = GLOBAL_TOPICS.concat(CHAT_TOPICS.concat(["TopicItemRead"]));
 
-export const SCROLL_DEBOUNCE_TIME = 30;
+export const SCROLL_DEBOUNCE_TIME = 70;
 export const RESIZE_DEBOUNCE_TIME = 150;
 
 export const DEBUG = true;
