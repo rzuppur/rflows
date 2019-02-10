@@ -93,15 +93,18 @@
           .has-text-grey.text-small.bottom-info-text(v-if="editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
     .sidebar.scrollbar-style(style="overflow-y: auto; height: 100%;")
-      .flagged(v-if="!hidden && flaggedMessageIds")
+      .workspace(v-if="workspace")
+        .text
+          .name {{ workspace.workspace.name }}
+          .desc {{ workspace.workspace.type.toLowerCase() }} workspace
+        img.logo(:src="workspace.logo" :alt="workspace.workspace.name")
+
+      .flagged(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4 #[i.fas.fa-thumbtack.has-text-info] Saved messages
-        div(v-for="messageIds, userId in flaggedMessageIds" v-if="+userId === currentUser.id")
-          message-preview.sidebar-saved(
-          v-for="messageId in messageIds"
-          :messageId="messageId"
-          :key="messageId + '-currentUser'")
-        //-div(v-for="messageIds, userId in flaggedMessageIds" v-if="userId != currentUser.id") #[h4.other {{ flows.getFirstName(userId) }}:]
-          message-preview.sidebar-saved(v-for="messageId in messageIds" :messageId="messageId" :key="messageId + '-' + userId")
+        message-preview.sidebar-saved(
+        v-for="messageId in flaggedMessageIds"
+        :messageId="messageId"
+        :key="messageId")
       div(style="margin: 10px 0;")
         a(@click="$emit('viewSavedMessages')" style="display: block; margin-top: 4px;") All saved messages
         a(v-if="firstUnreadMessageId !== -1" @click="flows.markCurrentChatRead()" style="display: block;") Mark all as read
@@ -224,6 +227,9 @@
           const user = this.chatUser;
           return user ? user.role === "ADMIN" : false;
         }
+      },
+      workspace() {
+        return this.flows.getChatWorkspace(this.currentChatId);
       },
     },
     methods: {

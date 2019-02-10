@@ -361,6 +361,36 @@ class Flows {
     return "?";
   }
 
+  getCurrentUserWorkspaces() {
+    if (this.store.currentUser && this.store.topics.Organization && this.store.topics.UserAccess) {
+      let workspaces = [];
+      const userId = this.store.currentUser.id;
+      const orgs = this.store.topics.Organization;
+      this.store.topics.UserAccess.forEach(access => {
+        if (access.userId === userId) {
+          const workspace = orgs.find(org => org.id === access.orgId);
+          workspaces.push({
+            workspace: workspace,
+            access: access.role,
+            logo: this.getWorkspaceLogo(workspace),
+          });
+        }
+      });
+      if (workspaces.length) return workspaces;
+    }
+  }
+
+  getWorkspaceLogo(workspace) {
+    if (workspace) {
+      if (workspace.logoUrl) {
+        return this.getFilePath(workspace.logoUrl);
+      } else if (workspace.name) {
+        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='42' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E" + workspace.name.charAt(0) + "%3C/text%3E%3C/svg%3E";
+      }
+    }
+    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='42' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E?%3C/text%3E%3C/svg%3E";
+  }
+
   /*
   CHATS
    */
@@ -509,6 +539,102 @@ class Flows {
   }
 
   /**
+   * @param chatId {number}
+   * @returns {string}
+   */
+  getChatName(chatId) {
+    if (this.store.topics.Topic && this.store.topics.Topic.length) {
+      const chat = this.store.topics.Topic.find(chat => chat.id === +chatId);
+      if (chat && chat.name) {
+        return chat.name;
+      }
+    }
+    return "?";
+  }
+
+  getChatWorkspace(chatId) {
+    const workspaces = this.getCurrentUserWorkspaces();
+    const locations = this.store.topics.TopicLocation;
+
+    if (locations && workspaces) {
+      const chatOrgs = locations.filter(location => location.topicId === +chatId)
+        .map(location => location.orgId);
+      for (let i = 0; i < chatOrgs.length; i++) {
+        const workspace = workspaces.find(workspace => workspace.workspace.id === chatOrgs[i]);
+        if (workspace) return workspace;
+      }
+    }
+  }
+
+  chatMessages() {
+    const currentChatId = this.store.currentChatId;
+    if (currentChatId && this.chatMessagesCached) {
+      const id = this.store.lastUpdateChat + "-" + currentChatId;
+      if (id === this.chatMessagesCached.id) {
+        this._debug("Returning cached chat messages (" + id + ")");
+        return JSON.parse(this.chatMessagesCached.messages);
+      }
+    }
+
+    let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const chatMessagesRead = this.chatMessagesRead();
+    const chatMessagesFlagged = this.chatMessagesFlagged();
+    if (messages && currentChatId) {
+      this._debug("Getting currently open chat messages");
+      messages = messages.filter(message => !message.deleted && !message.parentTopicItemId && message.topicId === currentChatId);
+      messages.sort((a, b) => a.id - b.id);
+
+      if (chatMessagesRead && currentUserId) {
+        messages = messages.map(message => {
+          message.unread = message.creatorUserId !== currentUserId && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
+          return message;
+        });
+      }
+      if (chatMessagesFlagged) {
+        messages = messages.map(message => {
+          message.flagged = chatMessagesFlagged.indexOf(message.id) > -1;
+          return message;
+        });
+      }
+
+      this.chatMessagesCached =  {
+        messages: JSON.stringify(messages),
+        id: this.store.lastUpdateChat + "-" + currentChatId,
+      };
+      return messages;
+    }
+  }
+
+  chatMessagesRead() {
+    const read = this.store.topics.TopicItemRead;
+    const currentChatId = this.store.currentChatId;
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+
+    if (read && currentChatId && currentUserId) {
+      return read.filter(TopicItemRead => TopicItemRead.topicId === currentChatId && TopicItemRead.userId === currentUserId);
+    }
+  }
+
+  chatMessagesFlagged() {
+    const prop = JSON.parse(JSON.stringify(this.store.topics.TopicItemUserProperty));
+    const currentChatId = this.store.currentChatId;
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+
+    if (prop && currentChatId && currentUserId) {
+      return prop.filter(userProperty => userProperty.flag
+          && userProperty.topicId === currentChatId
+          && userProperty.userId === currentUserId)
+        .map(userProperty => userProperty.itemId)
+        .sort();
+    }
+  }
+
+  chatUsers() {
+
+  }
+
+  /**
    * Get flagged (saved) message ids by chat
    *
    * Known filters:
@@ -543,20 +669,6 @@ class Flows {
   }
 
   /**
-   * @param chatId {number}
-   * @returns {string}
-   */
-  getChatName(chatId) {
-    if (this.store.topics.Topic && this.store.topics.Topic.length) {
-      const chat = this.store.topics.Topic.find(chat => chat.id === +chatId);
-      if (chat && chat.name) {
-        return chat.name;
-      }
-    }
-    return "?";
-  }
-
-  /**
    * @returns {Promise<Object>|undefined}
    */
   markCurrentChatRead() {
@@ -564,8 +676,8 @@ class Flows {
       this._debug("! No TopicItem or currentUser in store");
       return;
     }
-    const ids = this.store.topics.TopicItem
-      .filter(msg => (msg.topicId === this.store.currentChatId) && msg.unread)
+    const ids = this.chatMessages()
+      .filter(msg => msg.unread)
       .map(msg => msg.id);
     if (!ids.length) return;
     return this.socket.message("/app/TopicItemRead.markAsRead", {
@@ -607,78 +719,6 @@ class Flows {
       return this.socket.message("/app/UserProperty.save", recents, true);
     }
   }
-
-  chatMessages() {
-    const currentChatId = this.store.currentChatId;
-    if (currentChatId && this.chatMessagesCached) {
-      const id = this.store.lastUpdateChat + "-" + currentChatId;
-      if (id === this.chatMessagesCached.id) {
-        this._debug("Returning cached chat messages (" + id + ")");
-        return JSON.parse(this.chatMessagesCached.messages);
-      }
-    }
-
-    let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
-    const chatMessagesRead = this.chatMessagesRead();
-    const chatMessagesFlagged = this.chatMessagesFlagged();
-    if (messages && currentChatId) {
-      this._debug("Getting currently open chat messages");
-      messages = messages.filter(message => !message.deleted && !message.parentTopicItemId && message.topicId === currentChatId);
-      messages.sort((a, b) => a.id - b.id);
-
-      if (chatMessagesRead && currentUserId) {
-        messages = messages.map(message => {
-          message.unread = message.creatorUserId !== currentUserId && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
-          return message;
-        });
-      }
-      if (chatMessagesFlagged && currentUserId) {
-        messages = messages.map(message => {
-          message.flagged = chatMessagesFlagged[currentUserId].indexOf(message.id) > -1;
-          return message;
-        });
-      }
-
-      this.chatMessagesCached =  {
-        messages: JSON.stringify(messages),
-        id: this.store.lastUpdateChat + "-" + currentChatId,
-      };
-      return messages;
-    }
-  }
-
-  chatMessagesRead() {
-    const read = this.store.topics.TopicItemRead;
-    const currentChatId = this.store.currentChatId;
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
-
-    if (read && currentChatId && currentUserId) {
-      return read.filter(TopicItemRead => TopicItemRead.topicId === currentChatId && TopicItemRead.userId === currentUserId);
-    }
-  }
-
-  chatMessagesFlagged() {
-    const prop = this.store.topics.TopicItemUserProperty;
-    const currentChatId = this.store.currentChatId;
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
-
-    if (prop && currentChatId && currentUserId) {
-      let flagged = {};
-      flagged[currentUserId] = prop
-        .filter(userProperty => userProperty.flag && userProperty.topicId === currentChatId && userProperty.userId === currentUserId)
-        .map(userProperty => userProperty.itemId)
-        .sort();
-
-      return flagged;
-    }
-  }
-
-  chatUsers() {
-
-  }
-
-
 
   /*
   MESSAGES
