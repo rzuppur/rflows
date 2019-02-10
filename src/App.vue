@@ -34,12 +34,12 @@
         .mainbar(v-if="openSection === 'SETTINGS'")
           settings(@closeSettings="openSection = 'CHAT'")
         .mainbar(v-show="openSection === 'CHAT'")
-          div(v-if="!currentChatId || !topics.TopicItem" style="padding: 20px;")
+          div(v-if="!currentChatId" style="padding: 20px;")
             .title {{ loginLoading ? 'Loading...' : 'No connection' }}
             .buttons
               button.button(v-if="!loginLoading" @click="reloadPage()") Reload page
               button.button.is-outlined(@click="flows.logout") Log out
-          template(v-if="currentChatId && topics.TopicItem")
+          template(v-if="currentChatId")
             chat-messages(
             ref="messages"
             :favouriteIds="favouriteIds"

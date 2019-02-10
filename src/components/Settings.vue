@@ -50,6 +50,9 @@
                 .description(v-if="desktopNotifications") You will recieve browser notifications
                 .description(v-else) Notifications are turned off
 
+        div(style="height: 30px")
+        button.button.is-outlined(@click="flows.logout") Log out
+
 </template>
 
 <script>
