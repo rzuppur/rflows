@@ -435,7 +435,7 @@
       },
       "editorToolbar": function (newVal, oldVal) {
         if (oldVal === newVal) return;
-        this._scrollUpdate();
+        this.$nextTick(this._scrollUpdate);
       },
     }
   }
