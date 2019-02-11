@@ -91,16 +91,23 @@ p:not(:last-child)
 
   table
     border-collapse collapse
-    table-layout fixed
     width 100%
+    background alpha(white, 0.7)
+    //table-layout fixed
 
     td, th
       padding 4px 8px
       border 1px solid $color-gray-border
 
+      &,
+      p
+        max-width 100%
+        overflow hidden
+        text-overflow ellipsis
+
     th
       background $color-light-blue-background
-      border-color darken($color-light-blue-background, 20)
+      border-color darken($color-light-blue-background, 5)
 
     .selectedCell
       background #f2f2f2
