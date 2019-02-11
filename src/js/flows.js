@@ -365,11 +365,11 @@ class Flows {
     if (this.store.currentUser && this.store.topics.Organization && this.store.topics.UserAccess) {
       let workspaces = [];
       const userId = this.store.currentUser.id;
-      const orgs = this.store.topics.Organization;
+      const orgs = this.store.topics.Organization.filter(org => !org.integration);
       this.store.topics.UserAccess.forEach(access => {
         if (access.userId === userId) {
           const workspace = orgs.find(org => org.id === access.orgId);
-          workspaces.push({
+          if (workspace) workspaces.push({
             workspace: workspace,
             access: access.role,
             logo: this.getWorkspaceLogo(workspace),

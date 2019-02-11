@@ -1,16 +1,20 @@
 <template lang="pug">
+
   #app(v-cloak)
     notification
+
     login-form(v-if="!autoLogin && !currentUser && !reconnectTimeout")
 
     template(v-if="autoLogin || currentUser || reconnectTimeout")
       .main-container.alwaysFullHeight
         .sidebar
-          .sidebar-content
+          .sidebar-content(v-if="allChats && allChats.length")
+
             .connection-error(v-if="connectionError")
               div(style="margin-bottom: 5px;") {{ errorMsg }}
               div(v-if="loginLoading && connectionError" style="margin-bottom: 12px;") Reconnecting...
               button.button.is-info.is-fullwidth(v-if="!loginLoading" @click="reloadPage()") Reload page
+
             .user.user-with-name(v-if="currentUser && !connectionError")
               img.avatar.avatar-small(:src="flows.getAvatarFromUser(currentUser)")
               .text
@@ -19,20 +23,25 @@
               button.button.settings(v-tooltip.right="(openSection === 'SETTINGS') ? 'Close settings' : 'Settings'" @click="openSection = (openSection === 'SETTINGS') ? 'CHAT' : 'SETTINGS'")
                 span.icon
                   i.fas(:class="`fa-${(openSection === 'SETTINGS') ? 'times' : 'cog'}`")
-            .search(v.if="lastOpenChatCanBeOpened")
+
+            .search
               .control.has-icons-right
                 input.input(type="search" placeholder="Search chats" v-model="searchText")
                 span.icon.is-small.is-right
                   i.fas.fa-search
             sidebar-chats(
-            :allChats="allChats"
-            :favouriteIds="favouriteIds"
-            :recentIds="recentIds"
-            :searchText="searchText")
+              :allChats="allChats"
+              :favouriteIds="favouriteIds"
+              :recentIds="recentIds"
+              :searchText="searchText")
+
+
         .mainbar(v-if="openSection === 'SAVED'")
           flagged-messages(@closeSavedMessages="openSection = 'CHAT'")
+
         .mainbar(v-if="openSection === 'SETTINGS'")
           settings(@closeSettings="openSection = 'CHAT'")
+
         .mainbar(v-show="openSection === 'CHAT'")
           div(v-if="!currentChatId" style="padding: 20px;")
             .title {{ loginLoading ? 'Loading...' : 'No connection' }}
@@ -41,10 +50,11 @@
               button.button.is-outlined(@click="flows.logout") Log out
           template(v-if="currentChatId")
             chat-messages(
-            ref="messages"
-            :favouriteIds="favouriteIds"
-            :hidden="openSection !== 'CHAT'"
-            @viewSavedMessages="openSection = 'SAVED'")
+              ref="messages"
+              :favouriteIds="favouriteIds"
+              :hidden="openSection !== 'CHAT'"
+              @viewSavedMessages="openSection = 'SAVED'")
+
 </template>
 
 <script>
@@ -69,6 +79,7 @@
         showAllChats: false,
         favouriteIds: [],
         recentIds: [],
+        userWorkspaces: [],
         searchText: "",
         openSection: "CHAT",
       };
@@ -139,6 +150,12 @@
         this.recentIds = recents
           ? recents.value.filter(recentTools => recentTools.type === "MEETING" && recentTools.id).map(v => v.id)
           : [];
+      },
+      "topics.Organization": function () {
+        this.userWorkspaces = this.flows.getCurrentUserWorkspaces();
+      },
+      "topics.UserAccess": function () {
+        this.userWorkspaces = this.flows.getCurrentUserWorkspaces();
       },
     }
   }
