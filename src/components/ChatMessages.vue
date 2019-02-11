@@ -432,7 +432,11 @@
         if (oldVal === newVal) return;
         if (this.lastUpdateChatTimeout) return;
         this.lastUpdateChatTimeout = setTimeout(this.lastUpdateChatWatcher, 100);
-      }
+      },
+      "editorToolbar": function (newVal, oldVal) {
+        if (oldVal === newVal) return;
+        this._scrollUpdate();
+      },
     }
   }
 </script>
