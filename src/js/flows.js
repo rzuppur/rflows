@@ -566,6 +566,15 @@ class Flows {
     }
   }
 
+  getWorkspaceChats(workspaceId) {
+    const locations = this.store.topics.TopicLocation;
+
+    if (locations) {
+      return locations.filter(location => location.orgId === +workspaceId)
+        .map(location => location.topicId);
+    }
+  }
+
   chatMessages() {
     const currentChatId = this.store.currentChatId;
     if (currentChatId && this.chatMessagesCached) {

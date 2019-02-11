@@ -12,7 +12,6 @@
         | {{ (!!chat.unreadAtme ? '@' : '') + chat.unread }}
 
   .sidebar-chats(v-if="allChats.length")
-    | {{ setDocumentTitleUnread }}
     template(v-if="!searchText && favouriteChats.length")
       h4.chats-section #[i.far.fa-star] Favorites
       +sidebarChat("favouriteChats")
@@ -21,7 +20,7 @@
       +sidebarChat("recentChats")
     h4.chats-section.clickable.is-unselectable(v-if="!searchText" @click="showAllChats = !showAllChats")
       i.fas(:class="{ 'fa-angle-down': !showAllChats, 'fa-angle-up': showAllChats }")
-      | &nbsp;All chats
+      | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
     template(v-if="showAllChats")
       +sidebarChat("allChats")
     template(v-if="searchText")
@@ -62,16 +61,6 @@
           return chat.unread && this.favouriteIds.indexOf(chat.id) < 0
         });
         return unread.concat(recents).slice(0, 15);
-      },
-      setDocumentTitleUnread() {
-        if (this.allChats.length) {
-          const unread = this.allChats.map((chat) => chat.unread).reduce((a, b) => a + b, 0);
-          if (unread) {
-            document.title = "(" + unread + ") RFlows";
-            return;
-          }
-        }
-        document.title = "RFlows";
       },
       filteredChats() {
         if (this.searchText) {

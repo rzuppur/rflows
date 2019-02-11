@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  #app(v-cloak)
+  #app(v-cloak @click="documentClick")
     notification
 
     login-form(v-if="!autoLogin && !currentUser && !reconnectTimeout")
@@ -29,6 +29,24 @@
                 input.input(type="search" placeholder="Search chats" v-model="searchText")
                 span.icon.is-small.is-right
                   i.fas.fa-search
+
+            .workspace-filter(v-if="userWorkspaces && userWorkspaces.length > 1")
+              .popup-menu-container
+                button.button.menu-open(@click="workspaceMenuOpen = !workspaceMenuOpen")
+                  span {{ workspaceFilter ? workspaceFilter.name : 'All workspaces' }}
+                  span.icon.is-small
+                    i.fas(:class="`fa-angle-${ workspaceMenuOpen ? 'up' : 'down'}`")
+                .popup-menu(v-show="workspaceMenuOpen")
+                  .popup-menu-item(
+                    @click="workspaceFilter = null"
+                    :class="{ active: workspaceFilter === null }"
+                    ) All workspaces
+                  .popup-menu-item(
+                    v-for="workspace in userWorkspaces"
+                    @click="workspaceFilter = workspace.workspace"
+                    :class="{ active: workspaceFilter && workspaceFilter.id === workspace.workspace.id }"
+                    ) {{ workspace.workspace.name }}
+
             sidebar-chats(
               :allChats="allChats"
               :favouriteIds="favouriteIds"
@@ -82,6 +100,8 @@
         userWorkspaces: [],
         searchText: "",
         openSection: "CHAT",
+        workspaceMenuOpen: false,
+        workspaceFilter: null,
       };
     },
     created() {
@@ -122,6 +142,10 @@
       allChats() {
         if (!this.topics.User || !this.topics.TopicUser || !this.currentUser || !this.topics.Topic) return [];
         if (this.flows) this.flows.enrichChats();
+        if (this.workspaceFilter && this.userWorkspaces) {
+          const workspaceChats = this.flows.getWorkspaceChats(this.workspaceFilter.id);
+          return this.topics.Topic.filter(chat => workspaceChats.indexOf(chat.id) > -1);
+        }
         return this.topics.Topic;
       },
       lastOpenChatCanBeOpened() {
@@ -132,21 +156,28 @@
       reloadPage() {
         location.reload()
       },
+      documentClick(event) {
+        const path = event.composedPath();
+        //this.eventBus.$emit("documentClick", path);
+        if (!path.find(element => element.classList && element.classList.contains("menu-open"))) {
+          this.workspaceMenuOpen = false;
+        }
+      },
     },
     watch: {
-      "lastOpenChatCanBeOpened": function (val) {
-        if (!val) return;
+      "lastOpenChatCanBeOpened": function (newVal) {
+        if (!newVal) return;
         this._debug("Loading last opened chat: " + this.recentIds[0]);
         this.flows.openChat(this.recentIds[0]);
         this.openLastChat = false;
       },
-      "topics.UserProperty": function (val) {
-        if (!val) return;
-        let favs = val.find(userProperty => userProperty.name === "favorites");
+      "topics.UserProperty": function (newVal) {
+        if (!newVal) return;
+        let favs = newVal.find(userProperty => userProperty.name === "favorites");
         this.favouriteIds = favs
           ? favs.value.map(v => v.id)
           : [];
-        let recents = val.find(userProperty => userProperty.name === "recentTools");
+        let recents = newVal.find(userProperty => userProperty.name === "recentTools");
         this.recentIds = recents
           ? recents.value.filter(recentTools => recentTools.type === "MEETING" && recentTools.id).map(v => v.id)
           : [];
@@ -156,6 +187,18 @@
       },
       "topics.UserAccess": function () {
         this.userWorkspaces = this.flows.getCurrentUserWorkspaces();
+      },
+      "allChats": function (newVal) {
+        const workspace = this.workspaceFilter ? " - " + this.workspaceFilter.name : "";
+        if (newVal.length) {
+
+          const unread = newVal.map((chat) => chat.unread).reduce((a, b) => a + b, 0);
+          if (unread) {
+            document.title = "(" + unread + ") RFlows" + workspace;
+            return;
+          }
+        }
+        document.title = "RFlows" + workspace;
       },
     }
   }
