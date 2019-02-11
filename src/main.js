@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './App'
 import VTooltip from 'v-tooltip'
 import VueStash from 'vue-stash'
-import clampy from '@clampy-js/vue-clampy';
 
 import utils from "@/js/utils"
 import Flows from "@/js/flows"
@@ -13,7 +12,6 @@ import "@/assets/main.css";
 
 Vue.use(VTooltip);
 Vue.use(VueStash);
-Vue.use(clampy);
 Vue.config.productionTip = false;
 
 const eventBus = new Vue();
@@ -74,9 +72,6 @@ new Vue({
     flows: null,
     store: store,
     mqMobileMatches: false,
-  },
-  directives: {
-    clampy
   },
   created() {
     this.flows = new Flows(this.$store, eventBus);

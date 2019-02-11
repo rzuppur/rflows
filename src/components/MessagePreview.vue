@@ -6,7 +6,7 @@
         | {{ flows.getFullName(message.creatorUserId) }}
       .date {{ utils.fullDateAddOtherYear(message.createDate) }}
       a.expand-toggle(v-if="!clickable && clamped && !expanded" @click="toggleClamp()") View more
-      .message-content.note-content(v-clampy="clamp" ref="text") {{ messageText }}
+      .message-content.note-content(:class="{ clamped: !expanded }" ref="text" v-html="messageText")
 </template>
 
 <script>
@@ -41,13 +41,10 @@
         }
       },
       clamped() {
-        if (this.message && this.$refs.text) {
-          const text = this.$refs.text.innerText;
-          return text.slice(-1) === "…";
+        if (this.messageText && this.$refs.text) {
+          return this.$refs.text.offsetHeight < this.$refs.text.scrollHeight
+              || this.$refs.text.offsetWidth  < this.$refs.text.scrollWidth;
         }
-      },
-      clamp() {
-        return this.expanded ? 0 : 2;
       },
     },
     methods: {
@@ -117,7 +114,17 @@
     .message-content
       margin-top -2px
       margin-bottom 2px
-      overflow hidden
       white-space pre-line
+
+      &.clamped
+        overflow hidden
+        text-overflow ellipsis
+        white-space nowrap
+
+        @supports (-webkit-line-clamp: 3)
+          white-space pre-line
+          display -webkit-box
+          -webkit-box-orient vertical
+          -webkit-line-clamp 3
 
 </style>

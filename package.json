@@ -9,7 +9,6 @@
     "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && vue-cli-service build"
   },
   "dependencies": {
-    "@clampy-js/vue-clampy": "^1.0.6",
     "auto-bind": "^1.2.1",
     "dayjs": "^1.7.8",
     "fuse.js": "^3.3.0",
