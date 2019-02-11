@@ -6,8 +6,8 @@
           span.icon
             i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
         .name.ellipsis {{ currentChatName }}
-        template(v-if="topicUsers")
-          template(v-for="user in topicUsers")
+        template(v-if="chatUsers")
+          template(v-for="user in chatUsers")
             .user(v-if="user"
             v-tooltip="flows.getFullName(user.userId) + ' (' + user.role.toLowerCase() + ')'"
             :status="flows.getUserStatus(user.userId)"
@@ -105,13 +105,21 @@
         v-for="messageId in flaggedMessageIds"
         :messageId="messageId"
         :key="messageId")
+      button.saved-view-all(@click="$emit('viewSavedMessages')") All saved messages
+
       div(style="margin: 10px 0;")
-        a(@click="$emit('viewSavedMessages')" style="display: block; margin-top: 4px;") All saved messages
         a(v-if="firstUnreadMessageId !== -1" @click="flows.markCurrentChatRead()" style="display: block;") Mark all as read
         a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
         a(v-if="!scroll.keepScrollBottom" @click="scrollToBottom()" style="display: block;") Scroll to bottom
-      p.has-text-grey(v-if="isAdmin") You have administrator rights<br>
-      button.button.is-fullwidth.is-outlined(@click="flows.logout" style="margin-top: 20px") Log out
+      div(v-tooltip="'Upper left corner next to your name. This button will be removed in future.'")
+        button.button.is-fullwidth.is-outlined(disabled style="margin-top: 20px") Log out moved to settings
+
+      p.has-text-grey(style="margin-top: 10px")
+        template(v-if="chatUser")
+          template(v-if="isAdmin") You have administrator rights<br>
+          template(v-if="chatUser.role === 'USER'") You have user rights<br>
+          template(v-if="chatUser.role === 'NOTIFICATION_RECEIVER'") You are mentioned in this chat<br>
+        template(v-else) You are not a member of this chat<br>
 </template>
 
 <script>
@@ -175,11 +183,6 @@
           }
         }
       },
-      topicUsers() {
-        if (this.topics.TopicUser && this.topics.User) {
-          return this.topics.TopicUser.filter(topicUser => topicUser.topicId === this.currentChatId).sort((a, b) => a.createDate - b.createDate);
-        }
-      },
       messageInputPlaceholder() {
         if (this.replyToId) {
           const message = this.flows.chatMessages().find(ti => ti.id === this.replyToId);
@@ -198,8 +201,8 @@
         }
       },
       typingUsersText() {
-        if (this.topicUsers && this.currentUser) {
-          let users = this.topicUsers
+        if (this.chatUsers && this.currentUser) {
+          let users = this.chatUsers
             .filter(topicUser => topicUser.userId !== this.currentUser.id && topicUser.status === "TYPING")
             .map(user => this.flows.getFirstName(user.userId));
           if (users.length) {
@@ -217,13 +220,16 @@
           if (chat && chat.guid) return `${chat.guid}@flow.contriber.com`;
         }
       },
+      chatUsers() {
+        if (this.topics.User) return this.flows.getChatUsers(this.currentChatId);
+      },
       chatUser() {
-        if (this.topicUsers && this.currentUser) {
-          return this.topicUsers.find(topicUser => topicUser.userId === this.currentUser.id);
+        if (this.chatUsers && this.currentUser) {
+          return this.flows.currentChatUser();
         }
       },
       isAdmin() {
-        if (this.topicUsers && this.currentUser) {
+        if (this.chatUsers && this.currentUser) {
           const user = this.chatUser;
           return user ? user.role === "ADMIN" : false;
         }

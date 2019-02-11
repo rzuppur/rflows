@@ -361,6 +361,15 @@ class Flows {
     return "?";
   }
 
+  currentChatUser() {
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const currentChatId = this.store.currentChatId;
+    const chatUsers = currentChatId ? this.getChatUsers(currentChatId) : null;
+    if (chatUsers && currentUserId) {
+      return chatUsers.find(chatUser => chatUser.userId === currentUserId);
+    }
+  }
+
   getCurrentUserWorkspaces() {
     if (this.store.currentUser && this.store.topics.Organization && this.store.topics.UserAccess) {
       let workspaces = [];
@@ -595,10 +604,13 @@ class Flows {
       messages.sort((a, b) => a.id - b.id);
 
       if (chatMessagesRead && currentUserId) {
-        messages = messages.map(message => {
-          message.unread = message.creatorUserId !== currentUserId && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
-          return message;
-        });
+        const chatUsers = this.getChatUsers(currentChatId);
+        if (!chatUsers || chatUsers.find(chatUser => chatUser.userId === currentUserId)) {
+          messages = messages.map(message => {
+            message.unread = message.creatorUserId !== currentUserId && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
+            return message;
+          });
+        }
       }
       if (chatMessagesFlagged) {
         messages = messages.map(message => {
@@ -639,8 +651,12 @@ class Flows {
     }
   }
 
-  chatUsers() {
+  getChatUsers(chatId) {
+    const chatUsers = this.store.topics.TopicUser;
 
+    if (chatUsers) {
+      return chatUsers.filter(chatUser => chatUser.topicId === +chatId).sort((a, b) => a.createDate - b.createDate);
+    }
   }
 
   /**

@@ -15,14 +15,26 @@
   @media (max-width $chat-sidebar-hide)
     display none
 
-  .flagged
+  .flagged h4
     margin-bottom 10px
 
-    h4
-      margin-bottom 10px
+  .saved-view-all
+    text-uppercase-13()
+    display block
+    width 100%
+    padding 0 10px
+    height 36px
+    background alpha($color-light-blue-background, 0.6)
+    border-radius $border-radius
+    border none
+    outline none
+    cursor pointer
+    transition all 0.1s
 
-      &.other
-        margin 10px 0 3px
+    &:hover,
+    &:focus
+      background darken($color-light-blue-background, 1)
+      outline none
 
 .mainbar
   max-width 1200px
