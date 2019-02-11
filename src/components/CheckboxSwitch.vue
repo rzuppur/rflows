@@ -57,6 +57,7 @@
     text-align left
     margin 0
     padding 0 10px 0 50px
+    user-select none
 
     &[disabled]
       opacity 0.5
