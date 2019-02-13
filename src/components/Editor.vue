@@ -97,6 +97,7 @@
 		TableCell,
 		TableRow,
     Placeholder,
+    HorizontalRule,
   } from 'tiptap-extensions'
   import HardBreakModifierOnly from "@/js/HardBreakModifierOnly"
 
@@ -120,6 +121,7 @@
     new TableCell(),
     new TableRow(),
     new Placeholder({emptyClass: 'is-empty'}),
+    new HorizontalRule(),
   ];
   const extensionsTextOnly = [
     new HardBreakModifierOnly(),
