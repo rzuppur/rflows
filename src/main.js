@@ -48,7 +48,7 @@ Vue.mixin({
       const time = utils.debugDateTime();
       const error = !text.indexOf("! ");
       if (error) text = text.substring(2);
-      const parentVNodeTag = this.$options && this.$options._parentVnode && this.$options._parentVnode.tag && this.$options._parentVnode.tag.split("-");
+      const parentVNodeTag = this.$options?._parentVnode?.tag?.split("-");
       const name = parentVNodeTag ? parentVNodeTag[parentVNodeTag.length - 1] : "unknown";
       console.log(time + " %c" + name + ".vue (" + caller + "): %c" + text, "color: #3ba776; font-weight: bold", "color: " + (error ? "#f00" : "inherit"));
     },

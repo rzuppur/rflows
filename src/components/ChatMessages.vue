@@ -217,7 +217,7 @@
       flowsEmail() {
         if (this.topics.Topic && this.currentChatId) {
           const chat = this.topics.Topic.find(chat => chat.id === this.currentChatId);
-          if (chat && chat.guid) return `${chat.guid}@flow.contriber.com`;
+          if (chat?.guid) return `${chat.guid}@flow.contriber.com`;
         }
       },
       chatUsers() {
@@ -328,7 +328,7 @@
         }
       },
       scrollToNew() {
-        if (this.$refs.unread && this.$refs.unread[0]) {
+        if (this.$refs.unread?.[0]) {
           this.scroll.keepScrollBottom = false;
           this._debug("Scrolling to new");
           this.$refs.unread[0].scrollIntoView({behavior: "smooth", block: "start"});
@@ -339,10 +339,10 @@
       },
       scrollToMessage(messageId, instant) {
         this.scroll.keepScrollBottom = false;
-        const message = this.$refs['message-' + messageId] && this.$refs['message-' + messageId][0]
+        const message = this.$refs['message-' + messageId]?.[0]
           ? this.$refs['message-' + messageId][0]
           : null; // this.findOrLoadMessage(messageId);
-        if (message && message.$el) {
+        if (message?.$el) {
           message.$el.scrollIntoView({behavior: (instant ? "auto" : "smooth"), block: "start"});
           message.highlight();
         }
@@ -409,7 +409,7 @@
           const myMessages = this.sortedMessages.filter(message => message.creatorUserId === this.currentUser.id);
           if (myMessages.length) {
             const messageId = myMessages[myMessages.length - 1].id;
-            const message = this.$refs['message-' + messageId] && this.$refs['message-' + messageId][0]
+            const message = this.$refs['message-' + messageId]?.[0]
               ? this.$refs['message-' + messageId][0]
               : null;
             if (message) {

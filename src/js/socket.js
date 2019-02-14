@@ -103,7 +103,7 @@ class Socket {
   close(CloseEvent) {
     const _debug = (text) => {if (this.debug) this._logDebug(text, "close")};
 
-    if (this.connected && this.stompClient && this.stompClient.connected) {
+    if (this.connected && this.stompClient?.connected) {
       return new Promise((resolve) => {
         this.stompClient.disconnect(() => {
           _debug("stompclient disconnected");

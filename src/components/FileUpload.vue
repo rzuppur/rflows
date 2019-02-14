@@ -90,11 +90,11 @@
         this.expanded = false;
       },
       _pasteFromClipboard(event) {
-        if (event.clipboardData.files && event.clipboardData.files.length === 1) {
+        if (event.clipboardData.files?.length === 1) {
           this._setFile(event.clipboardData.files[0]);
           return;
         }
-        if (event.clipboardData.items && event.clipboardData.items.length) {
+        if (event.clipboardData.items?.length) {
           const items = event.clipboardData.items;
           for (let i = 0; i < items.length; i++) {
             if (items[i].kind === "file") {

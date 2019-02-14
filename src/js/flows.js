@@ -173,7 +173,7 @@ class Flows {
     if ([1000, 1002, 1006].indexOf(CloseEvent.code) > -1) {
       this.startReconnectTimer();
     }
-    if (CloseEvent.reason && CloseEvent.reason.length) {
+    if (CloseEvent.reason?.length) {
       this.store.errorMsg = CloseEvent.reason;
     } else {
       if (CloseEvent.code && CloseEvent.code === 1006) this.store.errorMsg = "Connection lost";
@@ -248,7 +248,7 @@ class Flows {
       _debug("Log in done");
     }
 
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const currentUserId = this.store.currentUser?.id;
 
     if (currentUserId) {
       _debug("Subscribing to global topics");
@@ -276,7 +276,7 @@ class Flows {
 
   getLoginToken() {
     const session = JSON.parse(localStorage.getItem("session"));
-    if (session && session.token) {
+    if (session?.token) {
       this._debug("Login token found");
       return session.token;
     }
@@ -295,7 +295,7 @@ class Flows {
       this.store.topics[topic] = null;
     });
 
-    if (this.socket && this.socket.connected) {
+    if (this.socket?.connected) {
       this._debug("Unsubscribing");
       this.socket.unsubscribeAll();
       this._debug("Sending log out message");
@@ -316,7 +316,7 @@ class Flows {
    */
 
   getFullNameFromUser(user) {
-    if (user && (user.firstName || user.lastName)) return user.firstName + " " + user.lastName;
+    if (user?.firstName) return user.firstName + " " + user.lastName;
     return "?";
   }
 
@@ -331,16 +331,16 @@ class Flows {
   getFirstName(userId) {
     if (this.store.topics.User) {
       const user = this.store.topics.User.find(user => user.id === +userId);
-      if (user && user.firstName) return user.firstName;
+      if (user?.firstName) return user.firstName;
     }
     return "?";
   }
 
   getAvatarFromUser(user) {
-    if (user && user.avatarUrl) {
+    if (user?.avatarUrl) {
       return this.getFilePath(user.avatarUrl);
     }
-    let char = user && user.firstName ? user.firstName.charAt(0) : "?";
+    let char = user?.firstName ? user.firstName.charAt(0) : "?";
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='56' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E" +
       char + "%3C/text%3E%3C/svg%3E";
   }
@@ -356,13 +356,13 @@ class Flows {
   getUserStatus(userId) {
     if (this.store.topics.User) {
       const user = this.store.topics.User.find(user => userId === user.id);
-      if (user && user.status) return user.status;
+      if (user?.status) return user.status;
     }
     return "?";
   }
 
   currentChatUser() {
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const currentUserId = this.store.currentUser?.id;
     const currentChatId = this.store.currentChatId;
     const chatUsers = currentChatId ? this.getChatUsers(currentChatId) : null;
     if (chatUsers && currentUserId) {
@@ -552,9 +552,9 @@ class Flows {
    * @returns {string}
    */
   getChatName(chatId) {
-    if (this.store.topics.Topic && this.store.topics.Topic.length) {
+    if (this.store.topics.Topic?.length) {
       const chat = this.store.topics.Topic.find(chat => chat.id === +chatId);
-      if (chat && chat.name) {
+      if (chat?.name) {
         return chat.name;
       }
     }
@@ -595,7 +595,7 @@ class Flows {
     }
 
     let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const currentUserId = this.store.currentUser?.id;
     const chatMessagesRead = this.chatMessagesRead();
     const chatMessagesFlagged = this.chatMessagesFlagged();
     if (messages && currentChatId) {
@@ -630,7 +630,7 @@ class Flows {
   chatMessagesRead() {
     const read = this.store.topics.TopicItemRead;
     const currentChatId = this.store.currentChatId;
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const currentUserId = this.store.currentUser?.id;
 
     if (read && currentChatId && currentUserId) {
       return read.filter(TopicItemRead => TopicItemRead.topicId === currentChatId && TopicItemRead.userId === currentUserId);
@@ -640,7 +640,7 @@ class Flows {
   chatMessagesFlagged() {
     const prop = JSON.parse(JSON.stringify(this.store.topics.TopicItemUserProperty));
     const currentChatId = this.store.currentChatId;
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    const currentUserId = this.store.currentUser?.id;
 
     if (prop && currentChatId && currentUserId) {
       return prop.filter(userProperty => userProperty.flag

@@ -159,7 +159,7 @@
       documentClick(event) {
         const path = event.composedPath();
         //this.eventBus.$emit("documentClick", path);
-        if (!path.find(element => element.classList && element.classList.contains("menu-open"))) {
+        if (!path.find(element => element.classList?.contains("menu-open"))) {
           this.workspaceMenuOpen = false;
         }
       },
