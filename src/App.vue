@@ -30,7 +30,7 @@
                 span.icon.is-small.is-right
                   i.fas.fa-search
 
-            .workspace-filter(v-if="userWorkspaces && userWorkspaces.length > 1")
+            .workspace-filter(v-if="flows.showWorkspaceSwitcher && userWorkspaces && userWorkspaces.length > 1")
               .popup-menu-container
                 button.button.menu-open(@click="workspaceMenuOpen = !workspaceMenuOpen")
                   span {{ workspaceFilter ? workspaceFilter.name : 'All workspaces' }}
@@ -142,7 +142,7 @@
       allChats() {
         if (!this.topics.User || !this.topics.TopicUser || !this.currentUser || !this.topics.Topic) return [];
         if (this.flows) this.flows.enrichChats();
-        if (this.workspaceFilter && this.userWorkspaces) {
+        if (this.flows.showWorkspaceSwitcher && this.workspaceFilter && this.userWorkspaces) {
           const workspaceChats = this.flows.getWorkspaceChats(this.workspaceFilter.id);
           return this.topics.Topic.filter(chat => workspaceChats.indexOf(chat.id) > -1);
         }

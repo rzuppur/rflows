@@ -931,49 +931,62 @@ class Flows {
    * @returns {boolean}
    */
   get autoMarkAsRead() {
-    if (!this.store.topics.UserProperty) return true;
-    const prop = this.store.topics.UserProperty.find(userProperty => userProperty.name === "autoMarkAsRead");
-    return prop ? prop.value : true;
+    return this._getBooleanUserProp("autoMarkAsRead", true);
   }
 
   /**
    * @param value {boolean}
    */
   set autoMarkAsRead(value) {
-    this._setBooleanUserProp("autoMarkAsRead", value,
-      "Messages will be marked as read automatically",
-      "Messages have to be marked as read manually");
+    this._setBooleanUserProp("autoMarkAsRead", value);
   }
 
   /**
    * @returns {boolean}
    */
   get desktopNotifications() {
-    if (!this.store.topics.UserProperty) return false;
-    const prop = this.store.topics.UserProperty.find(userProperty => userProperty.name === "desktopNotifications");
-    return prop ? prop.value : false;
+    return this._getBooleanUserProp("desktopNotifications", false);
   }
 
   /**
    * @param value {boolean}
    */
   set desktopNotifications(value) {
-    this._setBooleanUserProp("desktopNotifications", value,
-      "Desktop notifications enabled",
-      "Desktop notifications disabled");
+    this._setBooleanUserProp("desktopNotifications", value);
   }
 
   /**
-   * Set a boolean user property
-   * Change local instantly, show confirmation toast when saved in server
-   *
-   * @param propName {string}
+   * @returns {boolean}
+   */
+  get showWorkspaceSwitcher() {
+    return this._getBooleanUserProp("showWorkspaceSwitcher", true);
+  }
+
+  /**
    * @param value {boolean}
-   * @param onToast {string}
-   * @param offToast {string}
+   */
+  set showWorkspaceSwitcher(value) {
+    this._setBooleanUserProp("showWorkspaceSwitcher", value)
+  }
+
+  /**
+   * @param propName {string}
+   * @param fallback {boolean}
+   * @returns {boolean}
    * @private
    */
-  _setBooleanUserProp(propName, value, onToast, offToast) {
+  _getBooleanUserProp(propName, fallback) {
+    if (!this.store.topics.UserProperty) return fallback;
+    const prop = this.store.topics.UserProperty.find(userProperty => userProperty.name === propName);
+    return prop ? prop.value : fallback;
+  }
+
+  /**
+   * @param propName {string}
+   * @param value {boolean}
+   * @private
+   */
+  _setBooleanUserProp(propName, value) {
     if (!this.store.topics.UserProperty) {
       this._debug("! UserProperty missing from store");
       return;
@@ -999,8 +1012,11 @@ class Flows {
     }
     Vue.set(this.store.topics.UserProperty, propIndex, prop);
     this.socket.message("/app/UserProperty.save", prop, true)
-    .then(() => this.eventBus.$emit("notify", value ? onToast : offToast))
-    .catch(() => this.eventBus.$emit("notify", "Error saving user property"));
+    .then(() => this._debug(`Saved ${propName} (${value})`))
+    .catch(() => {
+      this.eventBus.$emit("notify", `Error saving ${propName}`);
+      this._debug(`! Error saving user property ${propName} (${value})`)
+    });
   }
 
   /**

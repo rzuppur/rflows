@@ -43,6 +43,12 @@
               .label Mark messages as read automatically
                 .description(v-if="autoMarkAsRead") Messages will be marked as read when opened
                 .description(v-else) Messages have to be marked as read manually
+        .field
+          .control
+            checkbox-switch(v-model="showWorkspaceSwitcher" :checked="showWorkspaceSwitcher")
+              .label Show workspace switcher
+                .description(v-if="showWorkspaceSwitcher") Chats can be filtered by workspace on sidebar
+                .description(v-else) Workspace filter turned off
         //-.field TODO:
           .control
             checkbox-switch(v-model="desktopNotifications" :checked="desktopNotifications")
@@ -65,6 +71,7 @@
     data: function () {
       return {
         autoMarkAsRead: null,
+        showWorkspaceSwitcher: null,
         desktopNotifications: null,
         user: {
           firstName: "",
@@ -77,6 +84,7 @@
       this.eventBus.$on("currentChatChange", () => {this.$emit('closeSettings')});
       if (this.topics.UserProperty) {
         this.autoMarkAsRead = this.flows.autoMarkAsRead;
+        this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
         this.desktopNotifications = this.flows.desktopNotifications;
       }
       if (this.currentUser) {
@@ -113,6 +121,11 @@
         if (val === null || oldVal === null) return;
         if (this.flows.autoMarkAsRead !== val) this.flows.autoMarkAsRead = val;
       },
+      showWorkspaceSwitcher(val, oldVal) {
+        this._debug(`showWorkspaceSwitcher ${oldVal} => ${val}`);
+        if (val === null || oldVal === null) return;
+        if (this.flows.showWorkspaceSwitcher !== val) this.flows.showWorkspaceSwitcher = val;
+      },
       desktopNotifications(val, oldVal) {
         this._debug(`desktopNotifications ${oldVal} => ${val}`);
         if (val === null || oldVal === null) return;
@@ -121,10 +134,12 @@
       "topics.UserProperty": function (val) {
         if (val) {
           this.autoMarkAsRead = this.flows.autoMarkAsRead;
+          this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
           this.desktopNotifications = this.flows.desktopNotifications;
         } else {
           this._debug("userProp watch reset to null");
           this.autoMarkAsRead = null;
+          this.showWorkspaceSwitcher = null;
           this.desktopNotifications= null;
         }
       },
@@ -183,5 +198,8 @@
 
         .button:not(:last-child)
           margin-right -6px
+
+      .field:not(:last-child)
+        margin-bottom 20px
 
 </style>
