@@ -54,7 +54,7 @@
             setTimeout(() => {
               this.queue.shift();  // toast transition finished, remove text
             }, 200);
-          }, 1000 + (val.text.length * 100));
+          }, 700 + (val.text.length * 70));
         }
       }
     },
