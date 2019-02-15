@@ -25,6 +25,7 @@ export default class HardBreakModifierOnly extends Node {
       return true;
     });
     return {
+      'Enter': command,
       'Mod-Enter': command,
     };
   }
