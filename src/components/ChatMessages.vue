@@ -1,6 +1,6 @@
 <template lang="pug">
   .chat
-    .mainbar(:class="{focusMode: replyToId}")
+    .mainbar(:class="{ focusMode: replyToId, 'extra-space': !flows.compactMode }")
       .chat-title
         button.button.fav-toggle.is-white(v-tooltip="isStarred ? 'Remove from favorites' : 'Add to favorites'" @click="toggleFavourite()")
           span.icon

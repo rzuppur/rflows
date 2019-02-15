@@ -970,6 +970,20 @@ class Flows {
   }
 
   /**
+   * @returns {boolean}
+   */
+  get compactMode() {
+    return this._getBooleanUserProp("compactMode", true);
+  }
+
+  /**
+   * @param value {boolean}
+   */
+  set compactMode(value) {
+    this._setBooleanUserProp("compactMode", value)
+  }
+
+  /**
    * @param propName {string}
    * @param fallback {boolean}
    * @returns {boolean}

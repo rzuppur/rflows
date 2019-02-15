@@ -248,4 +248,17 @@
   }
 </script>
 
+<style lang="stylus">
+  @import "~@/shared.styl"
+
+  .extra-space .chat-message
+    padding 15px 30px !important
+
+    @media (max-width $media-sidebar-hide)
+      padding 15px 20px !important
+
+    p
+      line-height 1.6
+
+</style>
 <style lang="stylus" scoped src="./Message.styl"></style>

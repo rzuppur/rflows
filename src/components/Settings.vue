@@ -15,7 +15,7 @@
 
         template(v-if="!nameEdit")
           .user-with-name
-            img.avatar.avatar-small(:src="flows.getAvatarFromUser(currentUser)")
+            img.avatar.avatar-small(:src="flows.getAvatarFromUser(currentUser)" style="margin-right: 20px;")
             .text
               .name.ellipsis {{ flows.getFullNameFromUser(currentUser) }}
               .details.text-muted.ellipsis {{ currentUser.email }}
@@ -43,18 +43,22 @@
               .label Mark messages as read automatically
                 .description(v-if="autoMarkAsRead") Messages will be marked as read when opened
                 .description(v-else) Messages have to be marked as read manually
-        .field
-          .control
-            checkbox-switch(v-model="showWorkspaceSwitcher" :checked="showWorkspaceSwitcher")
-              .label Show workspace switcher
-                .description(v-if="showWorkspaceSwitcher") Chats can be filtered by workspace on sidebar
-                .description(v-else) Workspace filter turned off
         //-.field TODO:
           .control
             checkbox-switch(v-model="desktopNotifications" :checked="desktopNotifications")
               .label Browser notifications
                 .description(v-if="desktopNotifications") You will recieve browser notifications
                 .description(v-else) Notifications are turned off
+        .field
+          .control
+            checkbox-switch(v-model="showWorkspaceSwitcher" :checked="showWorkspaceSwitcher")
+              .label Show workspace filter on sidebar
+        .field
+          .control
+            checkbox-switch(v-model="compactMode" :checked="compactMode")
+              .label Compact message display
+                .description(v-if="compactMode") Maximize number of messages displayed
+                .description(v-else) More space around messages
 
         div(style="height: 30px")
         button.button.is-outlined(@click="flows.logout") Log out
@@ -71,8 +75,9 @@
     data: function () {
       return {
         autoMarkAsRead: null,
-        showWorkspaceSwitcher: null,
         desktopNotifications: null,
+        showWorkspaceSwitcher: null,
+        compactMode: null,
         user: {
           firstName: "",
           lastName: "",
@@ -84,8 +89,9 @@
       this.eventBus.$on("currentChatChange", () => {this.$emit('closeSettings')});
       if (this.topics.UserProperty) {
         this.autoMarkAsRead = this.flows.autoMarkAsRead;
-        this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
         this.desktopNotifications = this.flows.desktopNotifications;
+        this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
+        this.compactMode = this.flows.compactMode;
       }
       if (this.currentUser) {
         this.user.firstName = this.currentUser.firstName;
@@ -131,16 +137,23 @@
         if (val === null || oldVal === null) return;
         if (this.flows.desktopNotifications !== val) this.flows.desktopNotifications = val;
       },
+      compactMode(val, oldVal) {
+        this._debug(`compactMode ${oldVal} => ${val}`);
+        if (val === null || oldVal === null) return;
+        if (this.flows.compactMode !== val) this.flows.compactMode = val;
+      },
       "topics.UserProperty": function (val) {
         if (val) {
           this.autoMarkAsRead = this.flows.autoMarkAsRead;
-          this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
           this.desktopNotifications = this.flows.desktopNotifications;
+          this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
+          this.compactMode = this.flows.compactMode;
         } else {
           this._debug("userProp watch reset to null");
           this.autoMarkAsRead = null;
-          this.showWorkspaceSwitcher = null;
           this.desktopNotifications= null;
+          this.showWorkspaceSwitcher = null;
+          this.compactMode= null;
         }
       },
       currentUser(val, oldVal) {
