@@ -254,6 +254,9 @@
   .extra-space .chat-message
     padding 15px 30px !important
 
+    &.message-highlight
+      padding 15px 17px !important
+
     @media (max-width $media-sidebar-hide)
       padding 15px 20px !important
 
