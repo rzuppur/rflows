@@ -94,29 +94,37 @@
             span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
           .has-text-grey.text-small.bottom-info-text(v-if="editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
-    .sidebar.scrollbar-style(style="overflow-y: auto; height: 100%;")
+    .sidebar.scrollbar-style(:class="{ collapsed: sidebarCollapsed }")
       .workspace(v-if="workspace")
-        .text
+        .text.show-wide
           .name {{ workspace.workspace.name }}
           .desc {{ workspace.workspace.type.toLowerCase() }} workspace
         img.logo(:src="workspace.logo" :alt="workspace.workspace.name")
 
-      .flagged(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
+      .flagged.show-wide(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4 #[i.fas.fa-thumbtack.has-text-info] Saved messages
         message-preview.sidebar-saved(
         v-for="messageId in flaggedMessageIds"
         :messageId="messageId"
         :key="messageId")
-      button.saved-view-all(@click="$emit('viewSavedMessages')") All saved messages
+      button.saved-view-all.sidebar-button(@click="$emit('viewSavedMessages')" v-tooltip.left="{ content: sidebarCollapsed ? 'Saved messages' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
+        span.show-wide All saved messages
+        span.icon.small
+          i.fas.fa-thumbtack.has-text-info
 
-      div(style="margin: 10px 0;")
+      button.sidebar-button(@click="sidebarCollapsed = !sidebarCollapsed" v-tooltip.left="{ content: sidebarCollapsed ? 'Expand sidebar' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
+        span.show-wide Collapse sidebar
+        span.icon.small
+          i.fas.fa-chevron-left.has-text-grey
+
+      .show-wide(style="margin: 10px 0;")
         a(v-if="firstUnreadMessageId !== -1" @click="flows.markCurrentChatRead()" style="display: block;") Mark all as read
         a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
         a(v-if="!scroll.keepScrollBottom" @click="scrollToBottom()" style="display: block;") Scroll to bottom
-      div(v-tooltip="'Upper left corner next to your name. This button will be removed in future.'")
+      .show-wide(v-tooltip="'Upper left corner next to your name. This button will be removed in future.'")
         button.button.is-fullwidth.is-outlined(disabled style="margin-top: 20px") Log out moved to settings
 
-      p.has-text-grey(style="margin-top: 10px")
+      p.show-wide.has-text-grey(style="margin-top: 10px")
         template(v-if="chatUser")
           template(v-if="isAdmin") You have administrator rights<br>
           template(v-if="chatUser.role === 'USER'") You have user rights<br>
@@ -159,12 +167,17 @@
         sortedMessages: null,
         messagesRead: null,
         flaggedMessageIds: null,
+
+        sidebarCollapsed: false,
       }
     },
     created() {
       this.eventBus.$on("messagesScrollUpdate", this.scrollUpdate);
       this.eventBus.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
       this.eventBus.$on("currentChatChange", this.markNewChat);
+
+      const sidebarIsCollapsed = !!localStorage.getItem("sidebarCollapsed");
+      if (sidebarIsCollapsed) this.sidebarCollapsed = true;
     },
     mounted() {
       this.$root.updateFullHeight();
@@ -444,6 +457,9 @@
       "editorToolbar": function (newVal, oldVal) {
         if (oldVal === newVal) return;
         this.$nextTick(this._scrollUpdate);
+      },
+      "sidebarCollapsed": function (newVal, oldVal) {
+        localStorage.setItem("sidebarCollapsed", newVal);
       },
     }
   }
