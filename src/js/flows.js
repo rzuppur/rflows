@@ -1086,18 +1086,20 @@ class Flows {
    *
    * @param formData {FormData}
    * @param fileName {string}
+   * @param [replyToId] {number}
    * @returns {Promise}
    */
-  uploadFileToChat(formData, fileName) {
+  uploadFileToChat(formData, fileName, replyToId) {
     const token = this.getLoginToken();
     const openChatId = this.store.currentChatId;
     if (!openChatId || !token) {
       this._debug("! No token or currentChatId");
       return Promise.reject("No token or currentChatId");
     }
-    formData.append("topicId", openChatId);
+    formData.append("topicId", openChatId.toString());
     formData.append("token", token);
     formData.append("text", fileName);
+    if (replyToId) formData.append("referenceFromTopicItemId", replyToId.toString());
 
     return fetch(FILE_UPLOAD_URL, {
       method: "POST",

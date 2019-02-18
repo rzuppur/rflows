@@ -11,7 +11,7 @@
       .field(style="margin-bottom: 30px;")
         label.label Password
         .control
-          input.input#password(v-on:keyup.enter="login" v-model="loginData.password" type="password" name="password" required autocomplete="password")
+          input.input#password(@keyup.enter="login" v-model="loginData.password" type="password" name="password" required autocomplete="password")
       .field
         .control
           button.button.is-info.is-fullwidth(type="submit" :class="{ 'is-loading': loginLoading }") Sign in

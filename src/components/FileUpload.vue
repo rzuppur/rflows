@@ -6,7 +6,7 @@
     form.field.is-grouped(
       enctype="multipart/form-data"
       novalidate
-      v-on:submit.prevent)
+      @submit.prevent)
 
       .control.is-expanded(v-show="expanded")
         input.input(
@@ -14,7 +14,7 @@
           ref="fileName"
           v-model="fileName"
           placeholder="File name"
-          v-on:keydown.enter.prevent)
+          @keydown.enter.prevent="upload")
 
       .control
         label.button.is-outlined(tabindex="0" for="fileInput" @keyup.enter="e => e.target.click()" v-tooltip="expanded ? 'Change file' :  'Upload file'")
@@ -43,7 +43,7 @@
 <script>
   export default {
     name: "FileUpload",
-    props: ["chatId"],
+    props: ["chatId", "replyToId"],
     data: function () {
       return {
         fileName: "",
@@ -70,12 +70,13 @@
         if (!this.formData) return;
         this.currentStatus = "UPLOADING";
         this._debug("Starting file upload");
-        this.flows.uploadFileToChat(this.formData, this.fileName)
+        this.flows.uploadFileToChat(this.formData, this.fileName, this.replyToId)
         .then(response => {
           this.currentStatus = "SUCCESS";
           this.fileName = "";
           this._reset();
           this.eventBus.$emit("notify", "File uploaded");
+          this.$emit("fileUploaded");
         })
         .catch(error => {
           this.uploadError = error.response;

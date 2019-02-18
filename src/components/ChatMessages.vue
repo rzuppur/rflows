@@ -72,7 +72,9 @@
               ref="fileUpload"
               :class="{ flex0: !uploadExpanded, flex1: uploadExpanded}"
               :chatId="currentChatId"
-              v-on:expandChange="uploadExpanded = $event")
+              :replyToId="replyToId"
+              @expandChange="uploadExpanded = $event"
+              @fileUploaded="replyCancel()")
 
             .control(v-if="replyToId" v-show="!uploadExpanded")
               button.button.is-outlined(@pointerdown.prevent @pointerup="replyCancel()" @keyup.enter="replyCancel()")
@@ -186,7 +188,7 @@
       messageInputPlaceholder() {
         if (this.replyToId) {
           const message = this.flows.chatMessages().find(ti => ti.id === this.replyToId);
-          return 'Reply to ' + (message.creatorUserId
+          return 'Reply to ' + (message?.creatorUserId
             ? this.flows.getFullName(message.creatorUserId)
             : this.currentChatName);
         } else {
