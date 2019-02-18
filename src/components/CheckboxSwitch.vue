@@ -2,7 +2,13 @@
 <template lang="pug">
 
   label.switch
-    input.switch-input(:class="classes" type="checkbox" :checked="checked" :name="name" :disabled="disabled" v-model="value")
+    input.switch-input(
+      :class="classes"
+      type="checkbox"
+      :checked="checked"
+      @change="changed"
+      :name="name"
+      :disabled="disabled")
     span.switch-toggle(:disabled="disabled")
       slot
 
@@ -27,6 +33,11 @@
     },
     mounted() {
       this.$emit('input', this.value)
+    },
+    methods: {
+      changed(event) {
+        this.value = event.target.checked;
+      },
     },
     watch: {
       value(val) {
