@@ -24,14 +24,18 @@
     .show-wide
       display none
 
-    .sidebar-button .small
-      display inline
+    .sidebar-button
+      text-align center
+
+      .small
+        display inline
 
   .sidebar-button .small
     display none
 
   .flagged h4
     margin-bottom 10px
+    margin-top 20px
 
   .sidebar-button
     text-uppercase-13()
@@ -46,11 +50,17 @@
     outline none
     cursor pointer
     transition all 0.1s
+    text-align left
 
     &:hover,
     &:focus
       background darken($color-light-blue-background, 1)
       outline none
+
+    &[disabled]
+      opacity 0.5
+      background none
+      pointer-events none
 
 .mainbar
   flex 3

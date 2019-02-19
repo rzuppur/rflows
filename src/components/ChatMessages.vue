@@ -101,30 +101,46 @@
           .desc {{ workspace.workspace.type.toLowerCase() }} workspace
         img.logo(:src="workspace.logo" :alt="workspace.workspace.name")
 
+      button.sidebar-button(@click="sidebarCollapsed = !sidebarCollapsed" v-tooltip.left="{ content: sidebarCollapsed ? 'Expand sidebar' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
+        span.show-wide Collapse sidebar
+        span.icon.small
+          i.fas.fa-chevron-left.has-text-grey
+
+      button.saved-view-all.sidebar-button(@click="$emit('viewSavedMessages')" v-tooltip.left="{ content: sidebarCollapsed ? 'Saved messages' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
+        span.show-wide All saved messages
+        span.icon.small
+          i.fas.fa-thumbtack.has-text-info
+
+      button.sidebar-button(
+        @click="flows.markCurrentChatRead()"
+        :disabled="firstUnreadMessageId === -1"
+        v-tooltip.left="{ content: sidebarCollapsed ? 'Mark all as read' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+      )
+        span.show-wide Mark all as read
+        span.icon.small
+          i.fas.fa-check.has-text-success
+
+      button.sidebar-button(
+        @click="scrollToBottom()"
+        :disabled="scroll.keepScrollBottom"
+        v-tooltip.left="{ content: sidebarCollapsed ? 'Scroll to bottom' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+      )
+        span.show-wide Scroll to bottom
+        span.icon.small
+          i.fas.fa-arrow-down.has-text-grey
+
       .flagged.show-wide(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4 #[i.fas.fa-thumbtack.has-text-info] Saved messages
         message-preview.sidebar-saved(
         v-for="messageId in flaggedMessageIds"
         :messageId="messageId"
         :key="messageId")
-      button.saved-view-all.sidebar-button(@click="$emit('viewSavedMessages')" v-tooltip.left="{ content: sidebarCollapsed ? 'Saved messages' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
-        span.show-wide All saved messages
-        span.icon.small
-          i.fas.fa-thumbtack.has-text-info
 
-      button.sidebar-button(@click="sidebarCollapsed = !sidebarCollapsed" v-tooltip.left="{ content: sidebarCollapsed ? 'Expand sidebar' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
-        span.show-wide Collapse sidebar
-        span.icon.small
-          i.fas.fa-chevron-left.has-text-grey
-
-      .show-wide(style="margin: 10px 0;")
-        a(v-if="firstUnreadMessageId !== -1" @click="flows.markCurrentChatRead()" style="display: block;") Mark all as read
-        a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
-        a(v-if="!scroll.keepScrollBottom" @click="scrollToBottom()" style="display: block;") Scroll to bottom
+      //-a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
       .show-wide(v-tooltip="'Upper left corner next to your name. This button will be removed in future.'")
         button.button.is-fullwidth.is-outlined(disabled style="margin-top: 20px") Log out moved to settings
 
-      p.show-wide.has-text-grey(style="margin-top: 10px")
+      p.show-wide.has-text-grey(style="margin-top: 10px;")
         template(v-if="chatUser")
           template(v-if="isAdmin") You have administrator rights<br>
           template(v-if="chatUser.role === 'USER'") You have user rights<br>
