@@ -251,14 +251,16 @@
 <style lang="stylus">
   @import "~@/shared.styl"
 
+  $verticalPadding = 12px
+
   .extra-space .chat-message
-    padding 13px 30px !important
+    padding $verticalPadding 30px !important
 
     &.message-highlight
-      padding 13px 17px !important
+      padding $verticalPadding 17px !important
 
     @media (max-width $media-sidebar-hide)
-      padding 13px 20px !important
+      padding $verticalPadding 20px !important
 
     p
       line-height 1.6
