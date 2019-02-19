@@ -176,7 +176,7 @@
       this.eventBus.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
       this.eventBus.$on("currentChatChange", this.markNewChat);
 
-      const sidebarIsCollapsed = !!localStorage.getItem("sidebarCollapsed");
+      const sidebarIsCollapsed = JSON.parse(localStorage.getItem("sidebarCollapsed"));
       if (sidebarIsCollapsed) this.sidebarCollapsed = true;
     },
     mounted() {
