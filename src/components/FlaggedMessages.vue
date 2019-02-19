@@ -117,7 +117,7 @@
     background $color-light-gray-background
 
     .messages-container
-      max-width 900px
+      max-width 850px
       margin 0 auto
       padding 20px
       background #fff
