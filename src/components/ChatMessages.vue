@@ -396,7 +396,7 @@
         }
       },
       _scrollUpdate()  {
-        this._debug("Scroll height update");
+        //this._debug("Scroll height update");
         this.scrollUpdateTimer = null;
         this.$nextTick(this.scrollToNewOnce);
 

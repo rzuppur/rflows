@@ -154,7 +154,7 @@
         if (this.message.originalFileName === "mime") return previewUrl;
         let ext = this.message.url.split(".");
         ext = ext[ext.length - 1] + "";
-        if (["png", "jpg", "gif", "jpeg"].indexOf(ext.toLowerCase()) > -1) return previewUrl;
+        if (["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) > -1) return previewUrl;
       },
     },
     methods: {

@@ -1,6 +1,9 @@
 <template lang="pug">
   .file-upload
 
+    .drop-overlay(:class="{ dropping: dropping }")
+      .drop-overlay-text #[span.icon #[i.fas.fa-upload]]
+
     img.image-preview(v-if="previewUrl" :src="previewUrl")
 
     form.field.is-grouped(
@@ -53,19 +56,64 @@
         previewUrl: null,
         currentStatus: "INITIAL",
         expanded: false,
+        dropping: false,
       };
     },
     created() {
       window.addEventListener("paste", this._pasteFromClipboard);
+      window.addEventListener("dragenter", this._startDrop, true);
+      window.addEventListener("dragover", this._dragOver, true);
+      window.addEventListener("dragleave", this._endDrop, true);
+      window.addEventListener("drop", this._drop, true);
+      this.dragCounter = 0;
     },
     mounted() {
       this.loginToken = this.flows.getLoginToken();
     },
     destroyed() {
       window.removeEventListener("paste", this._pasteFromClipboard);
+      window.removeEventListener("dragenter", this._startDrop, true);
+      window.removeEventListener("dragover", this._dragOver, true);
+      window.removeEventListener("dragleave", this._endDrop, true);
+      window.removeEventListener("drop", this._drop, true);
+
       this.$emit("expandChange", false);
     },
     methods: {
+      _startDrop(event) {
+        this.dragCounter += 1;
+        if (event.dataTransfer.types.indexOf("Files") > -1) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.dropping = true;
+        }
+      },
+      _dragOver(event) {
+        if (event.dataTransfer.types.indexOf("Files") > -1) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.dropping = true;
+        }
+      },
+      _endDrop(event) {
+        this.dragCounter -= 1;
+        if (event.dataTransfer.types.indexOf("Files") > -1) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (this.dragCounter === 0) this.dropping = false;
+        }
+      },
+      _drop(event) {
+        this.dragCounter = 0;
+        if (event.dataTransfer.types.indexOf("Files") > -1) {
+          event.stopPropagation();
+          event.preventDefault();
+          this.dropping = false;
+
+          const file = event.dataTransfer?.files?.[0];
+          if (file) this._setFile(file);
+        }
+      },
       upload() {
         if (!this.formData) return;
         this.currentStatus = "UPLOADING";
@@ -158,6 +206,42 @@
     border-radius $border-radius
     display block
     margin 0 auto 15px
-    box-shadow 0 0 0 2px rgba(0,0,0,0.1)
+    box-shadow 0 0 0 2px rgba(0, 0, 0, .1)
+
+  .drop-overlay
+    position fixed
+    left 0
+    right 0
+    top 0
+    bottom 0
+    background alpha(#fff, .96)
+    display flex
+    align-items center
+    flex-direction row
+    justify-content space-around
+    user-select none
+    pointer-events none
+    transition all 0.15s
+    z-index -1000
+    opacity 0
+
+    &.dropping
+      z-index 1000
+      opacity 1
+
+    .drop-overlay-text
+      text-regular-30()
+      color $color-text
+
+      &:before
+        content ""
+        position absolute
+        top 30px
+        bottom @top
+        left @top
+        right @top
+        border 2px dashed alpha(#000, .2)
+        border-radius $border-radius
+
 
 </style>
