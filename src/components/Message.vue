@@ -61,39 +61,39 @@
     .buttons-container(v-if="!editMode")
       .field.has-addons
         .control(v-if="!autoMarkAsRead && message.unread")
-          button.button.is-small.is-outlined.has-text-success(
+          button.button.is-outlined.has-text-success(
           @click.stop="markRead(message.id)"
           v-tooltip="'Mark as read'")
             span.icon.is-small
               i.fas.fa-check
         .control(v-if="message.creatorUserId === currentUser.id && ['EMAIL', 'EVENT'].indexOf(message.type) < 0")
-          button.button.is-small.is-outlined.has-text-link(
+          button.button.is-outlined.has-text-link(
           @click.stop="openEdit()"
           v-tooltip="'Edit'")
             span.icon.is-small
               i.fas.fa-edit
         .control(v-if="canDelete")
-          button.button.is-small.is-outlined.has-text-danger(
+          button.button.is-outlined.has-text-danger(
           @click.stop.exact="deleteChatMessage(false)"
           @click.stop.ctrl.exact="deleteChatMessage(true)"
           v-tooltip="'Delete'")
             span.icon.is-small
               i.fas.fa-times
         .control
-          button.button.is-small.is-outlined(
+          button.button.is-outlined(
           @click.stop="flagToggle()"
           :class="message.flagged ? 'has-text-grey-light' : 'has-text-info'"
           v-tooltip="message.flagged ? 'Remove from saved' : 'Save for later'")
             span.icon.is-small
               i.fas.fa-thumbtack
         .control(v-if="replyToId !== message.id")
-          button.button.is-small.is-outlined.has-text-primary(
+          button.button.is-outlined.has-text-primary(
           @click.stop="$emit('replyStart', message.id)"
           v-tooltip="'Reply'")
             span.icon.is-small
               i.fas.fa-reply
         .control(v-if="replyToId === message.id")
-          button.button.is-small.is-outline(
+          button.button.is-outline(
           @click.stop="$emit('replyCancel')"
           v-tooltip="'Cancel reply'")
             span.icon.is-small
