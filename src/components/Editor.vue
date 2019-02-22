@@ -34,7 +34,7 @@
 
           .button-spacer
 
-          +editorButton("blockquote()", "Quote")
+          //-+editorButton("blockquote()", "Quote")
             i.fas.fa-quote-right
           +editorButton("code()", "Inline code")
             i.fas.fa-code
