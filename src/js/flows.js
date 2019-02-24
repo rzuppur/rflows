@@ -25,7 +25,6 @@ class Flows {
 
   _debug(text, ...extra) {
     if (this.debug) {
-      //const caller = new Error().stack.split('\n')[2].replace(/(\s.+at [^.]+.| \(.+)/g, "");
       const caller = new Error().stack.split('\n')[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
       this._logDebug(text, caller);
       if (extra) console.log(...extra);
@@ -849,6 +848,11 @@ class Flows {
     return this.socket.message("/app/TopicItem.delete", {id: messageId}, true);
   }
 
+  /**
+   * @param messageId {number}
+   * @param flag {boolean}
+   * @returns {Promise}
+   */
   setFlag(messageId, flag) {
     return this.socket.message("/app/TopicItemUserProperty.save", {
       itemId: messageId,
@@ -856,6 +860,10 @@ class Flows {
     }, true);
   }
 
+  /**
+   * @param messageId {number}
+   * @returns {Promise}
+   */
   markChatMessageRead(messageId) {
     return this.socket.message("/app/TopicItemRead.markAsRead", {
       topicId: this.store.currentChatId,
@@ -921,6 +929,19 @@ class Flows {
       .replace(/src=['"]\/files\/*([^'"]+)['"]/g, 'src="https://flows.contriber.com/files/$1"')
       .replace(/<a[^<]+href=['"]*([^'"]+)['"][^>]*>/g, '<a target="_blank" rel="noopener noreferrer nofollow" href="$1">')
       .replace(/<p><\/p>/g, "<br>");
+  }
+
+  /**
+   * @param messageText {string}
+   * @returns {string}
+   */
+  getMessageTextRepresentation(messageText) {
+    return messageText
+      .replace(/<img .*?alt=[\"']?([^\"']*)[\"']?.*?\/?>/g, "$1")
+      .replace(/<a .*?href=["']?([^"']*)["']?.*?>(.*)<\/a>/g, "$2")
+      .replace(/<(\/p|\/div|\/h\d|br)\w?\/?>/g, "\n")
+      .replace(/<[A-Za-z/][^<>]*>/g, "")
+      .replace(/&quot/g, '"');
   }
 
   /*
@@ -1072,7 +1093,7 @@ class Flows {
       avatarUrl: false,
     }, true)
     .then(() => this.eventBus.$emit("notify", "Avatar removed"))
-    .catch(() => this.eventBus.$emit("notift", "Error removing avatar"));
+    .catch(() => this.eventBus.$emit("notify", "Error removing avatar"));
   }
 
   // TODO: avatar upload

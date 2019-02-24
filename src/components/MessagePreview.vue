@@ -34,9 +34,9 @@
           if (this.message.type === "EMAIL") {
             return "✉ " + this.message.subject + "\n" + this.message.from.address;
           } else if (this.message.type === "NOTE") {
-            return this.getTextRepresentation(this.message.text);
+            return this.flows.getMessageTextRepresentation(this.message.text);
           } else {
-            return this.getTextRepresentation(this.flows.chatTextParse(this.message.text));
+            return this.flows.getMessageTextRepresentation(this.flows.chatTextParse(this.message.text));
           }
         }
       },
@@ -48,14 +48,6 @@
       },
     },
     methods: {
-      getTextRepresentation(text) {
-        return text
-          .replace(/<img .*?alt=[\"']?([^\"']*)[\"']?.*?\/?>/g, "$1")
-          .replace(/<a .*?href=["']?([^"']*)["']?.*?>(.*)<\/a>/g, "$2")
-          .replace(/<(\/p|\/div|\/h\d|br)\w?\/?>/g, "\n")
-          .replace(/<[A-Za-z/][^<>]*>/g, "")
-          .replace(/&quot/g, '"');
-      },
       scrollToMessage() {
         if (this.clickable && this.message) this.eventBus.$emit("scrollToMessage", this.message.id);
       },
