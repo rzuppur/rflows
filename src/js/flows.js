@@ -16,6 +16,7 @@ class Flows {
       clientInfo: "RFlows",
     };
 
+    this.notifiedMessageIds = [];
     this.shadowMessageId = 10000000;
     window.addEventListener('online', this.reconnectIfNeeded.bind(this));
 
@@ -95,6 +96,12 @@ class Flows {
 
     if (["TopicItem", "TopicItemRead", "TopicItemUserProperty", "TopicUser"].indexOf(type) > -1) {
       this.store.lastUpdateChat = frame.headers["message-id"];
+
+      if (type === "TopicItem" && !frame.headers["response-id"]) {
+        if (typeof frameBody === "object" && !frameBody.deleted && frameBody.creatorUserId !== this.store.currentUser.id) {
+          this._messageNotification(frameBody);
+        }
+      }
     }
   }
 
@@ -258,6 +265,19 @@ class Flows {
               this.socket.message("/app/" + topic + ".findByUser", {id: currentUserId}, true)
       ));
       _debug("Global topics done");
+
+      const chatUsers = this.store.topics.TopicUser.filter(chatUser => chatUser.userId === this.store.currentUser.id);
+      chatUsers.forEach((chatUser) => this.socket.subscribe("/topic/Topic." + chatUser.topicId + ".TopicItem.modified"));
+      _debug("Subscribed to " + chatUsers.length + " chats");
+
+      if (this.desktopNotifications && Notification.permission === "default") {
+        Notification.requestPermission().then(result => {
+          if (result === "default") this.eventBus.$emit("notify", "Notifications are disabled");
+          if (result === "denied") this.eventBus.$emit("notify", "Notifications are blocked, you can change this in site settings");
+          if (result === "granted") this.eventBus.$emit("notify", "Notifications enabled");
+        });
+      }
+
       return true;
 
     } else {
@@ -869,6 +889,59 @@ class Flows {
       topicId: this.store.currentChatId,
       itemIds: [messageId]
     }, true);
+  }
+
+  /**
+   * @param message {Object}
+   * @private
+   */
+  _messageNotification(message) {
+    if (!this.desktopNotifications) return;
+    if (this.notifiedMessageIds.indexOf(message.id) > -1) return;
+
+    const hidden =
+      //(typeof document.hidden !== "undefined") ? document.hidden :
+        !document.hasFocus();
+    if (hidden || message.topicId !== this.store.currentChatId) {
+      this.notifiedMessageIds.push(message.id);
+      const chatName = this.getChatName(message.topicId);
+      const creatorName = this.getFullName(message.creatorUserId);
+      const title = creatorName + (chatName !== creatorName ? " - " + chatName : "");
+      let options = {
+        body: message.type === "CHAT"
+          ? this.getMessageTextRepresentation(this.chatTextParse(message.text))
+          : this.getMessageTextRepresentation(message.text),
+        requireInteraction: false,
+        timestamp: message.createDate,
+      };
+      let notification;
+
+      if (message.type === "FILE" && message.url) {
+        let ext = message.url.split(".");
+        ext = ext[ext.length - 1] + "";
+        if (["png", "jpg", "jpeg"].indexOf(ext.toLowerCase()) > -1) {
+          options.image = this.getFilePath(message.url);
+        }
+      }
+
+      const avatar = this.getAvatar(message.creatorUserId);
+      if (avatar.indexOf("data:") === 0) {
+        const canvas = utils.createCanvas(42 * 3, 42 * 3);
+        const ctx = canvas.getContext("2d");
+        let img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, (56 - 42) * -1.5, 42 * 3, 56 * 3);
+          options.icon = canvas.toDataURL();
+          notification = new Notification(title, options);
+          notification.onclick = () => this.openChat(message.topicId);
+        };
+        img.src = avatar;
+      } else {
+        options.icon = avatar;
+        notification = new Notification(title, options);
+        notification.onclick = () => this.openChat(message.topicId);
+      }
+    }
   }
 
   /*

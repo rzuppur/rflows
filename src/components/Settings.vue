@@ -43,11 +43,13 @@
               .label Mark messages as read automatically
                 .description(v-if="autoMarkAsRead") Messages will be marked as read when opened
                 .description(v-else) Messages have to be marked as read manually
-        //-.field TODO:
+        .field
           .control
             checkbox-switch(v-model="desktopNotifications" :checked="desktopNotifications")
-              .label Browser notifications
-                .description(v-if="desktopNotifications") You will recieve browser notifications
+              .label Notifications
+                template(v-if="desktopNotifications")
+                  .description(v-if="notificationGranted()") Notifications enabled
+                  .description(v-else) Notifications are disabled from browser
                 .description(v-else) Notifications are turned off
         .field
           .control
@@ -120,25 +122,28 @@
       removeAvatar() {
         if (window.confirm('Delete avatar?')) this.flows.removeAvatar();
       },
+      notificationGranted() {
+        return window.Notification.permission === "granted";
+      },
     },
     watch: {
       autoMarkAsRead(val, oldVal) {
-        this._debug(`autoMarkAsRead ${oldVal} => ${val}`);
+        if (oldVal !== null) this._debug(`autoMarkAsRead ${oldVal} => ${val}`);
         if (val === null || oldVal === null) return;
         if (this.flows.autoMarkAsRead !== val) this.flows.autoMarkAsRead = val;
       },
       showWorkspaceSwitcher(val, oldVal) {
-        this._debug(`showWorkspaceSwitcher ${oldVal} => ${val}`);
+        if (oldVal !== null) this._debug(`showWorkspaceSwitcher ${oldVal} => ${val}`);
         if (val === null || oldVal === null) return;
         if (this.flows.showWorkspaceSwitcher !== val) this.flows.showWorkspaceSwitcher = val;
       },
       desktopNotifications(val, oldVal) {
-        this._debug(`desktopNotifications ${oldVal} => ${val}`);
+        if (oldVal !== null) this._debug(`desktopNotifications ${oldVal} => ${val}`);
         if (val === null || oldVal === null) return;
         if (this.flows.desktopNotifications !== val) this.flows.desktopNotifications = val;
       },
       compactMode(val, oldVal) {
-        this._debug(`compactMode ${oldVal} => ${val}`);
+        if (oldVal !== null) this._debug(`compactMode ${oldVal} => ${val}`);
         if (val === null || oldVal === null) return;
         if (this.flows.compactMode !== val) this.flows.compactMode = val;
       },
