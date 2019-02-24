@@ -38,7 +38,7 @@
             :ref="'message-' + message.id"
             @replyStart="replyStart($event)"
             @replyCancel="replyCancel()")
-        .typing(v-if="typingUsersText" v-html="typingUsersText")
+          .typing(v-if="typingUsersText" v-html="typingUsersText")
         div(ref="messagesEnd")
 
 
