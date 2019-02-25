@@ -38,9 +38,10 @@ const utils = {
     const htmlUnEscapes = {
       '&amp;': '&',
       '&lt;': '<',
-      '&gt;': '>'
+      '&gt;': '>',
+      '&nbsp;': ' ',
     };
-    const reEscapedHtml = /(&lt;|&gt;|&amp;)/g;
+    const reEscapedHtml = /(&lt;|&gt;|&amp;|&nbsp;)/g;
     return text.replace(reEscapedHtml , (chr) => htmlUnEscapes[chr]);
   },
 
