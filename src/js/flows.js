@@ -913,8 +913,15 @@ class Flows {
           : this.getMessageTextRepresentation(message.text),
         requireInteraction: false,
         timestamp: message.createDate,
+        renotify: true,
+        tag: message.topicId + "-" + this.store.currentUser?.id,
       };
       let notification;
+      const onclick = (event) => {
+        event.preventDefault();
+        window.focus();
+        this.openChat(message.topicId)
+      };
 
       if (message.type === "FILE" && message.url) {
         let ext = message.url.split(".");
@@ -933,13 +940,13 @@ class Flows {
           ctx.drawImage(img, 0, (56 - 42) * -1.5, 42 * 3, 56 * 3);
           options.icon = canvas.toDataURL();
           notification = new Notification(title, options);
-          notification.onclick = () => this.openChat(message.topicId);
+          notification.onclick = onclick;
         };
         img.src = avatar;
       } else {
         options.icon = avatar;
         notification = new Notification(title, options);
-        notification.onclick = () => this.openChat(message.topicId);
+        notification.onclick = onclick;
       }
     }
   }
