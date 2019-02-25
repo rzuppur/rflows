@@ -5,7 +5,7 @@
     .avatar-container
       .sticky-avatar
         img.avatar.avatar-small(:src="flows.getAvatar(message.creatorUserId)")
-      .date(v-tooltip="messageIsEdited ? 'Edited ' + utils.fullDateTime(message.modifiedDate) : ''")
+      .date(v-tooltip="messageIsEdited ? 'Edited ' + utils.dateTimeAddOtherYear(message.modifiedDate) : utils.weekdayDate(message.createDate)")
         | {{ utils.time(message.createDate) + (messageIsEdited ? '*' : '') }}
       .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
         i.fas.fa-thumbtack
@@ -17,7 +17,8 @@
       .name {{ flows.getFullName(message.creatorUserId) }}
         span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
           i.fas.fa-thumbtack
-      .date {{ utils.time(message.createDate) }}
+      .date
+        span(v-tooltip="utils.weekdayDate(message.createDate)") {{ utils.time(message.createDate) }}
         span(v-if="messageIsEdited") , edited {{ utils.dateTime(message.modifiedDate) }}
       message-preview.reply-original(v-if="message.referenceFromTopicItemId" :messageId="message.referenceFromTopicItemId")
       .edit(v-show="editMode")

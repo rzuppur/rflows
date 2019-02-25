@@ -19,7 +19,7 @@
         .messages(v-if="!hidden && sortedMessages && topics.User" v-images-loaded:on.progress="scrollUpdate")
           template(v-for="(message, i) in sortedMessages" v-if="message && topics.User && sortedMessages")
             .day-separator(v-if="!i || !utils.datesAreSameDay(sortedMessages[i-1].createDate, message.createDate)")
-              .text {{ utils.weekdayDateTimeAddOtherYear(message.createDate) | capitalize }}
+              .text {{ utils.weekdayDateAddOtherYear(message.createDate) | capitalize }}
             .unread-separator(
             ref="unread"
             v-if="firstUnreadMessageId === message.id"
