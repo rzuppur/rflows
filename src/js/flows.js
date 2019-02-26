@@ -911,7 +911,7 @@ class Flows {
         body: message.type === "CHAT"
           ? this.getMessageTextRepresentation(this.chatTextParse(message.text))
           : this.getMessageTextRepresentation(message.text),
-        requireInteraction: false,
+        requireInteraction: true,
         timestamp: message.createDate,
         renotify: true,
         tag: message.topicId + "-" + this.store.currentUser?.id,
