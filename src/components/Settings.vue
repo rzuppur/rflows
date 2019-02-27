@@ -141,6 +141,15 @@
         if (oldVal !== null) this._debug(`desktopNotifications ${oldVal} => ${val}`);
         if (val === null || oldVal === null) return;
         if (this.flows.desktopNotifications !== val) this.flows.desktopNotifications = val;
+        if (val === true) {
+          if (Notification.permission === "default") {
+            Notification.requestPermission().then(result => {
+              if (result === "default") this.eventBus.$emit("notify", "Notifications are disabled");
+              if (result === "denied") this.eventBus.$emit("notify", "Notifications are blocked, you can change this in site settings");
+              if (result === "granted") this.eventBus.$emit("notify", "Notifications enabled");
+            });
+          }
+        }
       },
       compactMode(val, oldVal) {
         if (oldVal !== null) this._debug(`compactMode ${oldVal} => ${val}`);
