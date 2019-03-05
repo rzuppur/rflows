@@ -11,7 +11,7 @@
         i.fas.fa-thumbtack
     .content-container
       //-b {{message.id}}
-      //-b(v-if="message.customData !== null" style="color: red") customData: {{ message.customData }}
+      //-b(v-if="message.customData && Object.keys(message.customData).length" style="color: red") customData: {{ message.customData }}
       b.text-error.text-small(v-if="message.error") Message was not sent #{""}
       //- TODO: resend
       .name {{ flows.getFullName(message.creatorUserId) }}

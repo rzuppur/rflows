@@ -5,6 +5,8 @@
     @click="changeChat(chat.id)"
     class= chatList === "recentChats" ? "recentChat" : "")
       .chat-title.ellipsis {{ chat.name }}
+        span.icon.is-small.chat-flagged(v-if="chat.flagged > 0")
+          i.fas.fa-thumbtack
       if chatList === "recentChats"
         .chat-removerecent(@click.stop="removeRecent(chat.id)")
           i.fa.fa-times

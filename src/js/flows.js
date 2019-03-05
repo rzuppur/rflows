@@ -289,6 +289,7 @@ class Flows {
   setLogin(loginData) {
     let debugData = {...loginData};
     if (debugData.password) debugData.password = debugData.password.replace(/./g, "*");
+    if (debugData.token) debugData.token = debugData.token.replace(/./g, "*");
     this._debug("Setting log in data", debugData);
     this.loginData = {...loginData, ...this.loginData};
   }
@@ -534,6 +535,7 @@ class Flows {
       chat.unread = (myChatUser ? myChatUser.unreadItemsCount : 0);
       chat.unreadImportant = (myChatUser ? myChatUser.unreadItemsToMeCount + myChatUser.atItemsToMeCount : 0);
       chat.unreadAtme = (myChatUser ? myChatUser.atItemsToMeCount : 0);
+      chat.flagged = (myChatUser ? myChatUser.flaggedItemsCount : 0);
 
       // If chat has no name, make one from participants
       if (!chat.name) {
@@ -791,6 +793,7 @@ class Flows {
   sendChatMessage(message) {
     message.creatorUserId = this.store.currentUser.id;
     message.topicId = this.store.currentChatId;
+    message.customData = {test: true};
 
     const shadowId = this.shadowMessageId++;
     // TODO: save message to localstorage => in case of error sending it is still there after refresh
