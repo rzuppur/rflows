@@ -476,6 +476,7 @@
       },
       "sidebarCollapsed": function (newVal, oldVal) {
         localStorage.setItem("sidebarCollapsed", newVal);
+        this.$nextTick(this._scrollUpdate);
       },
     }
   }
