@@ -102,32 +102,32 @@
         img.logo(:src="workspace.logo" :alt="workspace.workspace.name")
 
       button.sidebar-button(@click="sidebarCollapsed = !sidebarCollapsed" v-tooltip.left="{ content: sidebarCollapsed ? 'Expand sidebar' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
-        span.show-wide Collapse sidebar
         span.icon.small
-          i.fas.fa-chevron-left.has-text-grey
+          i.fas.has-text-grey(:class="'fa-chevron-' + (sidebarCollapsed ? 'left' : 'right')")
+        span.show-wide Collapse sidebar
 
       button.saved-view-all.sidebar-button(@click="$emit('viewSavedMessages')" v-tooltip.left="{ content: sidebarCollapsed ? 'Saved messages' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
-        span.show-wide All saved messages
         span.icon.small
           i.fas.fa-thumbtack.has-text-info
+        span.show-wide All saved messages
 
       button.sidebar-button(
         @click="flows.markCurrentChatRead()"
         :disabled="firstUnreadMessageId === -1"
         v-tooltip.left="{ content: sidebarCollapsed ? 'Mark all as read' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
       )
-        span.show-wide Mark all as read
         span.icon.small
           i.fas.fa-check.has-text-success
+        span.show-wide Mark all as read
 
       button.sidebar-button(
         @click="scrollToBottom()"
         :disabled="scroll.keepScrollBottom"
         v-tooltip.left="{ content: sidebarCollapsed ? 'Scroll to bottom' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
       )
-        span.show-wide Scroll to bottom
         span.icon.small
           i.fas.fa-arrow-down.has-text-grey
+        span.show-wide Scroll to bottom
 
       .flagged.show-wide(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4 #[i.fas.fa-thumbtack.has-text-info] Saved messages
