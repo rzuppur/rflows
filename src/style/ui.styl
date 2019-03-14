@@ -128,3 +128,27 @@ img.avatar
       &:hover
         background $color-focus-blue
         color #fff
+
+.workspace
+  display flex
+  align-items center
+  margin-top -10px
+  margin-bottom 25px
+
+  .text
+    flex 1
+    padding-right 10px
+
+    .name
+      text-title-20()
+      margin-top -5px
+
+    .desc
+      text-uppercase-13()
+      color $color-gray-text
+      margin-bottom -4px
+
+  .logo
+    width 42px
+    height @width
+    border-radius $border-radius

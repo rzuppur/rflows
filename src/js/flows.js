@@ -1188,6 +1188,8 @@ class Flows {
   /**
    * Upload a file to currently open chat
    *
+   * TODO: file max size check
+   *
    * @param formData {FormData}
    * @param fileName {string}
    * @param [replyToId] {number}

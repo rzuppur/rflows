@@ -11,20 +11,28 @@
           i.fas.fa-times.text-muted
 
     .messages.scrollbar-style
-      .messages-container
+      .workspace-container(v-for="workspace in workspaces")
+        .workspace
+          img.logo(:src="workspace.logo" :alt="workspace.workspace.name")
+          .text
+            .name {{ workspace.workspace.name }}
+            .desc {{ workspace.workspace.type.toLowerCase() }} workspace
 
-        .chat(v-for="messageIds, chatId in flaggedMessages")
-          .chat-title(@click="openChat(chatId)") {{ flows.getChatName(chatId) }}
+        .chat(v-for="flagged, chatId in getFlaggedByWorkspaceId(workspace.workspace.id)")
+          .chat-title(@click="openChat(chatId)")
+            | {{ flows.getChatName(chatId) }} &nbsp;
+            span.icon.text-muted
+              i.far.fa-comment-alt
 
           message-preview(
-            v-for="messageId in messageIds.sort()"
+            v-for="messageId in flagged.messageIds.sort()"
             :messageId="messageId"
             :key="messageId"
             :clickable="false")
 
-        template(v-if="flaggedMessages !== undefined && Object.keys(flaggedMessages).length === 0")
-          .chat-title No saved messages
-          p You can save a message using the&nbsp; #[i.fas.fa-thumbtack.has-text-info(style="font-size: 14px")] &nbsp;button
+      .workspace-container(v-if="flaggedMessages !== undefined && Object.keys(flaggedMessages).length === 0")
+        h3 No saved messages
+        p You can save a message using the&nbsp; #[i.fas.fa-thumbtack.has-text-info(style="font-size: 14px")] &nbsp;button
 
 </template>
 
@@ -68,20 +76,46 @@
             .filter(topicItemUserProperty => topicItemUserProperty.flag && (topicItemUserProperty.userId === this.currentUser.id))
             .forEach(saved => {
               if (savedChatMessages[saved.topicId]) {
-                savedChatMessages[saved.topicId].push(saved.itemId);
+                savedChatMessages[saved.topicId].messageIds.push(saved.itemId);
               } else {
-                savedChatMessages[saved.topicId] = [saved.itemId];
+                savedChatMessages[saved.topicId] = {
+                  messageIds: [saved.itemId],
+                  workspaceId: this.flows.getChatWorkspace(saved.topicId).workspace.id,
+                };
               }
             });
 
           return savedChatMessages;
         }
       },
+      workspaces() {
+        if (this.flaggedMessages) {
+          let workspaces = {};
+
+          Object.keys(this.flaggedMessages).forEach(chatId => {
+            if (!workspaces[this.flaggedMessages[chatId].workspaceId]) {
+              workspaces[this.flaggedMessages[chatId].workspaceId] = this.flows.getChatWorkspace(chatId);
+            }
+          });
+
+          return workspaces;
+        }
+      },
     },
     methods: {
       openChat(chatId) {
         this.flows.openChat(chatId);
-      }
+      },
+      getFlaggedByWorkspaceId(workspaceId) {
+        let flaggedMessages = {};
+        Object.keys(this.flaggedMessages).forEach(key => {
+          if (this.flaggedMessages[key].workspaceId === workspaceId) {
+            flaggedMessages[key] = this.flaggedMessages[key];
+          }
+        });
+
+        return flaggedMessages;
+      },
     },
   }
 </script>
@@ -115,24 +149,48 @@
     flex 1
     overflow-y auto
     background $color-light-gray-background
+    padding 15px 0 60px
 
-    .messages-container
+    .workspace-container
       max-width 850px
       margin 0 auto
-      padding 20px
-      background #fff
-      box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
 
-    .chat:not(:last-child)
-      margin-bottom 20px
+      &:not(:last-child)
+        margin-bottom 30px
 
-    .chat-title
-      text-title-20()
-      margin-bottom 5px
-      cursor pointer
+      .workspace
+        margin 0 0 10px
 
-    .message-preview
-      margin-bottom 7px
+        .text
+          padding-left 10px
+          padding-right 0
+
+        .logo
+          box-shadow 0 0 0 1px rgba(0, 0, 0, 0.05)
+
+      .chat
+        padding 15px
+        background #fff
+        box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
+        border-radius $border-radius
+
+        &:not(:last-child)
+          margin-bottom 10px
+
+        .chat-title
+          text-regular-30()
+          margin-bottom 6px
+          cursor pointer
+
+          &:hover
+            text-decoration underline
+
+        .message-preview
+          background none
+          padding 0
+
+        .message-preview:not(:last-child)
+          margin-bottom 15px
 
 
 </style>
