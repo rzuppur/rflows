@@ -457,12 +457,12 @@ class Flows {
         _debug("Subscribing to chat");
         this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.modified", true);
         this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.deleted", true);
-        _debug("Reading last 50 messages");
+        _debug("Reading chat");
         this.socket.message("/app/TopicItemRead.findByTopic", {id: id}, true);
 
         CHAT_TOPICS.forEach(chatTopic => {
-          this.socket.subscribe("/topic/Topic." + chatId + "." + chatTopic + ".modified", true);
-          this.socket.subscribe("/topic/Topic." + chatId + "." + chatTopic + ".deleted", true);
+          this.socket.subscribe("/topic/Topic." + id + "." + chatTopic + ".modified", true);
+          this.socket.subscribe("/topic/Topic." + id + "." + chatTopic + ".deleted", true);
           this.socket.message("/app/" + chatTopic + ".findByTopic",
             chatTopic === "TopicItem"
               ? {id: id, filter: {amount: 50}}
@@ -482,15 +482,15 @@ class Flows {
           const recentIndex = this.store.topics.UserProperty.findIndex(userProperty => userProperty.name === "recentTools");
           let userPropsRecent = this.store.topics.UserProperty[recentIndex];
           delete userPropsRecent.modifiedDate;
-          let val = userPropsRecent.value.filter(recent => recent.id !== chatId);
-          val.unshift({id: chatId, type: "MEETING"});
+          let val = userPropsRecent.value.filter(recent => recent.id !== id);
+          val.unshift({id: id, type: "MEETING"});
           userPropsRecent.value = val;
           Vue.set(this.store.topics.UserProperty, recentIndex, userPropsRecent);
           this.socket.message("/app/UserProperty.save", userPropsRecent, true);
         }
 
         // Set current chat name
-        this.store.currentChatName = this.getChatName(chatId);
+        this.store.currentChatName = this.getChatName(id);
 
         // TODO: an ugly hack pls remove
         setTimeout(() => {this.store.currentChatName = this.getChatName(this.store.currentChatId);}, 500);
