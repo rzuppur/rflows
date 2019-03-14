@@ -1,12 +1,29 @@
 <template lang="pug">
-  .message-preview(@click="scrollToMessage()" @keyup.enter="e => e.target.click()" :class="{ clickable: clickable }" :tabindex="clickable ? 0 : -1")
-    .name(v-if="!message") ?
+
+  .message-preview(
+    @click="scrollToMessage()"
+    @keyup.enter="e => e.target.click()"
+    :class="{ clickable: clickable, superCompact: superCompact }"
+    :tabindex="clickable ? 0 : -1"
+    v-tooltip.left="{ content: (superCompact && message) ? flows.getFullName(message.creatorUserId) + ': ' + messageText.substring(0, 30) + '...' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+  )
+    template(v-if="superCompact")
+      .has-text-grey-light.text-small.has-text-centered
+        span.icon.small(style="margin-left: -5px; margin-right: -4px;")
+          i.fas.fa-thumbtack
+        | {{ flows.getFullName(message.creatorUserId).charAt(0) + flows.getFullName(message.creatorUserId).split(" ")[1].charAt(0) }}
+
     template(v-else)
-      .name
-        | {{ flows.getFullName(message.creatorUserId) }}
-      .date {{ utils.fullDateAddOtherYear(message.createDate) }}
-      a.expand-toggle(v-if="!clickable && clamped && !expanded" @click="toggleClamp()") View more
-      .message-content.note-content(:class="{ clamped: !expanded }" ref="text" v-html="messageText")
+      .name(v-if="!message") ?
+
+      template(v-else)
+        .name
+          | {{ flows.getFullName(message.creatorUserId) }}
+        .date {{ utils.fullDateAddOtherYear(message.createDate) }}
+        a.expand-toggle(v-if="!clickable && clamped && !expanded" @click="toggleClamp()") View more
+
+        .message-content.note-content(:class="{ clamped: !expanded }" ref="text" v-html="messageText")
+
 </template>
 
 <script>
@@ -18,6 +35,10 @@
       clickable: {
         type: Boolean,
         default: true,
+      },
+      superCompact: {
+        type: Boolean,
+        default: false,
       },
     },
     data: function () {
@@ -85,6 +106,9 @@
         .name,
         .date
           text-decoration underline
+
+    &.superCompact
+      padding 5px 0
 
     .name,
     .date

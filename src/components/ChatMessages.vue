@@ -129,12 +129,15 @@
           i.fas.fa-arrow-down.has-text-grey
         span.show-wide Scroll to bottom
 
-      .flagged.show-wide(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
-        h4 #[i.fas.fa-thumbtack.has-text-info] Saved messages
+      .flagged(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
+        h4
+          .show-wide #[i.fas.fa-thumbtack.has-text-info] Saved messages
         message-preview.sidebar-saved(
-        v-for="messageId in flaggedMessageIds"
-        :messageId="messageId"
-        :key="messageId")
+          v-for="messageId in flaggedMessageIds"
+          :messageId="messageId"
+          :superCompact="sidebarCollapsed"
+          :key="messageId"
+        )
 
       //-a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
       .show-wide(v-tooltip="'Upper left corner next to your name. This button will be removed in future.'")
