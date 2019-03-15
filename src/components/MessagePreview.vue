@@ -137,10 +137,10 @@
         text-overflow ellipsis
         white-space nowrap
 
-        @supports (-webkit-line-clamp: 3)
+        @supports (-webkit-line-clamp: 2)
           white-space pre-line
           display -webkit-box
           -webkit-box-orient vertical
-          -webkit-line-clamp 3
+          -webkit-line-clamp 2
 
 </style>

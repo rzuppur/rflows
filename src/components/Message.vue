@@ -2,6 +2,7 @@
 
   .chat-message(:class="messageClass" @click="editorFocus()")
     //-:title="Object.keys(message).reduce((a, k) => (a + k + `: ${message[k]} \n`), '')"
+
     .avatar-container
       .sticky-avatar
         img.avatar.avatar-small(:src="flows.getAvatar(message.creatorUserId)")
@@ -9,9 +10,9 @@
         | {{ utils.time(message.createDate) + (messageIsEdited ? '*' : '') }}
       .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
         i.fas.fa-thumbtack
+
     .content-container
       //-b {{message.id}}
-      //-b(v-if="message.customData && Object.keys(message.customData).length" style="color: red") customData: {{ message.customData }}
       b.text-error.text-small(v-if="message.error") Message was not sent #{""}
       //- TODO: resend
       .name {{ flows.getFullName(message.creatorUserId) }}
@@ -20,33 +21,47 @@
       .date
         span(v-tooltip="utils.weekdayDate(message.createDate)") {{ utils.time(message.createDate) }}
         span(v-if="messageIsEdited") , edited {{ utils.dateTime(message.modifiedDate) }}
+      //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
+
       message-preview.reply-original(v-if="message.referenceFromTopicItemId" :messageId="message.referenceFromTopicItemId")
+
       .edit(v-show="editMode")
-        editor(ref="editor"
-        :show-buttons="(['NOTE', 'EMAIL'].indexOf(message.type) > -1) ? 'ALWAYS' : 'NEVER'"
-        :onlyText="['NOTE', 'EMAIL'].indexOf(message.type) < 0"
-        :placeholder="'Delete message?'"
-        :initEmpty="false")
+
+        editor(
+          ref="editor"
+          :show-buttons="(['NOTE', 'EMAIL'].indexOf(message.type) > -1) ? 'ALWAYS' : 'NEVER'"
+          :onlyText="['NOTE', 'EMAIL'].indexOf(message.type) < 0"
+          :placeholder="'Delete message?'"
+          :initEmpty="false"
+        )
+
         .field.is-grouped.edit-buttons
           .control
             button.button.is-outlined(@click.stop="saveEdit()")
               span.icon.is-small.has-text-success
                 i.fas.fa-check
               span Save
+
           .control
             button.button.is-outlined(@click.stop="cancelEdit()")
               span.icon.is-small.has-text-grey
                 i.fas.fa-times
               span Cancel
+
       template(v-if="!editMode")
+
         .file-content(v-if="message.type === 'FILE'")
           a.file-preview(:href="flows.getFilePath(message.url)" target="_blank" rel="noopener noreferrer nofollow")
             .file-title.ellipsis #[i.fas.fa-paperclip] {{ message.text }}
             .image-preview(v-if="imagePreviewUrl")
               img(:src="imagePreviewUrl")
+
         p.text-content(v-if="message.type === 'EVENT'") {{ message.text }}
+
         p.text-content(v-if="message.type === 'CHAT'" v-html="flows.chatTextParse(message.text)")
+
         .note-content(v-if="message.type === 'NOTE'" v-html="flows.noteTextParse(message.text)")
+
         template(v-if="message.type === 'EMAIL'")
           .email-meta
             | From: {{ message.from.address }}<br>
@@ -59,20 +74,24 @@
             @load="setEmailFrameHeight()")
           p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
         p.text-content(v-if="['CHAT', 'NOTE', 'EMAIL', 'EVENT', 'FILE'].indexOf(message.type) < 0") #[b(style="color: #c00;") Unknown message type:] {{ message.type }}
+
     .buttons-container(v-if="!editMode")
       .field.has-addons
+
         .control(v-if="!autoMarkAsRead && message.unread")
           button.button.is-outlined.has-text-success(
           @click.stop="markRead(message.id)"
           v-tooltip="'Mark as read'")
             span.icon.is-small
               i.fas.fa-check
+
         .control(v-if="message.creatorUserId === currentUser.id && ['EMAIL', 'EVENT'].indexOf(message.type) < 0")
           button.button.is-outlined.has-text-link(
           @click.stop="openEdit()"
           v-tooltip="'Edit'")
             span.icon.is-small
               i.fas.fa-edit
+
         .control(v-if="canDelete")
           button.button.is-outlined.has-text-danger(
           @click.stop.exact="deleteChatMessage(false)"
@@ -80,6 +99,7 @@
           v-tooltip="'Delete'")
             span.icon.is-small
               i.fas.fa-times
+
         .control
           button.button.is-outlined(
           @click.stop="flagToggle()"
@@ -87,18 +107,21 @@
           v-tooltip="message.flagged ? 'Remove from saved' : 'Save for later'")
             span.icon.is-small
               i.fas.fa-thumbtack
+
         .control(v-if="replyToId !== message.id")
           button.button.is-outlined.has-text-primary(
           @click.stop="$emit('replyStart', message.id)"
           v-tooltip="'Reply'")
             span.icon.is-small
               i.fas.fa-reply
+
         .control(v-if="replyToId === message.id")
           button.button.is-outline(
           @click.stop="$emit('replyCancel')"
           v-tooltip="'Cancel reply'")
             span.icon.is-small
               i.fas.fa-times
+
 </template>
 
 <script>
