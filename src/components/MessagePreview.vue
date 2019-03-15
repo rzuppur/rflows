@@ -8,8 +8,8 @@
     v-tooltip.left="{ content: (superCompact && message) ? flows.getFullName(message.creatorUserId) + ': ' + messageText.substring(0, 30) + '...' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
   )
     template(v-if="superCompact")
-      .has-text-grey-light.text-small.has-text-centered
-        span.icon.small(style="margin-left: -5px; margin-right: -4px;")
+      .has-text-grey.text-small.has-text-centered
+        span.icon.small.has-text-info(style="margin-left: -5px; margin-right: -4px;")
           i.fas.fa-thumbtack
         | {{ flows.getFullName(message.creatorUserId).charAt(0) + flows.getFullName(message.creatorUserId).split(" ")[1].charAt(0) }}
 
