@@ -435,7 +435,7 @@ class Flows {
    *
    * @param chatId {?number|string}
    */
-  async openChat(chatId) {
+  openChat(chatId) {
     const _debug = (text) => {if (this.debug) this._logDebug(text, "openChat")};
     this.eventBus.$emit("currentChatChange");
 
@@ -914,16 +914,21 @@ class Flows {
         body: message.type === "CHAT"
           ? this.getMessageTextRepresentation(this.chatTextParse(message.text))
           : this.getMessageTextRepresentation(message.text),
-        requireInteraction: true,
         timestamp: message.createDate,
         renotify: true,
         tag: message.topicId + "-" + this.store.currentUser?.id,
+        // requireInteraction: true,
+        // actions: [{action: "mark_as_read", title: "Mark as read" }],
       };
       let notification;
       const onclick = (event) => {
         event.preventDefault();
         window.focus();
-        this.openChat(message.topicId)
+        if (this.store.currentChatId !== message.topicId) {
+          this.openChat(message.topicId);
+        } else {
+          this.eventBus.$emit("scrollToMessage", message.id);
+        }
       };
 
       if (message.type === "FILE" && message.url) {
@@ -935,7 +940,9 @@ class Flows {
       }
 
       const avatar = this.getAvatar(message.creatorUserId);
+
       if (avatar.indexOf("data:") === 0) {
+        // For svg placeholder avatars, draw them to canvas to get a bitmap
         const canvas = utils.createCanvas(42 * 3, 42 * 3);
         const ctx = canvas.getContext("2d");
         let img = new Image();
@@ -947,6 +954,7 @@ class Flows {
         };
         img.src = avatar;
       } else {
+        // Otherwise just use the image
         options.icon = avatar;
         notification = new Notification(title, options);
         notification.onclick = onclick;
