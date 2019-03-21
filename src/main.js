@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import App from './App'
-import VTooltip from 'v-tooltip'
-import VueStash from 'vue-stash'
+import Vue from 'vue';
+import App from './App';
+import VTooltip from 'v-tooltip';
+import VueStash from 'vue-stash';
 
-import utils from "@/js/utils"
-import Flows from "@/js/flows"
-import store from "@/js/store"
-import {RESIZE_DEBOUNCE_TIME, DEBUG} from "@/js/consts";
+import utils from "@/js/utils";
+import Flows from "@/js/flows";
+import store from "@/js/store";
+import { RESIZE_DEBOUNCE_TIME, DEBUG } from "@/js/consts";
 
 import "intersection-observer";
 import "@/assets/main.css";

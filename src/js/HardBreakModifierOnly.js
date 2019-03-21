@@ -1,10 +1,10 @@
-import { Node } from 'tiptap'
-import { chainCommands, exitCode } from 'tiptap-commands'
+import { Node } from 'tiptap';
+import { chainCommands, exitCode } from 'tiptap-commands';
 
 export default class HardBreakModifierOnly extends Node {
 
   get name() {
-    return 'hard_break'
+    return 'hard_break';
   }
 
   get schema() {

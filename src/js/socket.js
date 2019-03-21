@@ -1,8 +1,8 @@
-import autoBind from "auto-bind"
-import sockjs from 'sockjs-client'
-import webstomp from 'webstomp-client'
-import utils from "@/js/utils"
-import {SOCKET_URL, DEBUG, SOCKET_TRAFFIC_DEBUG} from "@/js/consts"
+import autoBind from "auto-bind";
+import sockjs from 'sockjs-client';
+import webstomp from 'webstomp-client';
+import utils from "@/js/utils";
+import { SOCKET_URL, DEBUG, SOCKET_TRAFFIC_DEBUG } from "@/js/consts";
 
 
 export class SocketResponse {
@@ -62,22 +62,24 @@ class Socket {
     const time = utils.debugDateTime();
     const error = !text.indexOf("! ");
     if (error) text = text.substring(2);
-    console.log(time + " %c" + this.constructor.name + " (" + caller + "): %c" + text, "color: #cb7300; font-weight: bold", "color: " + (error ? "#f00" : "inherit"));
+    console.log(time + " %c" + this.constructor.name + " (" + caller + "): %c" + text, "color: #cb7300; font-weight: bold", "color: " + ( error ? "#f00" : "inherit" ));
   }
 
   /**
    * @returns {Promise<Object>} resolves on connection or if already connected with {alreadyOpen: true}
    */
   open() {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "open")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "open");
+    };
 
     if (this.connected) {
       _debug("Socket already open");
-      return Promise.resolve({alreadyOpen: true});
+      return Promise.resolve({ alreadyOpen: true });
     }
     return new Promise((resolve, reject) => {
       _debug("Creating socket");
-      this.stompClient = webstomp.over(new sockjs(SOCKET_URL), {debug: SOCKET_TRAFFIC_DEBUG});
+      this.stompClient = webstomp.over(new sockjs(SOCKET_URL), { debug: SOCKET_TRAFFIC_DEBUG });
       _debug("Connecting...");
       this.stompClient.connect({}, frame => {
         if (frame.command === "CONNECTED") {
@@ -92,7 +94,7 @@ class Socket {
         _debug("Connection closed, rejecting");
         reject(CloseEvent);
         this.closeCleanup(CloseEvent);
-      })
+      });
     });
   }
 
@@ -101,7 +103,9 @@ class Socket {
    * @returns {Promise<Object>} resolves when socket closing and cleanup is finished or with {alreadyClosed: true}
    */
   close(CloseEvent) {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "close")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "close");
+    };
 
     if (this.connected && this.stompClient?.connected) {
       return new Promise((resolve) => {
@@ -113,7 +117,7 @@ class Socket {
         });
       });
     }
-    return Promise.resolve({alreadyClosed: true});
+    return Promise.resolve({ alreadyClosed: true });
   }
 
   closeCleanup(CloseEvent) {
@@ -145,28 +149,28 @@ class Socket {
       throw "Socket not connected";
     }
     if (this.subscriptions[destination]) {
-      if (response) return Promise.resolve({alreadyExists: true});
+      if (response) return Promise.resolve({ alreadyExists: true });
     }
     if (response) {
       return new Promise((resolve, reject) => {
         this.responsePromises[this.nextResponseId] = {
           success: resolve,
-          error: reject
+          error: reject,
         };
         this.subscriptions[destination] = this.stompClient.subscribe(
           destination,
           this._frameHandler.bind(this), {
             response: this.nextResponseId++,
-            id: this.nextSubId++
-          }
+            id: this.nextSubId++,
+          },
         );
       });
     } else {
       this.subscriptions[destination] = this.stompClient.subscribe(
         destination,
         this._frameHandler.bind(this), {
-          id: this.nextSubId++
-        }
+          id: this.nextSubId++,
+        },
       );
     }
   }
@@ -203,7 +207,7 @@ class Socket {
       return new Promise((resolve, reject) => {
         this.responsePromises[this.nextResponseId] = {
           success: resolve,
-          error: reject
+          error: reject,
         };
         this.stompClient.send(destination, JSON.stringify(data), {
           response: this.nextResponseId++,
@@ -225,7 +229,7 @@ class Socket {
       const response = new SocketResponse(
         parseInt(frame.headers['response-id']),
         frame.headers.cl,
-        JSON.parse(frame.body)
+        JSON.parse(frame.body),
       );
 
       if (this.responsePromises[response.id]) {
@@ -245,4 +249,4 @@ class Socket {
 }
 
 
-export default Socket
+export default Socket;

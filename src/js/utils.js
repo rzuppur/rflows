@@ -1,5 +1,5 @@
-import dayjs from 'dayjs'
-import advancedFormat from 'dayjs/plugin/advancedFormat'
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 
 dayjs.extend(advancedFormat);
 //import 'dayjs/locale/et'
@@ -21,12 +21,12 @@ const utils = {
       '<': '&lt',
       '>': '&gt',
       '"': '&quot',
-      "'": '&#39'
+      "'": '&#39',
     };
     const reUnescapedHtml = /[&<>"']/g;
     const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
 
-    return (text && reHasUnescapedHtml.test(text)) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text
+    return ( text && reHasUnescapedHtml.test(text) ) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text;
   },
 
   /**
@@ -42,7 +42,7 @@ const utils = {
       '&nbsp;': ' ',
     };
     const reEscapedHtml = /(&lt;|&gt;|&amp;|&nbsp;)/g;
-    return text.replace(reEscapedHtml , (chr) => htmlUnEscapes[chr]);
+    return text.replace(reEscapedHtml, (chr) => htmlUnEscapes[chr]);
   },
 
   /**
@@ -103,7 +103,7 @@ const utils = {
    */
   dateTimeAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjs(date).format((dayjsDate.year() === dayjs().year()) ? 'MMM Do, HH:mm' : 'MMM Do YYYY, HH:mm');
+    return dayjs(date).format(( dayjsDate.year() === dayjs().year() ) ? 'MMM Do, HH:mm' : 'MMM Do YYYY, HH:mm');
   },
 
   /**
@@ -112,7 +112,7 @@ const utils = {
    */
   fullDateAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjsDate.format((dayjsDate.year() === dayjs().year()) ? 'MMM Do' : 'MMM Do YYYY');
+    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? 'MMM Do' : 'MMM Do YYYY');
   },
 
   /**
@@ -129,7 +129,7 @@ const utils = {
    */
   weekdayDateAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjsDate.format((dayjsDate.year() === dayjs().year()) ? 'dddd MMM Do' : 'dddd MMM Do YYYY');
+    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? 'dddd MMM Do' : 'dddd MMM Do YYYY');
   },
 
   /**
@@ -138,9 +138,9 @@ const utils = {
   debugDateTime() {
     const date = new Date();
     return `${date.getHours().toString().padStart(2, "0")}:${
-                    date.getMinutes().toString().padStart(2, "0")}:${
-                    date.getSeconds().toString().padStart(2, "0")}.${
-                    date.getMilliseconds().toString().padStart(3, "0")}`;
+      date.getMinutes().toString().padStart(2, "0")}:${
+      date.getSeconds().toString().padStart(2, "0")}.${
+      date.getMilliseconds().toString().padStart(3, "0")}`;
   },
 
   /**
@@ -149,7 +149,7 @@ const utils = {
    * @returns {boolean} Dates are on the same day
    */
   datesAreSameDay(dateA, dateB) {
-    return dayjs(dateA).isSame(dateB, 'day')
+    return dayjs(dateA).isSame(dateB, 'day');
   },
 
   /*
@@ -161,8 +161,8 @@ const utils = {
     canvas.width = width;
     canvas.height = height;
     return canvas;
-  }
+  },
 };
 
 
-export default utils
+export default utils;

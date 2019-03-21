@@ -1,8 +1,8 @@
-import autoBind from "auto-bind"
-import Vue from 'vue'
+import autoBind from "auto-bind";
+import Vue from 'vue';
 import utils from "@/js/utils";
 import Socket from "@/js/socket";
-import {GLOBAL_TOPICS, CHAT_TOPICS, ALL_TOPICS, DEBUG, FILE_UPLOAD_URL, FILE_DELETE_URL} from "@/js/consts"
+import { GLOBAL_TOPICS, CHAT_TOPICS, ALL_TOPICS, DEBUG, FILE_UPLOAD_URL, FILE_DELETE_URL } from "@/js/consts";
 
 
 class Flows {
@@ -37,7 +37,7 @@ class Flows {
     const time = utils.debugDateTime();
     const error = !text.indexOf("! ");
     if (error) text = text.substring(2);
-    console.log(time + " %c" + this.constructor.name + " (" + caller + "): %c" + text, "color: #3273dc; font-weight: bold", "color: " + (error ? "#f00" : "inherit"));
+    console.log(time + " %c" + this.constructor.name + " (" + caller + "): %c" + text, "color: #3273dc; font-weight: bold", "color: " + ( error ? "#f00" : "inherit" ));
   }
 
   /*
@@ -61,7 +61,7 @@ class Flows {
     if (["ServerInfo", "SubscribeResponse"].indexOf(frameType) > -1) return;
     if (frameType === "LoginResponse") {
       if (frameBody.token) {
-        localStorage.setItem("session", JSON.stringify({token: frameBody.token}));
+        localStorage.setItem("session", JSON.stringify({ token: frameBody.token }));
       }
       this.store.currentUser = frameBody.user;
       frameBody.user ? this._debug(`log in ${frameBody.user.email}`) : this._debug("log out");
@@ -127,9 +127,9 @@ class Flows {
    * Increase timer length and call reconnectToFlows
    */
   reconnectTimer() {
-    const wait = this.reconnectWaitSeconds*1000;
-    this._debug("Retrying after " + wait/1000 + " seconds");
-    this.reconnectWaitSeconds = Math.min(Math.round(this.reconnectWaitSeconds*1.5), 60*15);
+    const wait = this.reconnectWaitSeconds * 1000;
+    this._debug("Retrying after " + wait / 1000 + " seconds");
+    this.reconnectWaitSeconds = Math.min(Math.round(this.reconnectWaitSeconds * 1.5), 60 * 15);
     this.store.reconnectTimeout = setTimeout(() => {
       this.reconnectToFlows(false);
     }, wait);
@@ -140,7 +140,9 @@ class Flows {
    * @returns {Promise<void>}
    */
   async reconnectToFlows(once) {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "reconnectToFlows")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "reconnectToFlows");
+    };
     _debug("Reconnecting");
     this.store.errorMsg = "Reconnecting...";
     const connectionSuccessful = await this.connect();
@@ -152,7 +154,7 @@ class Flows {
       this.store.errorMsg = "";
       if (this.store.currentChatId) this.openChat(this.store.currentChatId);
     } else {
-      _debug("Reconnect failed, " + (once ? "not trying again" : "setting new timer"));
+      _debug("Reconnect failed, " + ( once ? "not trying again" : "setting new timer" ));
       if (!once) this.reconnectTimer();
     }
   }
@@ -191,7 +193,9 @@ class Flows {
    * @private
    */
   async _openSocket() {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "_openSocket")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "_openSocket");
+    };
     if (!this.socket) {
       _debug("Creating new socket");
       this.socket = new Socket(this.socketFrameHandler, (CloseEvent) => {
@@ -228,7 +232,9 @@ class Flows {
    * @returns {Promise<boolean>} indicating a successful connection
    */
   async connect() {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "connect")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "connect");
+    };
 
     _debug("Connecting...");
     const openFrame = await this._openSocket();
@@ -259,10 +265,10 @@ class Flows {
     if (currentUserId) {
       _debug("Subscribing to global topics");
       GLOBAL_TOPICS.forEach(topic => ["modified", "deleted"].forEach(type =>
-              this.socket.subscribe("/topic/User." + currentUserId + "." + topic + "." + type)));
+        this.socket.subscribe("/topic/User." + currentUserId + "." + topic + "." + type)));
       _debug("Reading global topics");
       await Promise.all(GLOBAL_TOPICS.map(topic =>
-              this.socket.message("/app/" + topic + ".findByUser", {id: currentUserId}, true)
+        this.socket.message("/app/" + topic + ".findByUser", { id: currentUserId }, true),
       ));
       _debug("Global topics done");
 
@@ -287,11 +293,11 @@ class Flows {
   }
 
   setLogin(loginData) {
-    let debugData = {...loginData};
+    let debugData = { ...loginData };
     if (debugData.password) debugData.password = debugData.password.replace(/./g, "*");
     if (debugData.token) debugData.token = debugData.token.replace(/./g, "*");
     this._debug("Setting log in data", debugData);
-    this.loginData = {...loginData, ...this.loginData};
+    this.loginData = { ...loginData, ...this.loginData };
   }
 
   getLoginToken() {
@@ -437,7 +443,9 @@ class Flows {
    * @param chatId {?number|string}
    */
   openChat(chatId) {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "openChat")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "openChat");
+    };
 
     const id = +chatId;
     this.eventBus.$emit("currentChatChange", this.store.currentChatId, id);
@@ -445,7 +453,7 @@ class Flows {
     if (!id) {
       _debug("currentChatId > null");
       if (this.store.currentChatId) {
-        this.socket.message("/app/Topic.setMyStatus", {topicId: this.store.currentChatId, status: "NONE"});
+        this.socket.message("/app/Topic.setMyStatus", { topicId: this.store.currentChatId, status: "NONE" });
       }
       this.store.currentChatName = "";
       this.store.currentChatId = null;
@@ -460,23 +468,23 @@ class Flows {
         this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.modified", true);
         this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.deleted", true);
         _debug("Reading chat");
-        this.socket.message("/app/TopicItemRead.findByTopic", {id: id}, true);
+        this.socket.message("/app/TopicItemRead.findByTopic", { id: id }, true);
 
         CHAT_TOPICS.forEach(chatTopic => {
           this.socket.subscribe("/topic/Topic." + id + "." + chatTopic + ".modified", true);
           this.socket.subscribe("/topic/Topic." + id + "." + chatTopic + ".deleted", true);
           this.socket.message("/app/" + chatTopic + ".findByTopic",
             chatTopic === "TopicItem"
-              ? {id: id, filter: {amount: 50}}
-              : {id: id}, true);
-          this.getChatMessages(id, {sticky: true});
+              ? { id: id, filter: { amount: 50 } }
+              : { id: id }, true);
+          this.getChatMessages(id, { sticky: true });
         });
 
         // Set user status
         if (this.store.currentChatId) {
-          this.socket.message("/app/Topic.setMyStatus", {topicId: this.store.currentChatId, status: "NONE"});
+          this.socket.message("/app/Topic.setMyStatus", { topicId: this.store.currentChatId, status: "NONE" });
         }
-        this.socket.message("/app/Topic.setMyStatus", {topicId: id, status: "OPEN"});
+        this.socket.message("/app/Topic.setMyStatus", { topicId: id, status: "OPEN" });
         this.store.currentChatId = id;
 
         // Reorder recent chats
@@ -485,7 +493,7 @@ class Flows {
           let userPropsRecent = this.store.topics.UserProperty[recentIndex];
           delete userPropsRecent.modifiedDate;
           let val = userPropsRecent.value.filter(recent => recent.id !== id);
-          val.unshift({id: id, type: "MEETING"});
+          val.unshift({ id: id, type: "MEETING" });
           userPropsRecent.value = val;
           Vue.set(this.store.topics.UserProperty, recentIndex, userPropsRecent);
           this.socket.message("/app/UserProperty.save", userPropsRecent, true);
@@ -516,7 +524,7 @@ class Flows {
    * @returns {boolean} indicating if chats were enriched
    */
   enrichChats() {
-    if ( !this.store.topics.User
+    if (!this.store.topics.User
       || !this.store.topics.TopicUser
       || !this.store.currentUser
       || !this.store.topics.Topic) return false;
@@ -534,10 +542,10 @@ class Flows {
       const myChatUser = chatUsers.find(chatUser => chatUser.userId === currentUserId);
 
       // Add unread counts to chat
-      chat.unread = (myChatUser ? myChatUser.unreadItemsCount : 0);
-      chat.unreadImportant = (myChatUser ? myChatUser.unreadItemsToMeCount + myChatUser.atItemsToMeCount : 0);
-      chat.unreadAtme = (myChatUser ? myChatUser.atItemsToMeCount : 0);
-      chat.flagged = (myChatUser ? myChatUser.flaggedItemsCount : 0);
+      chat.unread = ( myChatUser ? myChatUser.unreadItemsCount : 0 );
+      chat.unreadImportant = ( myChatUser ? myChatUser.unreadItemsToMeCount + myChatUser.atItemsToMeCount : 0 );
+      chat.unreadAtme = ( myChatUser ? myChatUser.atItemsToMeCount : 0 );
+      chat.flagged = ( myChatUser ? myChatUser.flaggedItemsCount : 0 );
 
       // If chat has no name, make one from participants
       if (!chat.name) {
@@ -550,7 +558,7 @@ class Flows {
       }
     });
 
-    this.store.topics.Topic = allChats.sort((a, b) => (a.name ? a.name : "").localeCompare(b.name ? b.name : ""));
+    this.store.topics.Topic = allChats.sort((a, b) => ( a.name ? a.name : "" ).localeCompare(b.name ? b.name : ""));
     return true;
   }
 
@@ -567,7 +575,7 @@ class Flows {
    * @returns {Promise<Object>}
    */
   getChatMessages(chatId, filter) {
-    return this.socket.message("/app/TopicItem.findByTopic", {id: chatId, filter: filter}, true);
+    return this.socket.message("/app/TopicItem.findByTopic", { id: chatId, filter: filter }, true);
   }
 
   /**
@@ -590,7 +598,7 @@ class Flows {
 
     if (locations && workspaces) {
       const chatOrgs = locations.filter(location => location.topicId === +chatId)
-        .map(location => location.orgId);
+      .map(location => location.orgId);
       for (let i = 0; i < chatOrgs.length; i++) {
         const workspace = workspaces.find(workspace => workspace.workspace.id === chatOrgs[i]);
         if (workspace) return workspace;
@@ -603,7 +611,7 @@ class Flows {
 
     if (locations) {
       return locations.filter(location => location.orgId === +workspaceId)
-        .map(location => location.topicId);
+      .map(location => location.topicId);
     }
   }
 
@@ -642,7 +650,7 @@ class Flows {
         });
       }
 
-      this.chatMessagesCached =  {
+      this.chatMessagesCached = {
         messages: JSON.stringify(messages),
         id: this.store.lastUpdateChat + "-" + currentChatId,
       };
@@ -667,10 +675,10 @@ class Flows {
 
     if (prop && currentChatId && currentUserId) {
       return prop.filter(userProperty => userProperty.flag
-          && userProperty.topicId === currentChatId
-          && userProperty.userId === currentUserId)
-        .map(userProperty => userProperty.itemId)
-        .sort();
+        && userProperty.topicId === currentChatId
+        && userProperty.userId === currentUserId)
+      .map(userProperty => userProperty.itemId)
+      .sort();
     }
   }
 
@@ -699,7 +707,7 @@ class Flows {
    *  flag {0|1} is message saved
    */
   getChatUserProps(chatId, filter) {
-    return this.socket.message("/app/TopicItemUserProperty.findByTopic", {id: chatId, filter: filter}, true);
+    return this.socket.message("/app/TopicItemUserProperty.findByTopic", { id: chatId, filter: filter }, true);
   }
 
   /**
@@ -725,8 +733,8 @@ class Flows {
       return;
     }
     const ids = this.chatMessages()
-      .filter(msg => msg.unread)
-      .map(msg => msg.id);
+    .filter(msg => msg.unread)
+    .map(msg => msg.id);
     if (!ids.length) return;
     return this.socket.message("/app/TopicItemRead.markAsRead", {
       topicId: this.store.currentChatId,
@@ -737,11 +745,11 @@ class Flows {
   addChatToStarred(chatId) {
     if (this.store.topics.UserProperty) {
       let favs = this.store.topics.UserProperty.find(userProperty => userProperty.name === "favorites");
-      if (!favs) favs = {name: "favorites", orgId: null, userId: this.store.currentUser.id, value: []};
+      if (!favs) favs = { name: "favorites", orgId: null, userId: this.store.currentUser.id, value: [] };
       const favIds = favs.value.map(v => v.id);
       if (favIds.indexOf(+chatId) > -1) return;
       delete favs.modifiedDate;
-      favs.value.push({type: "MEETING", id: +chatId});
+      favs.value.push({ type: "MEETING", id: +chatId });
       return this.socket.message("/app/UserProperty.save", favs, true);
     }
   }
@@ -795,27 +803,27 @@ class Flows {
   sendChatMessage(message) {
     message.creatorUserId = this.store.currentUser.id;
     message.topicId = this.store.currentChatId;
-    message.customData = {test: true};
+    message.customData = { test: true };
 
     const shadowId = this.shadowMessageId++;
     // TODO: save message to localstorage => in case of error sending it is still there after refresh
     // TODO: clear localstorage on logout (don't keep messages around)
 
     this.socket.message("/app/TopicItem.save", message, true)
-      .then(() => {
-        this._debug("Real message arrived (" + shadowId + ")");
-        const messageIndex = this.store.topics.TopicItem.findIndex(message => message.id === shadowId);
-        if (messageIndex) {
-          Vue.delete(this.store.topics.TopicItem, messageIndex);
-        }
-        // TODO: Delete from local storage
-      })
-      .catch(() => {
-        const message = this.store.topics.TopicItem.find(message => message.id === shadowId);
-        if (message) {
-          message.error = true;
-        }
-      });
+    .then(() => {
+      this._debug("Real message arrived (" + shadowId + ")");
+      const messageIndex = this.store.topics.TopicItem.findIndex(message => message.id === shadowId);
+      if (messageIndex) {
+        Vue.delete(this.store.topics.TopicItem, messageIndex);
+      }
+      // TODO: Delete from local storage
+    })
+    .catch(() => {
+      const message = this.store.topics.TopicItem.find(message => message.id === shadowId);
+      if (message) {
+        message.error = true;
+      }
+    });
 
     message.id = shadowId;
     message.shadow = true;
@@ -832,8 +840,8 @@ class Flows {
    */
   replaceLocalMessage(newMessage) {
     const messageIndex = this.store.topics.TopicItem
-      .findIndex(message => message.id === newMessage.id);
-    Vue.set(this.store.topics.TopicItem, messageIndex, {...newMessage});
+    .findIndex(message => message.id === newMessage.id);
+    Vue.set(this.store.topics.TopicItem, messageIndex, { ...newMessage });
   }
 
   /**
@@ -870,7 +878,7 @@ class Flows {
     if (messageIndex) {
       Vue.delete(this.store.topics.TopicItem, messageIndex);
     }
-    return this.socket.message("/app/TopicItem.delete", {id: messageId}, true);
+    return this.socket.message("/app/TopicItem.delete", { id: messageId }, true);
   }
 
   /**
@@ -881,7 +889,7 @@ class Flows {
   setFlag(messageId, flag) {
     return this.socket.message("/app/TopicItemUserProperty.save", {
       itemId: messageId,
-      flag: +flag
+      flag: +flag,
     }, true);
   }
 
@@ -892,7 +900,7 @@ class Flows {
   markChatMessageRead(messageId) {
     return this.socket.message("/app/TopicItemRead.markAsRead", {
       topicId: this.store.currentChatId,
-      itemIds: [messageId]
+      itemIds: [messageId],
     }, true);
   }
 
@@ -906,12 +914,12 @@ class Flows {
 
     const hidden =
       //(typeof document.hidden !== "undefined") ? document.hidden :
-        !document.hasFocus();
+      !document.hasFocus();
     if (hidden || message.topicId !== this.store.currentChatId) {
       this.notifiedMessageIds.push(message.id);
       const chatName = this.getChatName(message.topicId);
       const creatorName = this.getFullName(message.creatorUserId);
-      const title = creatorName + (chatName !== creatorName ? " - " + chatName : "");
+      const title = creatorName + ( chatName !== creatorName ? " - " + chatName : "" );
       let options = {
         body: message.type === "CHAT"
           ? this.getMessageTextRepresentation(this.chatTextParse(message.text))
@@ -949,7 +957,7 @@ class Flows {
         const ctx = canvas.getContext("2d");
         let img = new Image();
         img.onload = () => {
-          ctx.drawImage(img, 0, (56 - 42) * -1.5, 42 * 3, 56 * 3);
+          ctx.drawImage(img, 0, ( 56 - 42 ) * -1.5, 42 * 3, 56 * 3);
           options.icon = canvas.toDataURL();
           notification = new Notification(title, options);
           notification.onclick = onclick;
@@ -982,7 +990,7 @@ class Flows {
     const addText = (text) => parsedText.push(utils.textToHTML(text));
     for (let i = 0; i < splitText.length; i++) {
       let part = splitText[i];
-      if (part === firstName || part === lastName || "@" === part[0] && (part.substr(1) === firstName || part.substr(1) === lastName)) {
+      if (part === firstName || part === lastName || "@" === part[0] && ( part.substr(1) === firstName || part.substr(1) === lastName )) {
         parsedText.push('<span class="message-at">');
         addText(part);
         parsedText.push("</span>");
@@ -1001,9 +1009,9 @@ class Flows {
           parsedText.push("</a>");
         } else {
           if (emojis[part.toLowerCase()]) {
-            parsedText.push(emojis[part.toLowerCase()])
+            parsedText.push(emojis[part.toLowerCase()]);
           } else {
-            addText(part)
+            addText(part);
           }
         }
       }
@@ -1019,9 +1027,9 @@ class Flows {
    */
   noteTextParse(text) {
     return text
-      .replace(/src=['"]\/files\/*([^'"]+)['"]/g, 'src="https://flows.contriber.com/files/$1"')
-      .replace(/<a[^<]+href=['"]*([^'"]+)['"][^>]*>/g, '<a target="_blank" rel="noopener noreferrer nofollow" href="$1">')
-      .replace(/<p><\/p>/g, "<br>");
+    .replace(/src=['"]\/files\/*([^'"]+)['"]/g, 'src="https://flows.contriber.com/files/$1"')
+    .replace(/<a[^<]+href=['"]*([^'"]+)['"][^>]*>/g, '<a target="_blank" rel="noopener noreferrer nofollow" href="$1">')
+    .replace(/<p><\/p>/g, "<br>");
   }
 
   /**
@@ -1030,11 +1038,11 @@ class Flows {
    */
   getMessageTextRepresentation(messageText) {
     return messageText
-      .replace(/<img .*?alt=[\"']?([^\"']*)[\"']?.*?\/?>/g, "$1")
-      .replace(/<a .*?href=["']?([^"']*)["']?.*?>(.*)<\/a>/g, "$2")
-      .replace(/<(\/p|\/div|\/h\d|br)\w?\/?>/g, "\n")
-      .replace(/<[A-Za-z/][^<>]*>/g, "")
-      .replace(/&quot/g, '"');
+    .replace(/<img .*?alt=[\"']?([^\"']*)[\"']?.*?\/?>/g, "$1")
+    .replace(/<a .*?href=["']?([^"']*)["']?.*?>(.*)<\/a>/g, "$2")
+    .replace(/<(\/p|\/div|\/h\d|br)\w?\/?>/g, "\n")
+    .replace(/<[A-Za-z/][^<>]*>/g, "")
+    .replace(/&quot/g, '"');
   }
 
   /*
@@ -1080,7 +1088,7 @@ class Flows {
    * @param value {boolean}
    */
   set showWorkspaceSwitcher(value) {
-    this._setBooleanUserProp("showWorkspaceSwitcher", value)
+    this._setBooleanUserProp("showWorkspaceSwitcher", value);
   }
 
   /**
@@ -1094,7 +1102,7 @@ class Flows {
    * @param value {boolean}
    */
   set compactMode(value) {
-    this._setBooleanUserProp("compactMode", value)
+    this._setBooleanUserProp("compactMode", value);
   }
 
   /**
@@ -1120,8 +1128,7 @@ class Flows {
       return;
     }
     value = !!value;
-    const propIndex = this.store.topics.UserProperty
-      .findIndex(userProperty => userProperty.name === propName);
+    const propIndex = this.store.topics.UserProperty.findIndex(userProperty => userProperty.name === propName);
     let prop;
     if (propIndex < 0) {
       this._debug(`Creating ${propName} (${value})`);
@@ -1130,7 +1137,7 @@ class Flows {
         name: propName,
         value: value,
         userId: this.store.currentUser.id,
-        orgId: null
+        orgId: null,
       };
     } else {
       this._debug(`Setting ${propName} (${value})`);
@@ -1143,7 +1150,7 @@ class Flows {
     .then(() => this._debug(`Saved ${propName} (${value})`))
     .catch(() => {
       this.eventBus.$emit("notify", `Error saving ${propName}`);
-      this._debug(`! Error saving user property ${propName} (${value})`)
+      this._debug(`! Error saving user property ${propName} (${value})`);
     });
   }
 
@@ -1231,7 +1238,9 @@ class Flows {
    * @param url {string} "/files/2019-02-02/..."
    */
   deleteFile(url) {
-    const _debug = (text) => {if (this.debug) this._logDebug(text, "deleteFile")};
+    const _debug = (text) => {
+      if (this.debug) this._logDebug(text, "deleteFile");
+    };
     _debug(`Deleting file ${url}`);
     const formData = new FormData();
     formData.append("token", this.getLoginToken());
@@ -1246,4 +1255,4 @@ class Flows {
 }
 
 
-export default Flows
+export default Flows;

@@ -1,4 +1,4 @@
-import {ALL_TOPICS} from "@/js/consts";
+import { ALL_TOPICS } from "@/js/consts";
 
 const store = {
   currentChatId: null,
