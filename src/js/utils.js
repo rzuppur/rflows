@@ -53,6 +53,14 @@ const utils = {
     if (text) return this.escapeHTML(text).replace(/&#10;/g, "<br>").replace(/\n/g, "<br>");
   },
 
+  /**
+   * @param text {string}
+   * @returns {boolean}
+   */
+  editorTextNotEmpty(text) {
+    return text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "";
+  },
+
   /*
   DATE & TIME
    */

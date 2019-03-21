@@ -292,7 +292,7 @@
       },
       checkTypingStatus() {
         const text = this._getEditorContent();
-        const isTyping = text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "";
+        const isTyping = this.utils.editorTextNotEmpty(text);
 
         if (isTyping !== this.isTyping) {
           this.flows.setTypingStatus(isTyping);
@@ -302,7 +302,7 @@
       sendChatMessage() {
         const text = this._getEditorContent();
         const replyToId = this.replyToId;
-        if (text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "") {
+        if (this.utils.editorTextNotEmpty(text)) {
           setTimeout(this.scrollToBottomSmooth, 100);
           this.replyCancel();
           this.editorClear();
@@ -461,7 +461,7 @@
       saveRestoreMessage(prevChatId, newChatId) {
         console.log(prevChatId, newChatId);
         const text = this._getEditorContent();
-        if (this.replyToId || text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "") {
+        if (this.replyToId || this.utils.editorTextNotEmpty(text)) {
           if (prevChatId) {
             this._debug("Saving draft message in chat " + this.currentChatName);
             this.draftMessages[prevChatId] = {
