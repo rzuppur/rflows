@@ -187,6 +187,9 @@
       empty() {
         this._initOrSetContent("", false);
       },
+      setContent(text) {
+        this._initOrSetContent(text, false);
+      },
       setMessage(message) {
         const editorText = ["NOTE", "EMAIL"].indexOf(message.type) > -1
           ? this.flows.noteTextParse(message.text)

@@ -166,7 +166,7 @@
     directives: {imagesLoaded},
     components: {Message, MessagePreview, Editor, FileUpload},
     props: ["favouriteIds", "hidden"],
-    store: ["currentChatId", "currentChatName", "currentUser", "topics", "lastUpdateChat"],
+    store: ["currentChatId", "currentChatName", "currentUser", "topics", "lastUpdateChat", "draftMessages"],
     data() {
       return {
         replyToId: null,
@@ -194,6 +194,7 @@
       this.eventBus.$on("messagesScrollUpdate", this.scrollUpdate);
       this.eventBus.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
       this.eventBus.$on("currentChatChange", this.markNewChat);
+      this.eventBus.$on("currentChatChange", this.saveRestoreMessage);
 
       const sidebarIsCollapsed = JSON.parse(localStorage.getItem("sidebarCollapsed"));
       if (sidebarIsCollapsed) this.sidebarCollapsed = true;
@@ -273,6 +274,9 @@
       },
     },
     methods: {
+      _getEditorContent() {
+        return this.$refs.editor ? this.$refs.editor.getHTML() : "";
+      },
       /**
        * @param messageId {number}
        * @returns {Promise<Object|SocketResponse>}
@@ -287,7 +291,7 @@
         }
       },
       checkTypingStatus() {
-        const text = this.$refs.editor ? this.$refs.editor.getHTML() : "";
+        const text = this._getEditorContent();
         const isTyping = text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "";
 
         if (isTyping !== this.isTyping) {
@@ -296,7 +300,7 @@
         }
       },
       sendChatMessage() {
-        const text = this.$refs.editor ? this.$refs.editor.getHTML() : "";
+        const text = this._getEditorContent();
         const replyToId = this.replyToId;
         if (text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "") {
           setTimeout(this.scrollToBottomSmooth, 100);
@@ -437,7 +441,7 @@
         .catch(() => {this.eventBus.$emit("notify", "Copying failed")});
       },
       editLastMessage(event) {
-        const text = this.$refs.editor ? this.$refs.editor.getHTML() : "";
+        const text = this._getEditorContent();
         if (text === "<p></p>") {
           event.stopPropagation();
           const myMessages = this.sortedMessages.filter(message => message.creatorUserId === this.currentUser.id);
@@ -452,6 +456,28 @@
               event.stopPropagation();
             }
           }
+        }
+      },
+      saveRestoreMessage(prevChatId, newChatId) {
+        console.log(prevChatId, newChatId);
+        const text = this._getEditorContent();
+        if (this.replyToId || text.replace(/<p>|<\/p>|<br>|<br\/>/g, "").trim() !== "") {
+          if (prevChatId) {
+            this._debug("Saving draft message in chat " + this.currentChatName);
+            this.draftMessages[prevChatId] = {
+              text: text,
+              replyToId: this.replyToId,
+            };
+          }
+          this.replyCancel();
+          this.editorClear();
+        }
+
+        if (this.draftMessages[newChatId]) {
+          if (this.draftMessages[newChatId].text && this.$refs.editor) this.$refs.editor.setContent(this.draftMessages[newChatId].text);
+          if (this.draftMessages[newChatId].replyToId) this.replyToId = this.draftMessages[newChatId].replyToId;
+
+          delete this.draftMessages[newChatId];
         }
       },
       lastUpdateChatWatcher() {

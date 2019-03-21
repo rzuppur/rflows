@@ -327,6 +327,7 @@ class Flows {
     this.store.currentChatId = null;
     this.store.currentChatName = "";
     this.store.loginLoading = false;
+    this.store.draftMessages = {};
     this.eventBus.$emit("logout");
   }
 
@@ -437,9 +438,11 @@ class Flows {
    */
   openChat(chatId) {
     const _debug = (text) => {if (this.debug) this._logDebug(text, "openChat")};
-    this.eventBus.$emit("currentChatChange");
 
-    if (!chatId) {
+    const id = +chatId;
+    this.eventBus.$emit("currentChatChange", this.store.currentChatId, id);
+
+    if (!id) {
       _debug("currentChatId > null");
       if (this.store.currentChatId) {
         this.socket.message("/app/Topic.setMyStatus", {topicId: this.store.currentChatId, status: "NONE"});
@@ -449,7 +452,6 @@ class Flows {
       return;
     }
 
-    const id = +chatId;
     if (id !== this.store.currentChatId) {
       _debug("Changing chat " + this.store.currentChatId + " > " + id);
 

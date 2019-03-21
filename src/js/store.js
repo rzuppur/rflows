@@ -19,6 +19,7 @@ const store = {
   }(),
 
   lastUpdateChat: null,  // for reactivity, stores the latest chat related update id
+  draftMessages: {},
 };
 
 export default store;
