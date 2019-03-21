@@ -1,9 +1,6 @@
 <template lang="pug">
   .file-upload
 
-    .drop-overlay(:class="{ dropping: dropping }")
-      .drop-overlay-text #[span.icon #[i.fas.fa-upload]]
-
     img.image-preview(v-if="previewUrl" :src="previewUrl")
 
     form.field.is-grouped(
@@ -193,6 +190,9 @@
       previewUrl: function(val) {
         this.eventBus.$emit("messagesScrollUpdate");
       },
+      dropping: function(val, oldVal) {
+        if (val !== oldVal) this.eventBus.$emit("dropOverlay", val);
+      }
     },
   }
 </script>
@@ -207,41 +207,6 @@
     display block
     margin 0 auto 15px
     box-shadow 0 0 0 2px rgba(0, 0, 0, .1)
-
-  .drop-overlay
-    position fixed
-    left 0
-    right 0
-    top 0
-    bottom 0
-    background alpha(#fff, .96)
-    display flex
-    align-items center
-    flex-direction row
-    justify-content space-around
-    user-select none
-    pointer-events none
-    transition all 0.15s
-    z-index -1000
-    opacity 0
-
-    &.dropping
-      z-index 1000
-      opacity 1
-
-    .drop-overlay-text
-      text-regular-30()
-      color $color-text
-
-      &:before
-        content ""
-        position absolute
-        top 30px
-        bottom @top
-        left @top
-        right @top
-        border 2px dashed alpha(#000, .2)
-        border-radius $border-radius
 
 
 </style>

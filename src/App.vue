@@ -2,6 +2,7 @@
 
   #app(v-cloak @click="documentClick")
     notification
+    overlays
 
     login-form(v-if="!autoLogin && !currentUser && !reconnectTimeout")
 
@@ -76,18 +77,19 @@
 </template>
 
 <script>
-  import {CHAT_TOPICS, GLOBAL_TOPICS} from "@/js/consts"
+  import { CHAT_TOPICS, GLOBAL_TOPICS } from "@/js/consts";
 
-  import ChatMessages from "@/components/ChatMessages"
-  import SidebarChats from "@/components/SidebarChats"
-  import FlaggedMessages from "@/components/FlaggedMessages"
-  import Settings from "@/components/Settings"
-  import LoginForm from "@/components/LoginForm"
-  import Notification from "@/components/Notification"
+  import ChatMessages from "@/components/ChatMessages";
+  import SidebarChats from "@/components/SidebarChats";
+  import FlaggedMessages from "@/components/FlaggedMessages";
+  import Settings from "@/components/Settings";
+  import LoginForm from "@/components/LoginForm";
+  import Notification from "@/components/Notification";
+  import Overlays from "@/components/Overlays";
 
   export default {
     name: 'App',
-    components: {Notification, ChatMessages, SidebarChats, FlaggedMessages, Settings, LoginForm},
+    components: { Notification, ChatMessages, SidebarChats, FlaggedMessages, Settings, LoginForm, Overlays },
     store: ["currentChatId", "currentChatName", "currentUser", "topics", "loginLoading", "connectionError", "errorMsg", "reconnectTimeout"],
     data: function () {
       return {
