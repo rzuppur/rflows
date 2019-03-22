@@ -684,7 +684,7 @@ class Flows {
     const chatUsers = this.store.topics.TopicUser;
 
     if (chatUsers) {
-      return chatUsers.filter(chatUser => chatUser.topicId === +chatId).sort((a, b) => a.createDate - b.createDate);
+      return chatUsers.filter(chatUser => !chatUser.deleted && chatUser.topicId === +chatId).sort((a, b) => a.createDate - b.createDate);
     }
   }
 
