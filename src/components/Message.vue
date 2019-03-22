@@ -62,10 +62,12 @@
 
         .note-content(v-if="message.type === 'NOTE'" v-html="flows.noteTextParse(message.text)")
 
-        template(v-if="message.type === 'EMAIL'")
+        p.text-content(v-if="isNetlifyDeploy") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
+
+        template(v-if="message.type === 'EMAIL' && !isNetlifyDeploy")
 
           template(v-if="commits && commits.length")
-            p.text-content New commits in repositry
+            p.text-content #[i.fas.fa-plus] New commits in repositry
             .file-content(v-for="commit in commits")
               a.file-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow" style="padding: 1px 5px 1px 0; color: inherit;")
                 .file-title #[i.fab.fa-github] #[b  {{ commit.name }}]
@@ -155,7 +157,7 @@
     computed: {
       messageClass() {
         return {
-          event: this.message.type === 'EVENT' || this.commits,
+          event: this.message.type === 'EVENT' || this.commits || this.isNetlifyDeploy,
           noauthor: (this.i > 0)
             && this.sortedMessages[this.i - 1]
             && (this.sortedMessages[this.i - 1].creatorUserId === this.message.creatorUserId)
@@ -206,6 +208,9 @@
 
           return commits;
         }
+      },
+      isNetlifyDeploy() {
+        return this.message.type === "EMAIL" && this.message.subject === "[Netlify] We just published a new Production deploy for rflows" && this.message.from.address === 'team@netlify.com';
       },
     },
     methods: {
