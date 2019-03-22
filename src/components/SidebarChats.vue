@@ -14,6 +14,20 @@
         | {{ (!!chat.unreadAtme ? '@' : '') + chat.unread }}
 
   .sidebar-chats(v-if="allChats.length")
+    template(v-if="!searchText")
+      h4.chats-section #[i.far.fa-comment] RFlows
+
+      .chat(v-if="devChat" :class="{ unread: !!devChat.unread, active: devChat.id === $store.currentChatId }" @click="changeChat(devChat.id)")
+        .chat-title.ellipsis Features & feedback
+          span.icon.is-small.chat-flagged(v-if="devChat.flagged > 0")
+            i.fas.fa-thumbtack
+        .chat-unread(:class="{ important: !!devChat.unreadImportant, atme: !!devChat.unreadAtme }")
+          | {{ (!!devChat.unreadAtme ? '@' : '') + devChat.unread }}
+
+      .chat(v-else @click="changeChat(37479)")
+        .chat-title.ellipsis Features & feedback
+        .chat-unread
+
     template(v-if="!searchText && favouriteChats.length")
       h4.chats-section #[i.far.fa-star] Favorites
       +sidebarChat("favouriteChats")
@@ -50,7 +64,7 @@
           let chat = this.allChats.find(chat => chat.id === favId);
           if (chat) favourites.push(chat);
         });
-        return favourites;
+        return favourites.filter(chat => chat.id !== 37479);
       },
       recentChats() {
         if (!this.allChats.length || !this.recentIds) return [];
@@ -62,7 +76,7 @@
         const unread = this.allChats.filter(chat => {
           return chat.unread && this.favouriteIds.indexOf(chat.id) < 0
         });
-        return unread.concat(recents).slice(0, 15);
+        return unread.concat(recents).slice(0, 15).filter(chat => chat.id !== 37479);
       },
       filteredChats() {
         if (this.searchText) {
@@ -71,7 +85,14 @@
             return chat.name.toLowerCase().includes(text);
           });
         }
-      }
+      },
+      devChat() {
+        if (!this.allChats.length) return false;
+        const chat = this.allChats.filter(chat => chat.id === 37479);
+        if (chat && chat[0]) {
+          return chat[0];
+        }
+      },
     },
     methods: {
       changeChat(chatId) {

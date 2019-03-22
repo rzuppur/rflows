@@ -63,16 +63,25 @@
         .note-content(v-if="message.type === 'NOTE'" v-html="flows.noteTextParse(message.text)")
 
         template(v-if="message.type === 'EMAIL'")
-          .email-meta
-            | From: {{ message.from.address }}<br>
-            | To: {{ message.to.map(to => to.address).join(", ") }}<br>
-            | #[b {{ message.subject }}]
-          .email-frame-container(v-if="(message.contentType && message.contentType.toLowerCase()) === 'text/html'")
-            iframe.email-frame(
-            ref="emailframe"
-            :srcdoc="getEmailText(message.text)"
-            @load="setEmailFrameHeight()")
-          p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+
+          template(v-if="commits && commits.length")
+            p.text-content New commits in repositry
+            .file-content(v-for="commit in commits")
+              a.file-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow" style="padding: 1px 5px 1px 0; color: inherit;")
+                .file-title #[i.fab.fa-github] #[b  {{ commit.name }}]
+
+          template(v-else)
+            .email-meta
+              | From: {{ message.from.address }}<br>
+              | To: {{ message.to.map(to => to.address).join(", ") }}<br>
+              | #[b {{ message.subject }}]
+            .email-frame-container(v-if="(message.contentType && message.contentType.toLowerCase()) === 'text/html'")
+              iframe.email-frame(
+              ref="emailframe"
+              :srcdoc="getEmailText(message.text)"
+              @load="setEmailFrameHeight()")
+            p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+
         p.text-content(v-if="['CHAT', 'NOTE', 'EMAIL', 'EVENT', 'FILE'].indexOf(message.type) < 0") #[b(style="color: #c00;") Unknown message type:] {{ message.type }}
 
     .buttons-container(v-if="!editMode")
@@ -146,7 +155,7 @@
     computed: {
       messageClass() {
         return {
-          event: this.message.type === 'EVENT',
+          event: this.message.type === 'EVENT' || this.commits,
           noauthor: (this.i > 0)
             && this.sortedMessages[this.i - 1]
             && (this.sortedMessages[this.i - 1].creatorUserId === this.message.creatorUserId)
@@ -179,6 +188,24 @@
         let ext = this.message.url.split(".");
         ext = ext[ext.length - 1] + "";
         if (["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) > -1) return previewUrl;
+      },
+      commits() {
+        if (this.message.type === "EMAIL" && this.message.from.address === "noreply@github.com") {
+          const parts = this.message.text.split("Commit: ");
+          parts.splice(0, 1);
+
+          let commits = [];
+          parts.forEach(part => {
+            commits.push({
+              url: part.split(" ").filter(part => part)[1],
+              name: part.split("-----------").filter(part => part)[1].split("Compare: ")[0].trim(),
+              changes: part.split("Changed paths:").filter(part => part)[1].split("Log Message:")[0].trim().split("\n").map(change => change.trim()),
+              author: part.split("Author: ").filter(part => part)[1].split("Date:")[0].trim(),
+            })
+          });
+
+          return commits;
+        }
       },
     },
     methods: {
