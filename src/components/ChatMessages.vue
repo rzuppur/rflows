@@ -456,7 +456,6 @@
         }
       },
       saveRestoreMessage(prevChatId, newChatId) {
-        console.log(prevChatId, newChatId);
         const text = this._getEditorContent();
         if (this.replyToId || this.utils.editorTextNotEmpty(text)) {
           if (prevChatId) {

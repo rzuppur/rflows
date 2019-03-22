@@ -153,6 +153,7 @@
 
     .workspace-container
       max-width 850px
+      padding 0 10px
       margin 0 auto
 
       &:not(:last-child)
