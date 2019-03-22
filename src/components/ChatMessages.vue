@@ -44,6 +44,8 @@
 
       .chat-bottom
 
+        .text-small.top-info-text(v-if="!mqMobile && !editorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
+
         .flex.chat-inputs
 
           .field.is-grouped.flex1
@@ -86,13 +88,6 @@
                 span(v-if="!mqMobile") Send
                 span.icon(v-if="mqMobile")
                   i.fas.fa-paper-plane
-
-
-        template(v-if="!mqMobile")
-          .has-text-grey.text-small.bottom-info-text(v-if="!editorFocused && flowsEmail")
-            | Forward emails to chat:&nbsp;
-            span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
-          .has-text-grey.text-small.bottom-info-text(v-if="editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
     .sidebar.scrollbar-style(:class="{ collapsed: sidebarCollapsed }")
       .workspace(v-if="workspace")
@@ -140,8 +135,6 @@
         )
 
       //-a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
-      .show-wide(v-tooltip="'Upper left corner next to your name. This button will be removed in future.'")
-        button.button.is-fullwidth.is-outlined(disabled style="margin-top: 20px") Log out moved to settings
 
       p.show-wide.has-text-grey(style="margin-top: 10px;")
         template(v-if="chatUser")
@@ -149,6 +142,10 @@
           template(v-if="chatUser.role === 'USER'") You have user rights<br>
           template(v-if="chatUser.role === 'NOTIFICATION_RECEIVER'") You are mentioned in this chat<br>
         template(v-else) You are not a member of this chat<br>
+      div(style="height: 10px")
+      p.show-wide.has-text-grey.text-small(v-if="flowsEmail")
+        | Forward emails to chat: #{""}
+        span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
 </template>
 
 <script>
