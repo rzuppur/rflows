@@ -72,6 +72,7 @@
     top 36px
     left 50%
     padding 8px 16px
+    text-align center
     border-radius $border-radius
     box-shadow 0 4px 8px -3px alpha(#000, 0.5)
     z-index 100000

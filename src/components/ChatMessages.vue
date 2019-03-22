@@ -124,6 +124,34 @@
           i.fas.fa-arrow-down.has-text-grey
         span.show-wide Scroll to bottom
 
+      button.sidebar-button(
+        v-if="chatUser"
+        @click="leaveChat"
+        :disabled="leavingOrJoining"
+        v-tooltip.left="{ content: sidebarCollapsed ? 'Leave chat' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+      )
+        span.icon.small
+          i.far.fa-user.has-text-grey
+        span.show-wide Leave chat
+
+      button.sidebar-button(
+        v-else
+        @click="joinChat"
+        :disabled="leavingOrJoining"
+        v-tooltip.left="{ content: sidebarCollapsed ? 'Join chat' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+      )
+        span.icon.small
+          i.fas.fa-user.has-text-grey
+        span.show-wide Join chat
+
+      p.show-wide.has-text-grey(style="margin-top: 10px;")
+        template(v-if="chatUser")
+          template(v-if="isAdmin") You have administrator rights<br>
+          template(v-if="chatUser.role === 'USER'") You have user rights<br>
+          template(v-if="chatUser.role === 'NOTIFICATION_RECEIVER'") You are mentioned in this chat<br>
+        template(v-else)
+          | You are not a member of this chat
+
       .flagged(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4
           .show-wide #[i.fas.fa-thumbtack.has-text-info] Saved messages
@@ -134,14 +162,6 @@
           :key="messageId"
         )
 
-      //-a(v-if="firstUnreadMessageId !== -1" @click="scrollToNew()" style="display: block;") First unread
-
-      p.show-wide.has-text-grey(style="margin-top: 10px;")
-        template(v-if="chatUser")
-          template(v-if="isAdmin") You have administrator rights<br>
-          template(v-if="chatUser.role === 'USER'") You have user rights<br>
-          template(v-if="chatUser.role === 'NOTIFICATION_RECEIVER'") You are mentioned in this chat<br>
-        template(v-else) You are not a member of this chat<br>
       div(style="height: 10px")
       p.show-wide.has-text-grey.text-small(v-if="flowsEmail")
         | Forward emails to chat: #{""}
@@ -185,6 +205,7 @@
         flaggedMessageIds: null,
 
         sidebarCollapsed: false,
+        leavingOrJoining: false,
       }
     },
     created() {
@@ -357,6 +378,7 @@
         });
 
         this.newChatScrollToBottom();
+        this.leavingOrJoining = false;
       },
       scrollToNewOnce() {
         if (!this.scrolledToNew) {
@@ -475,6 +497,22 @@
           if (this.draftMessages[newChatId].replyToId) this.replyToId = this.draftMessages[newChatId].replyToId;
 
           delete this.draftMessages[newChatId];
+        }
+      },
+      joinChat() {
+        this.leavingOrJoining = true;
+        this.flows.joinChat(this.currentChatId).then(() => {
+          this.leavingOrJoining = false;
+          this.eventBus.$emit("notify", `Joined ${this.currentChatName}`)
+        });
+      },
+      leaveChat() {
+        if (window.confirm("Leave chat?")) {
+          this.leavingOrJoining = true;
+          this.flows.leaveChat(this.currentChatId).then(() => {
+            this.leavingOrJoining = false;
+            this.eventBus.$emit("notify", `Left ${this.currentChatName}`)
+          });
         }
       },
       lastUpdateChatWatcher() {
