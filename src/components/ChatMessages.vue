@@ -189,6 +189,7 @@
     },
     created() {
       this.eventBus.$on("messagesScrollUpdate", this.scrollUpdate);
+      this.eventBus.$on("debouncedResize", this.scrollUpdate);
       this.eventBus.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
       this.eventBus.$on("currentChatChange", this.markNewChat);
       this.eventBus.$on("currentChatChange", this.saveRestoreMessage);
@@ -400,7 +401,7 @@
         }
       },
       _scrollUpdate()  {
-        //this._debug("Scroll height update");
+        this._debug("Scroll height update");
         this.scrollUpdateTimer = null;
         this.$nextTick(this.scrollToNewOnce);
 

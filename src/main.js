@@ -66,6 +66,7 @@ function alwaysFullHeightSetSize(fixAnchor) {
       elements[i].setAttribute("style", "height:" + height + "; max-height:" + height);
     }
   }
+  eventBus.$emit("debouncedResize");
 }
 
 new Vue({

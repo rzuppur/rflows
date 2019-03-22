@@ -464,10 +464,8 @@ class Flows {
       _debug("Changing chat " + this.store.currentChatId + " > " + id);
 
       try {
-        _debug("Subscribing to chat");
         this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.modified", true);
         this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.deleted", true);
-        _debug("Reading chat");
         this.socket.message("/app/TopicItemRead.findByTopic", { id: id }, true);
 
         CHAT_TOPICS.forEach(chatTopic => {
