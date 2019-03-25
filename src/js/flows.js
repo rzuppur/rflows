@@ -663,7 +663,7 @@ class Flows {
         const chatUsers = this.getChatUsers(currentChatId);
         if (!chatUsers || chatUsers.find(chatUser => chatUser.userId === currentUserId)) {
           messages = messages.map(message => {
-            message.unread = !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
+            message.unread = !message.shadow && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id);
             return message;
           });
         }
