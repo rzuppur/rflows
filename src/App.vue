@@ -77,8 +77,6 @@
 </template>
 
 <script>
-  import { CHAT_TOPICS, GLOBAL_TOPICS } from "@/js/consts";
-
   import ChatMessages from "@/components/ChatMessages";
   import SidebarChats from "@/components/SidebarChats";
   import FlaggedMessages from "@/components/FlaggedMessages";
