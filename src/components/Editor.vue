@@ -86,7 +86,6 @@
     OrderedList,
     BulletList,
     ListItem,
-    Bold,
     Code,
     Underline,
     History,
@@ -98,7 +97,8 @@
     HorizontalRule,
   } from 'tiptap-extensions'
   import HardBreakModifierOnly from "@/js/tiptap/HardBreakModifierOnly";
-  import Italic from "@/js/tiptap/Italics";
+  import Italic from "@/js/tiptap/Italic";
+  import Bold from "@/js/tiptap/Bold";
 
   const extensions = [
     new Blockquote(),
