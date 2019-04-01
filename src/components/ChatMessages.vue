@@ -124,6 +124,8 @@
           i.fas.fa-arrow-down.has-text-grey
         span.show-wide Scroll to bottom
 
+      div(style="height: 10px")
+
       button.sidebar-button(
         v-if="chatUser"
         @click="leaveChat"
@@ -131,7 +133,7 @@
         v-tooltip.left="{ content: sidebarCollapsed ? 'Leave chat' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
       )
         span.icon.small
-          i.far.fa-user.has-text-grey
+          i.fas.fa-user-alt-slash.has-text-grey
         span.show-wide Leave chat
 
       button.sidebar-button(
@@ -141,7 +143,7 @@
         v-tooltip.left="{ content: sidebarCollapsed ? 'Join chat' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
       )
         span.icon.small
-          i.fas.fa-user.has-text-grey
+          i.fas.fa-user-plus.has-text-grey
         span.show-wide Join chat
 
       p.show-wide.has-text-grey(style="margin-top: 10px;")
