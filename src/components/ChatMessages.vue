@@ -32,7 +32,7 @@
             :replyToId="replyToId"
             :sortedMessages="sortedMessages"
             :isAdmin="isAdmin"
-            :autoMarkAsRead="flows.autoMarkAsRead"
+            :autoMarkAsRead="autoMarkAsRead"
             :firstUnreadMessageId="firstUnreadMessageId"
             :key="message.id"
             :ref="'message-' + message.id"
@@ -107,6 +107,7 @@
         span.show-wide All saved messages
 
       button.sidebar-button(
+        v-if="!autoMarkAsRead"
         @click="flows.markCurrentChatRead()"
         :disabled="firstUnreadMessageId === -1"
         v-tooltip.left="{ content: sidebarCollapsed ? 'Mark all as read' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
@@ -124,35 +125,27 @@
           i.fas.fa-arrow-down.has-text-grey
         span.show-wide Scroll to bottom
 
+
       div(style="height: 10px")
-
-      button.sidebar-button(
-        v-if="chatUser"
-        @click="leaveChat"
-        :disabled="leavingOrJoining"
-        v-tooltip.left="{ content: sidebarCollapsed ? 'Leave chat' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
-      )
-        span.icon.small
-          i.fas.fa-user-alt-slash.has-text-grey
-        span.show-wide Leave chat
-
-      button.sidebar-button(
-        v-else
-        @click="joinChat"
-        :disabled="leavingOrJoining"
-        v-tooltip.left="{ content: sidebarCollapsed ? 'Join chat' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
-      )
-        span.icon.small
-          i.fas.fa-user-plus.has-text-grey
-        span.show-wide Join chat
-
-      p.show-wide.has-text-grey(style="margin-top: 10px;")
+      p.show-wide.has-text-grey.text-small(:class="{ disabled: leavingOrJoining }")
         template(v-if="chatUser")
           template(v-if="isAdmin") You have administrator rights<br>
           template(v-if="chatUser.role === 'USER'") You have user rights<br>
           template(v-if="chatUser.role === 'NOTIFICATION_RECEIVER'") You are mentioned in this chat<br>
+
+          div(style="height: 10px")
+          a(@click.prevent="leaveChat" href="#") Leave chat #{""}
+            i.fa-xs.fas.fa-user-alt-slash
         template(v-else)
           | You are not a member of this chat
+          div(style="height: 10px")
+          a(@click.prevent="joinChat" href="#") Join now #{""}
+            i.fa-xs.fas.fa-user-plus
+
+      div(style="height: 10px")
+      p.show-wide.has-text-grey.text-small(v-if="flowsEmail")
+        | Forward emails to chat: #{""}
+        span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
 
       .flagged(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4
@@ -164,10 +157,6 @@
           :key="messageId"
         )
 
-      div(style="height: 10px")
-      p.show-wide.has-text-grey.text-small(v-if="flowsEmail")
-        | Forward emails to chat: #{""}
-        span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
 </template>
 
 <script>
@@ -224,9 +213,12 @@
       this.$root.updateFullHeight();
     },
     computed: {
+      autoMarkAsRead() {
+        return this.flows.autoMarkAsRead;
+      },
       firstUnreadMessageId() {
         if (this.messagesRead && this.sortedMessages) {
-          if (this.flows.autoMarkAsRead) {
+          if (this.autoMarkAsRead) {
             if (!this.unreadId) {
               let firstUnread = this.sortedMessages.find(message => message.unread);
               if (firstUnread) this.unreadId = firstUnread.id;
@@ -504,17 +496,19 @@
       joinChat() {
         this.leavingOrJoining = true;
         this.flows.joinChat(this.currentChatId).then(() => {
-          this.leavingOrJoining = false;
           this.eventBus.$emit("notify", `Joined ${this.currentChatName}`)
+        }).finally(() => {
+          this.leavingOrJoining = false;
         });
       },
       leaveChat() {
         if (window.confirm("Leave chat?")) {
           this.leavingOrJoining = true;
           this.flows.leaveChat(this.currentChatId).then(() => {
-            this.leavingOrJoining = false;
             this.eventBus.$emit("notify", `Left ${this.currentChatName}`)
-          });
+          }).finally(() => {
+          this.leavingOrJoining = false;
+        });
         }
       },
       lastUpdateChatWatcher() {
