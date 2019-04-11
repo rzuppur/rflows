@@ -110,11 +110,11 @@
         v-if="!autoMarkAsRead"
         @click="flows.markCurrentChatRead()"
         :disabled="firstUnreadMessageId === -1"
-        v-tooltip.left="{ content: sidebarCollapsed ? 'Mark all as read' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+        v-tooltip.left="{ content: sidebarCollapsed ? 'Mark chat as read' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
       )
         span.icon.small
           i.fas.fa-check.has-text-success
-        span.show-wide Mark all as read
+        span.show-wide Mark chat as read
 
       button.sidebar-button(
         @click="scrollToBottom()"
