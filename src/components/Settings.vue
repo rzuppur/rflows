@@ -68,7 +68,7 @@
 </template>
 
 <script>
-  import CheckboxSwitch from "@/components/CheckboxSwitch"
+  import CheckboxSwitch from "@/components/UI/CheckboxSwitch"
 
   export default {
     name: "Settings",

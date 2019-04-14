@@ -137,7 +137,7 @@
 
 <script>
   import MessagePreview from "@/components/MessagePreview"
-  import Editor from "@/components/Editor"
+  import Editor from "@/components/UI/Editor"
 
 
   export default {

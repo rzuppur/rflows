@@ -37,16 +37,18 @@
                   span {{ workspaceFilter ? workspaceFilter.name : 'All workspaces' }}
                   span.icon.is-small
                     i.fas(:class="`fa-angle-${ workspaceMenuOpen ? 'up' : 'down'}`")
-                .popup-menu(v-show="workspaceMenuOpen")
-                  .popup-menu-item(
-                    @click="workspaceFilter = null"
-                    :class="{ active: workspaceFilter === null }"
-                    ) All workspaces
-                  .popup-menu-item(
-                    v-for="workspace in userWorkspaces"
-                    @click="workspaceFilter = workspace.workspace"
-                    :class="{ active: workspaceFilter && workspaceFilter.id === workspace.workspace.id }"
-                    ) {{ workspace.workspace.name }}
+                div(v-if="workspaceMenuOpen")
+                  slide-in-out(:duration=".1")
+                    .popup-menu(v-if="workspaceMenuOpen")
+                      .popup-menu-item(
+                        @click="workspaceFilter = null"
+                        :class="{ active: workspaceFilter === null }"
+                        ) All workspaces
+                      .popup-menu-item(
+                        v-for="workspace in userWorkspaces"
+                        @click="workspaceFilter = workspace.workspace"
+                        :class="{ active: workspaceFilter && workspaceFilter.id === workspace.workspace.id }"
+                        ) {{ workspace.workspace.name }}
 
             sidebar-chats(
               :allChats="allChats"
@@ -83,11 +85,12 @@
   import Settings from "@/components/Settings";
   import LoginForm from "@/components/LoginForm";
   import Notification from "@/components/Notification";
-  import Overlays from "@/components/Overlays";
+  import Overlays from "@/components/UI/Overlays";
+  import SlideInOut from "@/components/UI/SlideInOut";
 
   export default {
     name: 'App',
-    components: { Notification, ChatMessages, SidebarChats, FlaggedMessages, Settings, LoginForm, Overlays },
+    components: { SlideInOut, Notification, ChatMessages, SidebarChats, FlaggedMessages, Settings, LoginForm, Overlays },
     store: ["currentChatId", "currentChatName", "currentUser", "topics", "loginLoading", "connectionError", "errorMsg", "reconnectTimeout"],
     data: function () {
       return {

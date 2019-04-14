@@ -44,11 +44,14 @@
 
       .chat-bottom
 
+        .spacer(v-if="!editorToolbar" style="height: 5px;")
+
         .text-small.top-info-text(v-if="!mqMobile && !editorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
         .flex.chat-inputs
 
           .field.is-grouped.flex1
+
             .control.is-expanded(v-show="!uploadExpanded")
               editor(ref="editor"
               :showButtons="editorToolbar ? 'ALWAYS' : 'HIDE'"
@@ -166,7 +169,7 @@
 
   import Message from "@/components/Message"
   import MessagePreview from "@/components/MessagePreview"
-  import Editor from "@/components/Editor"
+  import Editor from "@/components/UI/Editor"
   import FileUpload from "@/components/FileUpload"
 
   export default {
