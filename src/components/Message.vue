@@ -67,7 +67,7 @@
         template(v-if="message.type === 'EMAIL' && !isNetlifyDeploy")
 
           template(v-if="commits && commits.length")
-            p.text-content #[i.fas.fa-plus] New commits in repositry
+            p.text-content #[i.fas.fa-plus] New commits in repository
             .file-content(v-for="commit in commits")
               a.file-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow" style="padding: 1px 5px 1px 0; color: inherit;")
                 .file-title #[i.fab.fa-github] #[b  {{ commit.name }}]
