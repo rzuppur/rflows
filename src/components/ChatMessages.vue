@@ -2,7 +2,7 @@
   .chat
     .mainbar(:class="{ focusMode: replyToId, 'extra-space': !flows.compactMode }")
       .chat-title
-        button.button.fav-toggle.is-white(v-tooltip="isStarred ? 'Remove from favorites' : 'Add to favorites'" @click="toggleFavourite()")
+        button.button.fav-toggle.is-white(v-if="!isDevChat" v-tooltip="isStarred ? 'Remove from favorites' : 'Add to favorites'" @click="toggleFavourite()")
           span.icon
             i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
         .name.ellipsis {{ currentChatName }}
@@ -171,6 +171,7 @@
   import MessagePreview from "@/components/MessagePreview"
   import Editor from "@/components/UI/Editor"
   import FileUpload from "@/components/FileUpload"
+  import { DEVCHAT_ID } from "../js/consts";
 
   export default {
     name: 'ChatMessages',
@@ -287,6 +288,9 @@
       },
       workspace() {
         return this.flows.getChatWorkspace(this.currentChatId);
+      },
+      isDevChat() {
+        return this.currentChatId === DEVCHAT_ID;
       },
     },
     methods: {

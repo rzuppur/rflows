@@ -24,7 +24,7 @@
         .chat-unread(:class="{ important: !!devChat.unreadImportant, atme: !!devChat.unreadAtme }")
           | {{ (!!devChat.unreadAtme ? '@' : '') + devChat.unread }}
 
-      .chat(v-else @click="changeChat(37479)")
+      .chat(v-else @click="changeChat(DEVCHAT_ID)")
         .chat-title.ellipsis Features & support
         .chat-unread
 
@@ -45,12 +45,15 @@
 </template>
 
 <script>
+  import { DEVCHAT_ID } from "../js/consts";
+
   export default {
     name: "SidebarChats",
     props: ["allChats", "favouriteIds", "recentIds", "searchText"],
     data: function () {
       return {
-        showAllChats: false
+        showAllChats: false,
+        DEVCHAT_ID: DEVCHAT_ID,
       };
     },
     mounted() {
@@ -64,7 +67,7 @@
           let chat = this.allChats.find(chat => chat.id === favId);
           if (chat) favourites.push(chat);
         });
-        return favourites.filter(chat => chat.id !== 37479);
+        return favourites.filter(chat => chat.id !== DEVCHAT_ID);
       },
       recentChats() {
         if (!this.allChats.length || !this.recentIds) return [];
@@ -76,7 +79,7 @@
         const unread = this.allChats.filter(chat => {
           return chat.unread && this.favouriteIds.indexOf(chat.id) < 0
         });
-        return unread.concat(recents).slice(0, 15).filter(chat => chat.id !== 37479);
+        return unread.concat(recents).slice(0, 15).filter(chat => chat.id !== DEVCHAT_ID);
       },
       filteredChats() {
         if (this.searchText) {
@@ -88,7 +91,7 @@
       },
       devChat() {
         if (!this.allChats.length) return false;
-        const chat = this.allChats.filter(chat => chat.id === 37479);
+        const chat = this.allChats.filter(chat => chat.id === DEVCHAT_ID);
         if (chat && chat[0]) {
           return chat[0];
         }

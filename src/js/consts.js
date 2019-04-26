@@ -42,3 +42,5 @@ export const RESIZE_DEBOUNCE_TIME = 150;
 
 export const DEBUG = process?.env.NODE_ENV === "development";
 export const SOCKET_TRAFFIC_DEBUG = false;
+
+export const DEVCHAT_ID = 37479;
