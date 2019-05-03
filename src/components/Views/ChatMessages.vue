@@ -163,21 +163,23 @@
 </template>
 
 <script>
-  import imagesLoaded from "vue-images-loaded"
+  import imagesLoaded from "vue-images-loaded";
 
-  import {SCROLL_DEBOUNCE_TIME} from "@/js/consts";
+  import { SCROLL_DEBOUNCE_TIME, DEVCHAT_ID } from "@/js/consts";
 
-  import Message from "@/components/Message"
-  import MessagePreview from "@/components/MessagePreview"
-  import Editor from "@/components/UI/Editor"
-  import FileUpload from "@/components/FileUpload"
-  import { DEVCHAT_ID } from "@/js/consts";
+  import Message from "@/components/Message.vue";
+  import MessagePreview from "@/components/MessagePreview.vue";
+  import Editor from "@/components/UI/Editor.vue";
+  import FileUpload from "@/components/FileUpload.vue";
 
   export default {
-    name: 'ChatMessages',
-    directives: {imagesLoaded},
-    components: {Message, MessagePreview, Editor, FileUpload},
-    props: ["favouriteIds", "hidden"],
+    name: "ChatMessages",
+    directives: { imagesLoaded },
+    components: { Message, MessagePreview, Editor, FileUpload },
+    props: {
+      favouriteIds: Array,
+      hidden: Boolean,
+    },
     store: ["currentChatId", "currentChatName", "currentUser", "topics", "lastUpdateChat", "draftMessages"],
     data() {
       return {
@@ -201,7 +203,103 @@
 
         sidebarCollapsed: false,
         leavingOrJoining: false,
-      }
+      };
+    },
+    computed: {
+      autoMarkAsRead() {
+        return this.flows.autoMarkAsRead;
+      },
+      firstUnreadMessageId() {
+        if (this.messagesRead && this.sortedMessages) {
+          if (this.autoMarkAsRead) {
+            if (!this.unreadId) {
+              const firstUnread = this.sortedMessages.find(message => message.unread);
+              if (firstUnread) this.unreadId = firstUnread.id; // eslint-disable-line
+            }
+            this.flows.markCurrentChatRead();
+            return this.unreadId;
+          }
+          const firstUnread = this.sortedMessages.find(message => message.unread);
+          if (firstUnread) return firstUnread.id;
+        }
+        return -1;
+      },
+      messageInputPlaceholder() {
+        if (this.replyToId) {
+          const message = this.flows.chatMessages().find(ti => ti.id === this.replyToId);
+          return `Reply to ${message?.creatorUserId ? this.flows.getFullName(message.creatorUserId) : this.currentChatName}`;
+        }
+        return `Message ${this.currentChatName}`;
+      },
+      isStarred() {
+        if (this.currentChatId) {
+          return (this.favouriteIds.indexOf(this.currentChatId) > -1);
+        }
+        return false;
+      },
+      typingUsersText() {
+        if (this.chatUsers && this.currentUser) {
+          const users = this.chatUsers
+            .filter(topicUser => topicUser.userId !== this.currentUser.id && topicUser.status === "TYPING")
+            .map(user => this.flows.getFirstName(user.userId));
+          if (users.length) {
+            if (users.length > 1) {
+              return `${users.splice(0, users.length - 1).join(", ")} and ${users[users.length - 1]} are typing<span class='loading-dots'></span>`;
+            }
+            return `${users[0]} is typing a message<span class='loading-dots'></span>`;
+          }
+          this.scrollUpdate();
+        }
+        return null;
+      },
+      flowsEmail() {
+        if (this.topics.Topic && this.currentChatId) {
+          const currentChat = this.topics.Topic.find(chat => chat.id === this.currentChatId);
+          if (currentChat?.guid) return `${currentChat.guid}@flow.contriber.com`;
+        }
+        return null;
+      },
+      chatUsers() {
+        if (this.topics.User) return this.flows.getChatUsers(this.currentChatId);
+        return [];
+      },
+      chatUser() {
+        if (this.chatUsers && this.currentUser) {
+          return this.flows.currentChatUser();
+        }
+        return null;
+      },
+      isAdmin() {
+        if (this.chatUsers && this.currentUser) {
+          const user = this.chatUser;
+          if (user) return user.role === "ADMIN";
+        }
+        return false;
+      },
+      workspace() {
+        return this.flows.getChatWorkspace(this.currentChatId);
+      },
+      isDevChat() {
+        return this.currentChatId === DEVCHAT_ID;
+      },
+    },
+    watch: {
+      "scroll.top": function () {
+        this._checkScrollBottom();
+      },
+      lastUpdateChat(newVal, oldVal) {
+        if (oldVal === newVal) return;
+        if (this.lastUpdateChatTimeout) return;
+        this.lastUpdateChatTimeout = setTimeout(this.lastUpdateChatWatcher, 100);
+      },
+      editorToolbar(newVal, oldVal) {
+        if (oldVal === newVal) return;
+        this.$nextTick(this._scrollUpdate);
+      },
+      sidebarCollapsed(newVal) {
+        localStorage.setItem("sidebarCollapsed", newVal);
+        this.$nextTick(this._scrollUpdate);
+      },
     },
     created() {
       this.eventBus.$on("messagesScrollUpdate", this.scrollUpdate);
@@ -216,99 +314,9 @@
     mounted() {
       this.$root.updateFullHeight();
     },
-    computed: {
-      autoMarkAsRead() {
-        return this.flows.autoMarkAsRead;
-      },
-      firstUnreadMessageId() {
-        if (this.messagesRead && this.sortedMessages) {
-          if (this.autoMarkAsRead) {
-            if (!this.unreadId) {
-              let firstUnread = this.sortedMessages.find(message => message.unread);
-              if (firstUnread) this.unreadId = firstUnread.id;
-            }
-            this.flows.markCurrentChatRead();
-            return this.unreadId;
-          } else {
-            let firstUnread = this.sortedMessages.find(message => message.unread);
-            return firstUnread ? firstUnread.id : -1;
-          }
-        }
-      },
-      messageInputPlaceholder() {
-        if (this.replyToId) {
-          const message = this.flows.chatMessages().find(ti => ti.id === this.replyToId);
-          return 'Reply to ' + (message?.creatorUserId
-            ? this.flows.getFullName(message.creatorUserId)
-            : this.currentChatName);
-        } else {
-          return 'Message ' + this.currentChatName;
-        }
-      },
-      isStarred() {
-        if (this.currentChatId) {
-          return (this.favouriteIds.indexOf(this.currentChatId) > -1)
-        } else {
-          return false;
-        }
-      },
-      typingUsersText() {
-        if (this.chatUsers && this.currentUser) {
-          let users = this.chatUsers
-            .filter(topicUser => topicUser.userId !== this.currentUser.id && topicUser.status === "TYPING")
-            .map(user => this.flows.getFirstName(user.userId));
-          if (users.length) {
-            if (users.length > 1) {
-              return `${users.splice(0, users.length - 1).join(", ")} and ${users[users.length - 1]} are typing<span class='loading-dots'></span>`;
-            }
-            return `${users[0]} is typing a message<span class='loading-dots'></span>`;
-          }
-          this.scrollUpdate();
-        }
-      },
-      flowsEmail() {
-        if (this.topics.Topic && this.currentChatId) {
-          const chat = this.topics.Topic.find(chat => chat.id === this.currentChatId);
-          if (chat?.guid) return `${chat.guid}@flow.contriber.com`;
-        }
-      },
-      chatUsers() {
-        if (this.topics.User) return this.flows.getChatUsers(this.currentChatId);
-      },
-      chatUser() {
-        if (this.chatUsers && this.currentUser) {
-          return this.flows.currentChatUser();
-        }
-      },
-      isAdmin() {
-        if (this.chatUsers && this.currentUser) {
-          const user = this.chatUser;
-          return user ? user.role === "ADMIN" : false;
-        }
-      },
-      workspace() {
-        return this.flows.getChatWorkspace(this.currentChatId);
-      },
-      isDevChat() {
-        return this.currentChatId === DEVCHAT_ID;
-      },
-    },
     methods: {
       _getEditorContent() {
         return this.$refs.editor ? this.$refs.editor.getHTML() : "";
-      },
-      /**
-       * @param messageId {number}
-       * @returns {Promise<Object|SocketResponse>}
-       */
-      findOrLoadMessage(messageId) {
-        if (!this.sortedMessages) return;
-        const existingMessage = this.sortedMessages.find(message => message.id === messageId);
-        if (existingMessage) {
-          return new Promise(resolve => resolve(existingMessage));
-        } else {
-          return this.flows.getChatMessages(this.currentChatId, {from: {id: messageId}, amount: 1});
-        }
       },
       checkTypingStatus() {
         const text = this._getEditorContent();
@@ -321,7 +329,7 @@
       },
       sendChatMessage() {
         const text = this._getEditorContent();
-        const replyToId = this.replyToId;
+        const { replyToId } = this;
         if (this.utils.editorTextNotEmpty(text)) {
           setTimeout(this.scrollToBottomSmooth, 100);
           this.replyCancel();
@@ -338,10 +346,10 @@
       toggleFavourite() {
         if (this.isStarred) {
           this.flows.removeChatFromStarred(this.currentChatId)
-          .then(() => this.eventBus.$emit("notify", this.currentChatName + " removed from favorites"));
+            .then(() => this.eventBus.$emit("notify", `${this.currentChatName} removed from favorites`));
         } else {
           this.flows.addChatToStarred(this.currentChatId)
-          .then(() => this.eventBus.$emit("notify", this.currentChatName + " added to favorites"));
+            .then(() => this.eventBus.$emit("notify", `${this.currentChatName} added to favorites`));
         }
       },
       editorFocus() {
@@ -390,21 +398,19 @@
         if (this.$refs.unread?.[0]) {
           this.scroll.keepScrollBottom = false;
           this._debug("Scrolling to new");
-          this.$refs.unread[0].scrollIntoView({behavior: "smooth", block: "start"});
+          this.$refs.unread[0].scrollIntoView({ behavior: "smooth", block: "start" });
           this.scrolledToNew = true;
           if (this.scrollToNewCheckBottomTimeout) clearTimeout(this.scrollToNewCheckBottomTimeout);
           this.scrollToNewCheckBottomTimeout = setTimeout(this._checkScrollBottom, 500);
         }
       },
       scrollToMessage(messageId, instant) {
+        const message = this.$refs[`message-${messageId}`]?.[0];
+        if (!message?.$el) return;
+
         this.scroll.keepScrollBottom = false;
-        const message = this.$refs['message-' + messageId]?.[0]
-          ? this.$refs['message-' + messageId][0]
-          : null; // this.findOrLoadMessage(messageId);
-        if (message?.$el) {
-          message.$el.scrollIntoView({behavior: (instant ? "auto" : "smooth"), block: "start"});
-          message.highlight();
-        }
+        message.$el.scrollIntoView({ behavior: (instant ? "auto" : "smooth"), block: "start" });
+        message.highlight();
       },
       scrollToBottom() {
         this.scroll.keepScrollBottom = true;
@@ -415,15 +421,15 @@
       scrollToBottomSmooth() {
         if (this.$refs.messagesEnd) {
           this.scroll.keepScrollBottom = true;
-          this.$refs.messagesEnd.scrollIntoView({behavior: "smooth", block: "start"});
+          this.$refs.messagesEnd.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       },
-      scrollUpdate()  {
+      scrollUpdate() {
         if (!this.scrollUpdateTimer) {
           this.scrollUpdateTimer = setTimeout(this._scrollUpdate, SCROLL_DEBOUNCE_TIME);
         }
       },
-      _scrollUpdate()  {
+      _scrollUpdate() {
         this._debug("Scroll height update");
         this.scrollUpdateTimer = null;
         this.$nextTick(this.scrollToNewOnce);
@@ -447,7 +453,7 @@
         }
       },
       _checkScrollBottom() {
-        this.scroll.keepScrollBottom = (this.scroll.height - 20 <= this.scroll.top)
+        this.scroll.keepScrollBottom = (this.scroll.height - 20 <= this.scroll.top);
       },
       newChatScrollToBottom() {
         if (this.newChat) {
@@ -458,8 +464,12 @@
       },
       flowsEmailCopy() {
         navigator.clipboard.writeText(this.flowsEmail)
-        .then(() => {this.eventBus.$emit("notify", "Copied chat email to clipboard")})
-        .catch(() => {this.eventBus.$emit("notify", "Copying failed")});
+          .then(() => {
+            this.eventBus.$emit("notify", "Copied chat email to clipboard");
+          })
+          .catch(() => {
+            this.eventBus.$emit("notify", "Copying failed");
+          });
       },
       editLastMessage(event) {
         const text = this._getEditorContent();
@@ -468,9 +478,8 @@
           const myMessages = this.sortedMessages.filter(message => message.creatorUserId === this.currentUser.id);
           if (myMessages.length) {
             const messageId = myMessages[myMessages.length - 1].id;
-            const message = this.$refs['message-' + messageId]?.[0]
-              ? this.$refs['message-' + messageId][0]
-              : null;
+            const message = this.$refs[`message-${messageId}`]?.[0];
+
             if (message) {
               setTimeout(() => this.scrollToMessage(messageId, true), 10);
               message.openEdit();
@@ -483,9 +492,9 @@
         const text = this._getEditorContent();
         if (this.replyToId || this.utils.editorTextNotEmpty(text)) {
           if (prevChatId) {
-            this._debug("Saving draft message in chat " + this.currentChatName);
+            this._debug(`Saving draft message in chat ${this.currentChatName}`);
             this.draftMessages[prevChatId] = {
-              text: text,
+              text,
               replyToId: this.replyToId,
             };
           }
@@ -503,7 +512,7 @@
       joinChat() {
         this.leavingOrJoining = true;
         this.flows.joinChat(this.currentChatId).then(() => {
-          this.eventBus.$emit("notify", `Joined ${this.currentChatName}`)
+          this.eventBus.$emit("notify", `Joined ${this.currentChatName}`);
         }).finally(() => {
           this.leavingOrJoining = false;
         });
@@ -512,10 +521,10 @@
         if (window.confirm("Leave chat?")) {
           this.leavingOrJoining = true;
           this.flows.leaveChat(this.currentChatId).then(() => {
-            this.eventBus.$emit("notify", `Left ${this.currentChatName}`)
+            this.eventBus.$emit("notify", `Left ${this.currentChatName}`);
           }).finally(() => {
-          this.leavingOrJoining = false;
-        });
+            this.leavingOrJoining = false;
+          });
         }
       },
       lastUpdateChatWatcher() {
@@ -528,25 +537,7 @@
         this.flaggedMessageIds = this.flows.chatMessagesFlagged();
       },
     },
-    watch: {
-      "scroll.top": function () {
-        this._checkScrollBottom();
-      },
-      "lastUpdateChat": function (newVal, oldVal) {
-        if (oldVal === newVal) return;
-        if (this.lastUpdateChatTimeout) return;
-        this.lastUpdateChatTimeout = setTimeout(this.lastUpdateChatWatcher, 100);
-      },
-      "editorToolbar": function (newVal, oldVal) {
-        if (oldVal === newVal) return;
-        this.$nextTick(this._scrollUpdate);
-      },
-      "sidebarCollapsed": function (newVal, oldVal) {
-        localStorage.setItem("sidebarCollapsed", newVal);
-        this.$nextTick(this._scrollUpdate);
-      },
-    }
-  }
+  };
 </script>
 
 <style lang="stylus" scoped src="./ChatMessages.styl"></style>

@@ -79,22 +79,22 @@
 </template>
 
 <script>
-  import ChatMessages from "@/components/Views/ChatMessages";
-  import SidebarChats from "@/components/Views/SidebarChats";
-  import FlaggedMessages from "@/components/Views/FlaggedMessages";
-  import Settings from "@/components/Views/Settings";
-  import LoginForm from "@/components/Views/LoginForm";
-  import Notification from "@/components/UI/Notification";
-  import Overlays from "@/components/UI/Overlays";
-  import SlideInOut from "@/components/UI/SlideInOut";
+  import ChatMessages from "@/components/Views/ChatMessages.vue";
+  import SidebarChats from "@/components/Views/SidebarChats.vue";
+  import FlaggedMessages from "@/components/Views/FlaggedMessages.vue";
+  import Settings from "@/components/Views/Settings.vue";
+  import LoginForm from "@/components/Views/LoginForm.vue";
+  import Notification from "@/components/UI/Notification.vue";
+  import Overlays from "@/components/UI/Overlays.vue";
+  import SlideInOut from "@/components/UI/SlideInOut.vue";
 
   export default {
-    name: 'App',
+    name: "App",
     components: { SlideInOut, Notification, ChatMessages, SidebarChats, FlaggedMessages, Settings, LoginForm, Overlays },
     store: ["currentChatId", "currentChatName", "currentUser", "topics", "loginLoading", "connectionError", "errorMsg", "reconnectTimeout"],
-    data: function () {
+    data() {
       return {
-        autoLogin: true,  // hide login form flash when session stored in localstorage
+        autoLogin: true, // hide login form flash when session stored in localstorage
         openLastChat: true,
 
         showAllChats: false,
@@ -106,6 +106,20 @@
         workspaceMenuOpen: false,
         workspaceFilter: null,
       };
+    },
+    computed: {
+      allChats() {
+        if (!this.topics.User || !this.topics.TopicUser || !this.currentUser || !this.topics.Topic) return [];
+        if (this.flows) this.flows.enrichChats();
+        if (this.flows.showWorkspaceSwitcher && this.workspaceFilter && this.userWorkspaces) {
+          const workspaceChats = this.flows.getWorkspaceChats(this.workspaceFilter.id);
+          return this.topics.Topic.filter(chat => workspaceChats.indexOf(chat.id) > -1);
+        }
+        return this.topics.Topic;
+      },
+      lastOpenChatCanBeOpened() {
+        return !!(this.openLastChat && this.allChats && this.recentIds.length && this.currentUser);
+      },
     },
     created() {
       this.eventBus.$on("logout", () => {
@@ -126,7 +140,7 @@
       this.$root.updateFullHeight();
       const token = this.flows.getLoginToken();
       if (token) {
-        this.flows.setLogin({token: token});
+        this.flows.setLogin({ token });
         this.loginLoading = true;
         this.flows.connect()
         .then((successful) => {
@@ -141,23 +155,9 @@
     beforeDestroy() {
       this.flows.socket.close({type: "clientClose"});
     },
-    computed: {
-      allChats() {
-        if (!this.topics.User || !this.topics.TopicUser || !this.currentUser || !this.topics.Topic) return [];
-        if (this.flows) this.flows.enrichChats();
-        if (this.flows.showWorkspaceSwitcher && this.workspaceFilter && this.userWorkspaces) {
-          const workspaceChats = this.flows.getWorkspaceChats(this.workspaceFilter.id);
-          return this.topics.Topic.filter(chat => workspaceChats.indexOf(chat.id) > -1);
-        }
-        return this.topics.Topic;
-      },
-      lastOpenChatCanBeOpened() {
-        return !!(this.openLastChat && this.allChats && this.recentIds.length && this.currentUser);
-      },
-    },
     methods: {
       reloadPage() {
-        location.reload()
+        location.reload();
       },
       documentClick(event) {
         const path = event.composedPath();
@@ -168,19 +168,19 @@
       },
     },
     watch: {
-      "lastOpenChatCanBeOpened": function (newVal) {
+      lastOpenChatCanBeOpened (newVal) {
         if (!newVal) return;
-        this._debug("Loading last opened chat: " + this.recentIds[0]);
+        this._debug(`Loading last opened chat: ${  this.recentIds[0]}`);
         this.flows.openChat(this.recentIds[0]);
         this.openLastChat = false;
       },
       "topics.UserProperty": function (newVal) {
         if (!newVal) return;
-        let favs = newVal.find(userProperty => userProperty.name === "favorites");
+        const favs = newVal.find(userProperty => userProperty.name === "favorites");
         this.favouriteIds = favs
           ? favs.value.map(v => v.id)
           : [];
-        let recents = newVal.find(userProperty => userProperty.name === "recentTools");
+        const recents = newVal.find(userProperty => userProperty.name === "recentTools");
         this.recentIds = recents
           ? recents.value.filter(recentTools => recentTools.type === "MEETING" && recentTools.id).map(v => v.id)
           : [];
@@ -191,20 +191,19 @@
       "topics.UserAccess": function () {
         this.userWorkspaces = this.flows.getCurrentUserWorkspaces();
       },
-      "allChats": function (newVal) {
-        const workspace = this.workspaceFilter ? " - " + this.workspaceFilter.name : "";
+      allChats(newVal) {
+        const workspace = this.workspaceFilter ? ` - ${this.workspaceFilter.name}` : "";
         if (newVal.length) {
-
-          const unread = newVal.map((chat) => chat.unread).reduce((a, b) => a + b, 0);
+          const unread = newVal.map(chat => chat.unread).reduce((a, b) => a + b, 0);
           if (unread) {
-            document.title = "(" + unread + ") RFlows" + workspace;
+            document.title = `(${unread}) RFlows${workspace}`;
             return;
           }
         }
-        document.title = "RFlows" + workspace;
+        document.title = `RFlows${workspace}`;
       },
-    }
-  }
+    },
+  };
 </script>
 
 <style lang="stylus" scoped src="./App.styl"></style>

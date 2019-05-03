@@ -22,10 +22,10 @@
   export default {
     name: "LoginForm",
     store: ["loginLoading", "connectionError", "errorMsg"],
-    data: function () {
+    data() {
       return {
-        loginData: {}
-      }
+        loginData: {},
+      };
     },
     mounted() {
       this.$root.updateFullHeight();

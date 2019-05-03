@@ -162,6 +162,14 @@ const utils = {
     canvas.height = height;
     return canvas;
   },
+
+  /**
+   * @param letter {string}
+   * @returns {string} data:image/svg
+   */
+  logoPlaceholder(letter) {
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='42' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E${letter}%3C/text%3E%3C/svg%3E`;
+  },
 };
 
 

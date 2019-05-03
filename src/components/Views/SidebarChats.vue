@@ -50,52 +50,45 @@
   export default {
     name: "SidebarChats",
     props: ["allChats", "favouriteIds", "recentIds", "searchText"],
-    data: function () {
+    data() {
       return {
         showAllChats: false,
-        DEVCHAT_ID: DEVCHAT_ID,
+        DEVCHAT_ID,
       };
-    },
-    mounted() {
-      this.$root.updateFullHeight();
     },
     computed: {
       favouriteChats() {
         if (!this.allChats.length || !this.favouriteIds) return [];
-        let favourites = [];
-        this.favouriteIds.forEach(favId => {
-          let chat = this.allChats.find(chat => chat.id === favId);
-          if (chat) favourites.push(chat);
+        const favourites = [];
+        this.favouriteIds.forEach((favId) => {
+          const favChat = this.allChats.find(chat => chat.id === favId);
+          if (favChat) favourites.push(favChat);
         });
         return favourites.filter(chat => chat.id !== DEVCHAT_ID);
       },
       recentChats() {
         if (!this.allChats.length || !this.recentIds) return [];
-        let recents = [];
-        this.recentIds.filter(recentId => this.favouriteIds.indexOf(recentId) < 0).forEach(recentId => {
-          let chat = this.allChats.find(chat => chat.id === recentId);
-          if (chat && !chat.unread) recents.push(chat);
+        const recents = [];
+        this.recentIds.filter(recentId => this.favouriteIds.indexOf(recentId) < 0).forEach((recentId) => {
+          const chatNotUnread = this.allChats.find(chat => chat.id === recentId && !chat.unread);
+          if (chatNotUnread) recents.push(chatNotUnread);
         });
-        const unread = this.allChats.filter(chat => {
-          return chat.unread && this.favouriteIds.indexOf(chat.id) < 0
-        });
+        const unread = this.allChats.filter(chat => chat.unread && this.favouriteIds.indexOf(chat.id) < 0);
         return unread.concat(recents).slice(0, 15).filter(chat => chat.id !== DEVCHAT_ID);
       },
       filteredChats() {
         if (this.searchText) {
           const text = this.searchText.toLowerCase();
-          return this.allChats.filter((chat) => {
-            return chat.name.toLowerCase().includes(text);
-          });
+          return this.allChats.filter(chat => chat.name.toLowerCase().includes(text));
         }
       },
       devChat() {
         if (!this.allChats.length) return false;
-        const chat = this.allChats.filter(chat => chat.id === DEVCHAT_ID);
-        if (chat && chat[0]) {
-          return chat[0];
-        }
+        return this.allChats.find(chat => chat.id === DEVCHAT_ID);
       },
+    },
+    mounted() {
+      this.$root.updateFullHeight();
     },
     methods: {
       changeChat(chatId) {
@@ -103,9 +96,9 @@
       },
       removeRecent(chatId) {
         this.flows.removeChatFromRecents(chatId);
-      }
-    }
-  }
+      },
+    },
+  };
 </script>
 
 <style lang="stylus" scoped src="./SidebarChats.styl"></style>

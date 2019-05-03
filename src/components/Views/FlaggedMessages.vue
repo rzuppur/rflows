@@ -37,20 +37,16 @@
 </template>
 
 <script>
-  import MessagePreview from "@/components/MessagePreview"
+  import MessagePreview from "@/components/MessagePreview.vue";
 
   export default {
     name: "FlaggedMessages",
-    components: {MessagePreview},
+    components: { MessagePreview },
     store: ["currentUser", "topics"],
-    data: function () {
+    data() {
       return {
         loaded: false,
       };
-    },
-    created() {
-      this.userPropsRequestedChatIds = [];
-      this.eventBus.$on("currentChatChange", () => {this.$emit('closeSavedMessages')});
     },
     computed: {
       flaggedMessages() {
@@ -71,10 +67,10 @@
           Promise.all(allPromises).then(() => {this.loaded = true});
 
           // Get saved message ids from chats
-          let savedChatMessages = {};
+          const savedChatMessages = {};
           this.topics.TopicItemUserProperty
             .filter(topicItemUserProperty => topicItemUserProperty.flag && (topicItemUserProperty.userId === this.currentUser.id))
-            .forEach(saved => {
+            .forEach((saved) => {
               if (savedChatMessages[saved.topicId]) {
                 savedChatMessages[saved.topicId].messageIds.push(saved.itemId);
               } else {
@@ -90,9 +86,9 @@
       },
       workspaces() {
         if (this.flaggedMessages) {
-          let workspaces = {};
+          const workspaces = {};
 
-          Object.keys(this.flaggedMessages).forEach(chatId => {
+          Object.keys(this.flaggedMessages).forEach((chatId) => {
             if (!workspaces[this.flaggedMessages[chatId].workspaceId]) {
               workspaces[this.flaggedMessages[chatId].workspaceId] = this.flows.getChatWorkspace(chatId);
             }
@@ -102,13 +98,17 @@
         }
       },
     },
+    created() {
+      this.userPropsRequestedChatIds = [];
+      this.eventBus.$on("currentChatChange", () => { this.$emit("closeSavedMessages"); });
+    },
     methods: {
       openChat(chatId) {
         this.flows.openChat(chatId);
       },
       getFlaggedByWorkspaceId(workspaceId) {
-        let flaggedMessages = {};
-        Object.keys(this.flaggedMessages).forEach(key => {
+        const flaggedMessages = {};
+        Object.keys(this.flaggedMessages).forEach((key) => {
           if (this.flaggedMessages[key].workspaceId === workspaceId) {
             flaggedMessages[key] = this.flaggedMessages[key];
           }

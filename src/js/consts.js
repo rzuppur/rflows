@@ -16,22 +16,22 @@ export const GLOBAL_TOPICS = [
   "TopicUser",
   "UserProperty",
   "Topic",
-  //"Project",
+  // "Project",
   "Organization",
   "TopicLocation",
   "User",
   "OrganizationContact",
   "UserAccess",
-  //"TopicProperty"
-  //"TopicItemDuration",
-  //"UserMailbox",
-  //"Calendar",
+  // "TopicProperty"
+  // "TopicItemDuration",
+  // "UserMailbox",
+  // "Calendar",
 ];
 
 export const CHAT_TOPICS = [
   "TopicItem",
   "TopicItemUserProperty",
-  //"Order",
+  // "Order",
   "TopicUser",
 ];
 

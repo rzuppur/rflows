@@ -5,7 +5,7 @@
 <script>
   export default {
     name: "Notification",
-    data: function () {
+    data () {
       return {
         timeout: null,
         visible: false,
@@ -13,13 +13,27 @@
         index: 0,
       };
     },
-    created() {
-      this.eventBus.$on("notify", this.notify);
-    },
     computed: {
       text() {
         if (this.queue.length) return this.queue[0];
       },
+    },
+    watch: {
+      text(val) {
+        if (val && !this.visible) {
+          this.visible = true;     // toast transitions in
+          clearTimeout(this.timeout);
+          this.timeout = setTimeout(() => {
+            this.visible = false;  // toast transition out starts
+            setTimeout(() => {
+              this.queue.shift();  // toast transition finished, remove text
+            }, 200);
+          }, 700 + (val.text.length * 70));
+        }
+      },
+    },
+    created() {
+      this.eventBus.$on("notify", this.notify);
     },
     methods: {
       notify(text) {
@@ -44,21 +58,7 @@
         }, 200);
       },
     },
-    watch: {
-      text: function(val) {
-        if (val && !this.visible) {
-          this.visible = true;     // toast transitions in
-          clearTimeout(this.timeout);
-          this.timeout = setTimeout(() => {
-            this.visible = false;  // toast transition out starts
-            setTimeout(() => {
-              this.queue.shift();  // toast transition finished, remove text
-            }, 200);
-          }, 700 + (val.text.length * 70));
-        }
-      }
-    },
-  }
+  };
 </script>
 
 <style lang="stylus" scoped>

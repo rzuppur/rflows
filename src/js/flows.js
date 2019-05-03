@@ -1,5 +1,5 @@
 import autoBind from "auto-bind";
-import Vue from 'vue';
+import Vue from "vue";
 import utils from "@/js/utils";
 import Socket from "@/js/socket";
 import { GLOBAL_TOPICS, CHAT_TOPICS, ALL_TOPICS, DEBUG, FILE_UPLOAD_URL, FILE_DELETE_URL } from "@/js/consts";
@@ -18,7 +18,7 @@ class Flows {
 
     this.notifiedMessageIds = [];
     this.shadowMessageId = 10000000;
-    window.addEventListener('online', this.reconnectIfNeeded.bind(this));
+    window.addEventListener("online", this.reconnectIfNeeded.bind(this));
 
     this.debug = DEBUG;
     autoBind(this);
@@ -26,7 +26,7 @@ class Flows {
 
   _debug(text, ...extra) {
     if (this.debug) {
-      const caller = new Error().stack.split('\n')[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
+      const caller = new Error().stack.split("\n")[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
       this._logDebug(text, caller);
       if (extra) console.log(...extra);
     }
@@ -37,7 +37,7 @@ class Flows {
     const time = utils.debugDateTime();
     const error = !text.indexOf("! ");
     if (error) text = text.substring(2);
-    console.log(time + " %c" + this.constructor.name + " (" + caller + "): %c" + text, "color: #3273dc; font-weight: bold", "color: " + ( error ? "#f00" : "inherit" ));
+    console.log(`${time} %c${this.constructor.name} (${caller}): %c${text}`, "color: #3273dc; font-weight: bold", `color: ${error ? "#f00" : "inherit"}`);
   }
 
   /*
@@ -51,7 +51,7 @@ class Flows {
     const frameDestination = frame.headers.destination.split(".");
 
     if (frameDestination[frameDestination.length - 1] === "deleted") {
-      let itemIndex = this.store.topics[frameType].findIndex(item => item.id === parseInt(frameBody.id));
+      const itemIndex = this.store.topics[frameType].findIndex(item => item.id === parseInt(frameBody.id));
       this._debug("Delete", frameType, frameBody);
       if (itemIndex > -1) {
         Vue.delete(this.store.topics[frameType], itemIndex);
@@ -68,7 +68,7 @@ class Flows {
       return;
     }
 
-    if (ALL_TOPICS.map(t => t + "[]").indexOf(frameType) > -1) {
+    if (ALL_TOPICS.map(t => `${t}[]`).indexOf(frameType) > -1) {
       if (this.store.topics[type]) {
         const newIds = frameBody.map(o => o.id);
         Vue.set(this.store.topics, type, this.store.topics[type].filter(o => newIds.indexOf(o.id) < 0).concat(frameBody));
@@ -76,23 +76,21 @@ class Flows {
         Vue.set(this.store.topics, type, frameBody);
       }
     } else if (ALL_TOPICS.indexOf(frameType) > -1) {
-      let old = this.store.topics[frameType]
+      const old = this.store.topics[frameType]
         ? this.store.topics[frameType].find(topic => topic.id === frameBody.id)
         : false;
       if (old) {
-        let index = this.store.topics[frameType].indexOf(old);
+        const index = this.store.topics[frameType].indexOf(old);
         Vue.set(this.store.topics[frameType], index, frameBody);
       } else {
         if (!this.store.topics[frameType]) Vue.set(this.store.topics, frameType, []);
         this.store.topics[frameType].push(frameBody);
       }
+    } else if (frameType === "Error") {
+      this._debug("! Socket error", frameBody);
+      if (frameBody.description) this.eventBus.$emit("notify", frameBody.description);
     } else {
-      if (frameType === "Error") {
-        this._debug("! Socket error", frameBody);
-        if (frameBody.description) this.eventBus.$emit("notify", frameBody.description);
-      } else {
-        this._debug("! UNHANDLED MESSAGE: " + frameType, frame.headers, frameBody);
-      }
+      this._debug(`! UNHANDLED MESSAGE: ${frameType}`, frame.headers, frameBody);
     }
 
     if (["TopicItem", "TopicItemRead", "TopicItemUserProperty", "TopicUser"].indexOf(type) > -1) {
@@ -129,7 +127,7 @@ class Flows {
    */
   reconnectTimer() {
     const wait = this.reconnectWaitSeconds * 1000;
-    this._debug("Retrying after " + wait / 1000 + " seconds");
+    this._debug(`Retrying after ${wait / 1000} seconds`);
     this.reconnectWaitSeconds = Math.min(Math.round(this.reconnectWaitSeconds * 1.5), 60 * 15);
     this.store.reconnectTimeout = setTimeout(() => {
       this.reconnectToFlows(false);
@@ -155,7 +153,7 @@ class Flows {
       this.store.errorMsg = "";
       if (this.store.currentChatId) this.openChat(this.store.currentChatId);
     } else {
-      _debug("Reconnect failed, " + ( once ? "not trying again" : "setting new timer" ));
+      _debug(`Reconnect failed, ${once ? "not trying again" : "setting new timer"}`);
       if (!once) this.reconnectTimer();
     }
   }
@@ -184,8 +182,8 @@ class Flows {
     }
     if (CloseEvent.reason?.length) {
       this.store.errorMsg = CloseEvent.reason;
-    } else {
-      if (CloseEvent.code && CloseEvent.code === 1006) this.store.errorMsg = "Connection lost";
+    } else if (CloseEvent.code && CloseEvent.code === 1006) {
+      this.store.errorMsg = "Connection lost";
     }
   }
 
@@ -211,12 +209,11 @@ class Flows {
       this.socket.subscribe("/topic/common");
       this.reconnect = true;
       return openFrame;
-
     } catch (errorData) {
       _debug("! Error while opening socket");
       return {
         error: true,
-        errorData: errorData,
+        errorData,
       };
     }
   }
@@ -252,12 +249,12 @@ class Flows {
       try {
         await this.socket.message("/app/Login.login", this.loginData, true);
       } catch (error) {
-        _debug("! Log in error: " + error.body.shortName);
+        _debug(`! Log in error: ${error.body.shortName}`);
         if (error.body.description !== "You are already logged in. Please logoff or disconnect first (refreshing the page helps)!") this.logout();
         return false;
       }
 
-      delete this.loginData.password;  // delete password from memory after log in
+      delete this.loginData.password; // delete password from memory after log in
       _debug("Log in done");
     }
 
@@ -265,20 +262,17 @@ class Flows {
 
     if (currentUserId) {
       _debug("Subscribing to global topics");
-      GLOBAL_TOPICS.forEach(topic => ["modified", "deleted"].forEach(type =>
-        this.socket.subscribe("/topic/User." + currentUserId + "." + topic + "." + type)));
+      GLOBAL_TOPICS.forEach(topic => ["modified", "deleted"].forEach(type => this.socket.subscribe(`/topic/User.${currentUserId}.${topic}.${type}`)));
       _debug("Reading global topics");
-      await Promise.all(GLOBAL_TOPICS.map(topic =>
-        this.socket.message("/app/" + topic + ".findByUser", { id: currentUserId }, true),
-      ));
+      await Promise.all(GLOBAL_TOPICS.map(topic => this.socket.message(`/app/${topic}.findByUser`, { id: currentUserId }, true)));
       _debug("Global topics done");
 
       const chatUsers = this.store.topics.TopicUser.filter(chatUser => chatUser.userId === this.store.currentUser.id);
-      chatUsers.forEach((chatUser) => this.socket.subscribe("/topic/Topic." + chatUser.topicId + ".TopicItem.modified"));
-      _debug("Subscribed to " + chatUsers.length + " chats");
+      chatUsers.forEach(chatUser => this.socket.subscribe(`/topic/Topic.${chatUser.topicId}.TopicItem.modified`));
+      _debug(`Subscribed to ${chatUsers.length} chats`);
 
       if (this.desktopNotifications && Notification.permission === "default") {
-        Notification.requestPermission().then(result => {
+        Notification.requestPermission().then((result) => {
           if (result === "default") this.eventBus.$emit("notify", "Notifications are disabled");
           if (result === "denied") this.eventBus.$emit("notify", "Notifications are blocked, you can change this in site settings");
           if (result === "granted") this.eventBus.$emit("notify", "Notifications enabled");
@@ -286,15 +280,13 @@ class Flows {
       }
 
       return true;
-
-    } else {
-      _debug("! No currentUser in store");
-      return false;
     }
+    _debug("! No currentUser in store");
+    return false;
   }
 
   setLogin(loginData) {
-    let debugData = { ...loginData };
+    const debugData = { ...loginData };
     if (debugData.password) debugData.password = debugData.password.replace(/./g, "*");
     if (debugData.token) debugData.token = debugData.token.replace(/./g, "*");
     this._debug("Setting log in data", debugData);
@@ -308,6 +300,7 @@ class Flows {
       return session.token;
     }
     this._debug("No login token found");
+    return null;
   }
 
   logout() {
@@ -318,7 +311,7 @@ class Flows {
     delete this.loginData.token;
 
     this._debug("Removing user data");
-    ALL_TOPICS.forEach(topic => {
+    ALL_TOPICS.forEach((topic) => {
       this.store.topics[topic] = null;
     });
 
@@ -344,7 +337,7 @@ class Flows {
    */
 
   getFullNameFromUser(user) {
-    if (user?.firstName) return user.firstName + " " + user.lastName;
+    if (user?.firstName) return `${user.firstName} ${user.lastName}`;
     return "?";
   }
 
@@ -358,7 +351,7 @@ class Flows {
 
   getFirstName(userId) {
     if (this.store.topics.User) {
-      const user = this.store.topics.User.find(user => user.id === +userId);
+      const user = this.store.topics.User.find(user_ => user_.id === +userId);
       if (user?.firstName) return user.firstName;
     }
     return "?";
@@ -368,14 +361,14 @@ class Flows {
     if (user?.avatarUrl) {
       return this.getFilePath(user.avatarUrl);
     }
-    let char = user?.firstName ? user.firstName.charAt(0) : "?";
-    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='56' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E" +
-      char + "%3C/text%3E%3C/svg%3E";
+    const char = user?.firstName ? user.firstName.charAt(0) : "?";
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='56' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E${
+      char}%3C/text%3E%3C/svg%3E`;
   }
 
   getAvatar(userId) {
     if (this.store.topics.User) {
-      const user = this.store.topics.User.find(user => user.id === userId);
+      const user = this.store.topics.User.find(user_ => user_.id === userId);
       return this.getAvatarFromUser(user);
     }
     return this.getAvatarFromUser();
@@ -383,7 +376,7 @@ class Flows {
 
   getUserStatus(userId) {
     if (this.store.topics.User) {
-      const user = this.store.topics.User.find(user => userId === user.id);
+      const user = this.store.topics.User.find(user_ => userId === user_.id);
       if (user?.status) return user.status;
     }
     return "?";
@@ -391,41 +384,41 @@ class Flows {
 
   currentChatUser() {
     const currentUserId = this.store.currentUser?.id;
-    const currentChatId = this.store.currentChatId;
+    const { currentChatId } = this.store;
     const chatUsers = currentChatId ? this.getChatUsers(currentChatId) : null;
     if (chatUsers && currentUserId) {
       return chatUsers.find(chatUser => chatUser.userId === currentUserId);
     }
+    return null;
   }
 
   getCurrentUserWorkspaces() {
+    const workspaces = [];
     if (this.store.currentUser && this.store.topics.Organization && this.store.topics.UserAccess) {
-      let workspaces = [];
       const userId = this.store.currentUser.id;
       const orgs = this.store.topics.Organization.filter(org => !org.integration);
-      this.store.topics.UserAccess.forEach(access => {
+      this.store.topics.UserAccess.forEach((access) => {
         if (access.userId === userId) {
           const workspace = orgs.find(org => org.id === access.orgId);
-          if (workspace) workspaces.push({
-            workspace: workspace,
-            access: access.role,
-            logo: this.getWorkspaceLogo(workspace),
-          });
+          if (workspace) {
+            workspaces.push({
+              workspace,
+              access: access.role,
+              logo: this.getWorkspaceLogo(workspace),
+            });
+          }
         }
       });
-      if (workspaces.length) return workspaces;
     }
+    return workspaces;
   }
 
   getWorkspaceLogo(workspace) {
     if (workspace) {
-      if (workspace.logoUrl) {
-        return this.getFilePath(workspace.logoUrl);
-      } else if (workspace.name) {
-        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='42' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E" + workspace.name.charAt(0) + "%3C/text%3E%3C/svg%3E";
-      }
+      if (workspace.logoUrl) return this.getFilePath(workspace.logoUrl);
+      if (workspace.name) return utils.logoPlaceholder(workspace.name.charAt(0));
     }
-    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='42' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E?%3C/text%3E%3C/svg%3E";
+    return utils.logoPlaceholder("?");
   }
 
   /**
@@ -439,6 +432,7 @@ class Flows {
         userId: this.store.currentUser.id,
       }, true);
     }
+    return Promise.reject(new Error("No currentUser in store"));
   }
 
   /**
@@ -450,9 +444,11 @@ class Flows {
     const currentUserId = this.store.currentUser?.id;
 
     if (chatUsers && currentUserId) {
-      const chatUser = chatUsers.find(chatUser => chatUser.topicId === +chatId && chatUser.userId === currentUserId);
-      if (chatUser?.id) return this.socket.message("/app/TopicUser.delete", { id: chatUser.id }, true);
+      const currentChatUser = chatUsers.find(chatUser => chatUser.topicId === +chatId && chatUser.userId === currentUserId);
+      if (currentChatUser?.id) return this.socket.message("/app/TopicUser.delete", { id: currentChatUser.id }, true);
+      return Promise.reject(new Error("Couldn't find currentChatUser"));
     }
+    return Promise.reject(new Error("No topicUsers or currentUser in store"));
   }
 
   /*
@@ -489,20 +485,20 @@ class Flows {
     }
 
     if (id !== this.store.currentChatId) {
-      _debug("Changing chat " + this.store.currentChatId + " > " + id);
+      _debug(`Changing chat ${this.store.currentChatId} > ${id}`);
 
       try {
-        this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.modified", true);
-        this.socket.subscribe("/user/queue/Topic." + id + ".TopicItemRead.deleted", true);
-        this.socket.message("/app/TopicItemRead.findByTopic", { id: id }, true);
+        this.socket.subscribe(`/user/queue/Topic.${id}.TopicItemRead.modified`, true);
+        this.socket.subscribe(`/user/queue/Topic.${id}.TopicItemRead.deleted`, true);
+        this.socket.message("/app/TopicItemRead.findByTopic", { id }, true);
 
-        CHAT_TOPICS.forEach(chatTopic => {
-          this.socket.subscribe("/topic/Topic." + id + "." + chatTopic + ".modified", true);
-          this.socket.subscribe("/topic/Topic." + id + "." + chatTopic + ".deleted", true);
-          this.socket.message("/app/" + chatTopic + ".findByTopic",
+        CHAT_TOPICS.forEach((chatTopic) => {
+          this.socket.subscribe(`/topic/Topic.${id}.${chatTopic}.modified`, true);
+          this.socket.subscribe(`/topic/Topic.${id}.${chatTopic}.deleted`, true);
+          this.socket.message(`/app/${chatTopic}.findByTopic`,
             chatTopic === "TopicItem"
-              ? { id: id, filter: { amount: 50 } }
-              : { id: id }, true);
+              ? { id, filter: { amount: 50 } }
+              : { id }, true);
           this.getChatMessages(id, { sticky: true });
         });
 
@@ -516,10 +512,10 @@ class Flows {
         // Reorder recent chats
         if (this.store.topics.UserProperty) {
           const recentIndex = this.store.topics.UserProperty.findIndex(userProperty => userProperty.name === "recentTools");
-          let userPropsRecent = this.store.topics.UserProperty[recentIndex];
+          const userPropsRecent = this.store.topics.UserProperty[recentIndex];
           delete userPropsRecent.modifiedDate;
-          let val = userPropsRecent.value.filter(recent => recent.id !== id);
-          val.unshift({ id: id, type: "MEETING" });
+          const val = userPropsRecent.value.filter(recent => recent.id !== id);
+          val.unshift({ id, type: "MEETING" });
           userPropsRecent.value = val;
           Vue.set(this.store.topics.UserProperty, recentIndex, userPropsRecent);
           this.socket.message("/app/UserProperty.save", userPropsRecent, true);
@@ -556,11 +552,11 @@ class Flows {
       || !this.store.topics.Topic) return false;
 
     // Remove special items and legacy Startup Includer integration chats
-    let allChats = JSON.parse(JSON.stringify(this.store.topics.Topic.filter(chat => !chat.integration && !chat.specialItemId)));
+    const allChats = JSON.parse(JSON.stringify(this.store.topics.Topic.filter(chat => !chat.integration && !chat.specialItemId)));
     const allUsers = JSON.parse(JSON.stringify(this.store.topics.TopicUser));
     const currentUserId = this.store.currentUser.id;
 
-    allChats.forEach(chat => {
+    allChats.forEach((chat) => {
       // Find all users in chat
       const chatUsers = allUsers.filter(chatUser => chatUser.topicId === chat.id);
 
@@ -576,7 +572,7 @@ class Flows {
       // If chat has no name, make one from participants
       if (!chat.name) {
         const otherUsers = chatUsers.filter(chatUser => chatUser.userId !== this.store.currentUser.id);
-        let otherUserNames = [];
+        const otherUserNames = [];
         if (otherUsers.length) {
           otherUsers.forEach(chatUser => otherUserNames.push(this.getFullName(chatUser.userId)));
         }
@@ -601,7 +597,7 @@ class Flows {
    * @returns {Promise<Object>}
    */
   getChatMessages(chatId, filter) {
-    return this.socket.message("/app/TopicItem.findByTopic", { id: chatId, filter: filter }, true);
+    return this.socket.message("/app/TopicItem.findByTopic", { id: chatId, filter }, true);
   }
 
   /**
@@ -623,10 +619,9 @@ class Flows {
     const locations = this.store.topics.TopicLocation;
 
     if (locations && workspaces) {
-      const chatOrgs = locations.filter(location => location.topicId === +chatId)
-      .map(location => location.orgId);
+      const chatOrgs = locations.filter(location => location.topicId === +chatId).map(location => location.orgId);
       for (let i = 0; i < chatOrgs.length; i++) {
-        const workspace = workspaces.find(workspace => workspace.workspace.id === chatOrgs[i]);
+        const workspace = workspaces.find(workspace_ => workspace_.workspace.id === chatOrgs[i]);
         if (workspace) return workspace;
       }
     }
@@ -636,17 +631,17 @@ class Flows {
     const locations = this.store.topics.TopicLocation;
 
     if (locations) {
-      return locations.filter(location => location.orgId === +workspaceId)
-      .map(location => location.topicId);
+      return locations.filter(location => location.orgId === +workspaceId).map(location => location.topicId);
     }
+    return Promise.reject(new Error("No topicLocations in store"));
   }
 
   chatMessages() {
-    const currentChatId = this.store.currentChatId;
+    const { currentChatId } = this.store;
     if (currentChatId && this.chatMessagesCached) {
-      const id = this.store.lastUpdateChat + "-" + currentChatId;
+      const id = `${this.store.lastUpdateChat}-${currentChatId}`;
       if (id === this.chatMessagesCached.id) {
-        this._debug("Returning cached chat messages (" + id + ")");
+        this._debug(`Returning cached chat messages (${id})`);
         return JSON.parse(this.chatMessagesCached.messages);
       }
     }
@@ -663,14 +658,14 @@ class Flows {
       if (chatMessagesRead && currentUserId) {
         const chatUsers = this.getChatUsers(currentChatId);
         if (!chatUsers || chatUsers.find(chatUser => chatUser.userId === currentUserId)) {
-          messages = messages.map(message => {
-            message.unread = !message.shadow && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id) && !(message.creatorUserId === currentUserId && message.type !== "EMAIL");
+          messages = messages.map((message) => {
+            message.unread = !message.shadow && !chatMessagesRead.find(readRange => readRange.itemFrom <= message.id && readRange.itemTo >= message.id) && !( message.creatorUserId === currentUserId && message.type !== "EMAIL" );
             return message;
           });
         }
       }
       if (chatMessagesFlagged) {
-        messages = messages.map(message => {
+        messages = messages.map((message) => {
           message.flagged = chatMessagesFlagged.indexOf(message.id) > -1;
           return message;
         });
@@ -678,7 +673,7 @@ class Flows {
 
       this.chatMessagesCached = {
         messages: JSON.stringify(messages),
-        id: this.store.lastUpdateChat + "-" + currentChatId,
+        id: `${this.store.lastUpdateChat}-${currentChatId}`,
       };
       return messages;
     }
@@ -686,7 +681,7 @@ class Flows {
 
   chatMessagesRead() {
     const read = this.store.topics.TopicItemRead;
-    const currentChatId = this.store.currentChatId;
+    const { currentChatId } = this.store;
     const currentUserId = this.store.currentUser?.id;
 
     if (read && currentChatId && currentUserId) {
@@ -696,7 +691,7 @@ class Flows {
 
   chatMessagesFlagged() {
     const prop = JSON.parse(JSON.stringify(this.store.topics.TopicItemUserProperty));
-    const currentChatId = this.store.currentChatId;
+    const { currentChatId } = this.store;
     const currentUserId = this.store.currentUser?.id;
 
     if (prop && currentChatId && currentUserId) {
@@ -708,12 +703,17 @@ class Flows {
     }
   }
 
+  /**
+   * @param chatId {number}
+   * @returns {Array<Object>}
+   */
   getChatUsers(chatId) {
     const chatUsers = this.store.topics.TopicUser;
 
     if (chatUsers) {
       return chatUsers.filter(chatUser => !chatUser.deleted && chatUser.topicId === +chatId).sort((a, b) => a.createDate - b.createDate);
     }
+    return [];
   }
 
   /**
@@ -733,7 +733,7 @@ class Flows {
    *  flag {0|1} is message saved
    */
   getChatUserProps(chatId, filter) {
-    return this.socket.message("/app/TopicItemUserProperty.findByTopic", { id: chatId, filter: filter }, true);
+    return this.socket.message("/app/TopicItemUserProperty.findByTopic", { id: chatId, filter }, true);
   }
 
   /**
@@ -751,17 +751,15 @@ class Flows {
   }
 
   /**
-   * @returns {Promise<Object>|undefined}
+   * @returns {Promise<Object>}
    */
   markCurrentChatRead() {
-    if (!this.store.topics.TopicItem || !this.store.currentUser) {
-      this._debug("! No TopicItem or currentUser in store");
-      return;
-    }
-    const ids = this.chatMessages()
-    .filter(msg => msg.unread)
-    .map(msg => msg.id);
-    if (!ids.length) return;
+    if (!this.store.currentChatId) return Promise.reject(new Error("No currentChatId in store"));
+    if (!this.store.topics.TopicItem || !this.store.currentUser) return Promise.reject(new Error("No TopicItem or currentUser in store"));
+
+    const ids = this.chatMessages().filter(msg => msg.unread).map(msg => msg.id);
+    if (!ids.length) return Promise.resolve("No unread messages found");
+
     return this.socket.message("/app/TopicItemRead.markAsRead", {
       topicId: this.store.currentChatId,
       itemIds: ids,
@@ -773,7 +771,7 @@ class Flows {
       let favs = this.store.topics.UserProperty.find(userProperty => userProperty.name === "favorites");
       if (!favs) favs = { name: "favorites", orgId: null, userId: this.store.currentUser.id, value: [] };
       const favIds = favs.value.map(v => v.id);
-      if (favIds.indexOf(+chatId) > -1) return;
+      if (favIds.indexOf(+chatId) > -1) return Promise.resolve("Chat already in favourites");
       delete favs.modifiedDate;
       favs.value.push({ type: "MEETING", id: +chatId });
       return this.socket.message("/app/UserProperty.save", favs, true);
@@ -782,9 +780,9 @@ class Flows {
 
   removeChatFromStarred(chatId) {
     if (this.store.topics.UserProperty) {
-      let favs = this.store.topics.UserProperty.find(userProperty => userProperty.name === "favorites");
+      const favs = this.store.topics.UserProperty.find(userProperty => userProperty.name === "favorites");
       const index = favs.value.map(v => v.id).indexOf(+chatId);
-      if (index < 0) return;
+      if (index < 0) return Promise.resolve("Chat not in favourites");
       delete favs.modifiedDate;
       favs.value.splice(index, 1);
       return this.socket.message("/app/UserProperty.save", favs, true);
@@ -793,9 +791,9 @@ class Flows {
 
   removeChatFromRecents(chatId) {
     if (this.store.topics.UserProperty) {
-      let recents = this.store.topics.UserProperty.find(userProperty => userProperty.name === "recentTools");
+      const recents = this.store.topics.UserProperty.find(userProperty => userProperty.name === "recentTools");
       const index = recents.value.map(v => v.id).indexOf(+chatId);
-      if (index < 0) return;
+      if (index < 0) return Promise.resolve("Chat not in recents");
       delete recents.modifiedDate;
       recents.value.splice(index, 1);
       return this.socket.message("/app/UserProperty.save", recents, true);
@@ -809,13 +807,12 @@ class Flows {
   /**
    * Returns a message only if it exists in store
    *
-   * @param messageId
-   * @returns {Object}
+   * @param messageId {number}
+   * @returns {Object|undefined}
    */
   getChatMessage(messageId) {
     if (this.store.topics.TopicItem) {
-      const message = this.store.topics.TopicItem.find(TopicItem => TopicItem.id === messageId);
-      if (message) return message;
+      return this.store.topics.TopicItem.find(TopicItem => TopicItem.id === messageId);
     }
   }
 
@@ -824,38 +821,38 @@ class Flows {
    * Creates a shadow message instantly that is deleted when real message is saved in server
    * If sending message fails, sets shadow message status as error
    *
-   * @param message {Object}
+   * @param newMessage {Object}
    */
-  sendChatMessage(message) {
-    message.creatorUserId = this.store.currentUser.id;
-    message.topicId = this.store.currentChatId;
-    message.customData = { test: true };
+  sendChatMessage(newMessage) {
+    if (!this.store.currentUser.id) return Promise.reject(new Error("No currentUser in store"));
+    if (!this.store.currentChatId) return Promise.reject(new Error("No currentChatId in store"));
+
+    newMessage.creatorUserId = this.store.currentUser.id;
+    newMessage.topicId = this.store.currentChatId;
+    newMessage.customData = { test: true };
 
     const shadowId = this.shadowMessageId++;
-    // TODO: save message to localstorage => in case of error sending it is still there after refresh
-    // TODO: clear localstorage on logout (don't keep messages around)
 
-    this.socket.message("/app/TopicItem.save", message, true)
+    this.socket.message("/app/TopicItem.save", newMessage, true)
     .then(() => {
-      this._debug("Real message arrived (" + shadowId + ")");
-      const messageIndex = this.store.topics.TopicItem.findIndex(message => message.id === shadowId);
+      this._debug(`Real message arrived (${shadowId})`);
+      const messageIndex = this.store.topics.TopicItem.findIndex(message_ => message_.id === shadowId);
       if (messageIndex) {
         Vue.delete(this.store.topics.TopicItem, messageIndex);
       }
-      // TODO: Delete from local storage
     })
     .catch(() => {
-      const message = this.store.topics.TopicItem.find(message => message.id === shadowId);
+      const message = this.store.topics.TopicItem.find(message_ => message_.id === shadowId);
       if (message) {
         message.error = true;
       }
     });
 
-    message.id = shadowId;
-    message.shadow = true;
-    this.store.topics.TopicItem.push(message);
+    newMessage.id = shadowId;
+    newMessage.shadow = true;
+    this.store.topics.TopicItem.push(newMessage);
     this.eventBus.$emit("messagesScrollUpdate");
-    this._debug("Shadow message created (" + shadowId + ")");
+    this._debug(`Shadow message created (${shadowId})`);
     this.store.lastUpdateChat = shadowId;
   }
 
@@ -938,21 +935,19 @@ class Flows {
     if (!this.desktopNotifications) return;
     if (this.notifiedMessageIds.indexOf(message.id) > -1) return;
 
-    const hidden =
-      //(typeof document.hidden !== "undefined") ? document.hidden :
-      !document.hasFocus();
+    const hidden = !document.hasFocus();
     if (hidden || message.topicId !== this.store.currentChatId) {
       this.notifiedMessageIds.push(message.id);
       const chatName = this.getChatName(message.topicId);
       const creatorName = this.getFullName(message.creatorUserId);
-      const title = creatorName + ( chatName !== creatorName ? " - " + chatName : "" );
-      let options = {
+      const title = creatorName + ( chatName !== creatorName ? ` - ${chatName}` : "" );
+      const options = {
         body: message.type === "CHAT"
           ? this.getMessageTextRepresentation(this.chatTextParse(message.text))
           : this.getMessageTextRepresentation(message.text),
         timestamp: message.createDate,
         renotify: true,
-        tag: message.topicId + "-" + this.store.currentUser?.id,
+        tag: `${message.topicId}-${this.store.currentUser?.id}`,
         // requireInteraction: true,
         // actions: [{action: "mark_as_read", title: "Mark as read" }],
       };
@@ -969,7 +964,7 @@ class Flows {
 
       if (message.type === "FILE" && message.url) {
         let ext = message.url.split(".");
-        ext = ext[ext.length - 1] + "";
+        ext = `${ext[ext.length - 1]}`;
         if (["png", "jpg", "jpeg"].indexOf(ext.toLowerCase()) > -1) {
           options.image = this.getFilePath(message.url);
         }
@@ -981,7 +976,7 @@ class Flows {
         // For svg placeholder avatars, draw them to canvas to get a bitmap
         const canvas = utils.createCanvas(42 * 3, 42 * 3);
         const ctx = canvas.getContext("2d");
-        let img = new Image();
+        const img = new Image();
         img.onload = () => {
           ctx.drawImage(img, 0, ( 56 - 42 ) * -1.5, 42 * 3, 56 * 3);
           options.icon = canvas.toDataURL();
@@ -1003,43 +998,47 @@ class Flows {
    */
 
   chatTextParse(text) {
-    if (!text)
-      return "";
-    const currentUser = this.store.currentUser;
+    if (!text) return "";
+    const { currentUser } = this.store;
     const firstName = currentUser ? currentUser.firstName : "";
     const lastName = currentUser ? currentUser.lastName : "";
-    const emojis = {":)": "🙂", ";)": "😉", ":d": "😁", ":\\": "😕", ":/": "😕", ":(": "😟", "(y)": "👍", "(n)": "👎"};
+    const emojis = {
+      ":)": "🙂",
+      ";)": "😉",
+      ":d": "😁",
+      ":\\": "😕",
+      ":/": "😕",
+      ":(": "😟",
+      "(y)": "👍",
+      "(n)": "👎",
+    };
     const splitText = text.match(/\S+|\s/g);
 
     /* copied with modifications from compiled Contriber Flows source */
-    let parsedText = [];
-    const addText = (text) => parsedText.push(utils.textToHTML(text));
+    const parsedText = [];
+    const addText = text_ => parsedText.push(utils.textToHTML(text_));
     for (let i = 0; i < splitText.length; i++) {
-      let part = splitText[i];
-      if (part === firstName || part === lastName || "@" === part[0] && ( part.substr(1) === firstName || part.substr(1) === lastName )) {
-        parsedText.push('<span class="message-at">');
+      const part = splitText[i];
+      if (part === firstName || part === lastName || part[0] === "@" && ( part.substr(1) === firstName || part.substr(1) === lastName )) {
+        parsedText.push("<span class=\"message-at\">");
         addText(part);
         parsedText.push("</span>");
+      } else if (part.match(/^(ftp:\/\/|http:\/\/|https:\/\/|mailto:)(.*)/)) {
+        parsedText.push("<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"");
+        addText(part.replace(/"/g, "&quot;"));
+        parsedText.push("\">");
+        addText(part);
+        parsedText.push("</a>");
+      } else if (part.match(/^(www.)(.*)/)) {
+        parsedText.push("<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"https://");
+        addText(part.replace(/"/g, "&quot;"));
+        parsedText.push("\">");
+        addText(part);
+        parsedText.push("</a>");
+      } else if (emojis[part.toLowerCase()]) {
+        parsedText.push(emojis[part.toLowerCase()]);
       } else {
-        if (part.match(/^(ftp:\/\/|http:\/\/|https:\/\/|mailto:)(.*)/)) {
-          parsedText.push('<a target="_blank" rel="noopener noreferrer nofollow" href="');
-          addText(part.replace(/"/g, "&quot;"));
-          parsedText.push('">');
-          addText(part);
-          parsedText.push("</a>");
-        } else if (part.match(/^(www.)(.*)/)) {
-          parsedText.push('<a target="_blank" rel="noopener noreferrer nofollow" href="https://');
-          addText(part.replace(/"/g, "&quot;"));
-          parsedText.push('">');
-          addText(part);
-          parsedText.push("</a>");
-        } else {
-          if (emojis[part.toLowerCase()]) {
-            parsedText.push(emojis[part.toLowerCase()]);
-          } else {
-            addText(part);
-          }
-        }
+        addText(part);
       }
     }
     return parsedText.join("");
@@ -1053,8 +1052,8 @@ class Flows {
    */
   noteTextParse(text) {
     return text
-    .replace(/src=['"]\/files\/*([^'"]+)['"]/g, 'src="https://flows.contriber.com/files/$1"')
-    .replace(/<a[^<]+href=['"]*([^'"]+)['"][^>]*>/g, '<a target="_blank" rel="noopener noreferrer nofollow" href="$1">')
+    .replace(/src=['"]\/files\/*([^'"]+)['"]/g, "src=\"https://flows.contriber.com/files/$1\"")
+    .replace(/<a[^<]+href=['"]*([^'"]+)['"][^>]*>/g, "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"$1\">")
     .replace(/<p><\/p>/g, "<br>");
   }
 
@@ -1068,7 +1067,7 @@ class Flows {
     .replace(/<a .*?href=["']?([^"']*)["']?.*?>(.*)<\/a>/g, "$2")
     .replace(/<(\/p|\/div|\/h\d|br)\w?\/?>/g, "\n")
     .replace(/<[A-Za-z/][^<>]*>/g, "")
-    .replace(/&quot/g, '"');
+    .replace(/&quot/g, "\"");
   }
 
   /*
@@ -1161,7 +1160,7 @@ class Flows {
       prop = {
         id: null,
         name: propName,
-        value: value,
+        value,
         userId: this.store.currentUser.id,
         orgId: null,
       };
@@ -1185,7 +1184,7 @@ class Flows {
    * @param lname {string}
    */
   setUserName(fname, lname) {
-    const currentUser = this.store.currentUser;
+    const { currentUser } = this.store;
     if (!currentUser) return this._debug("! No currentUser in store");
     fname = fname.toString();
     lname = lname.toString();
@@ -1205,7 +1204,7 @@ class Flows {
   }
 
   removeAvatar() {
-    const currentUser = this.store.currentUser;
+    const { currentUser } = this.store;
     if (!currentUser) return this._debug("! No currentUser in store");
     if (currentUser.avatarUrl) this.deleteFile(currentUser.avatarUrl);
     this.store.currentUser.avatarUrl = null;
@@ -1242,8 +1241,7 @@ class Flows {
     const token = this.getLoginToken();
     const openChatId = this.store.currentChatId;
     if (!openChatId || !token) {
-      this._debug("! No token or currentChatId");
-      return Promise.reject("No token or currentChatId");
+      return Promise.reject(new Error("No token or currentChatId"));
     }
     formData.append("topicId", openChatId.toString());
     formData.append("token", token);
@@ -1257,7 +1255,7 @@ class Flows {
   }
 
   getFilePath(url) {
-    return "https://flows.contriber.com" + encodeURI(url);
+    return `https://flows.contriber.com${encodeURI(url)}`;
   }
 
   /**
@@ -1276,7 +1274,7 @@ class Flows {
       body: formData,
     })
     .then(() => _debug(`File ${url} deleted`))
-    .catch((error) => _debug(`Error deleting file ${url}`, error));
+    .catch(error => _debug(`Error deleting file ${url}`, error));
   }
 }
 

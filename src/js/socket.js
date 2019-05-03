@@ -50,8 +50,8 @@ class Socket {
 
   _debug(text, ...extra) {
     if (this.debug) {
-      //const caller = new Error().stack.split('\n')[2].replace(/(\s.+at [^.]+.| \(.+)/g, "");
-      const caller = new Error().stack.split('\n')[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
+      // const caller = new Error().stack.split('\n')[2].replace(/(\s.+at [^.]+.| \(.+)/g, "");
+      const caller = new Error().stack.split("\n")[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
       this._logDebug(text, caller);
       if (extra) console.log(...extra);
     }
@@ -62,7 +62,7 @@ class Socket {
     const time = utils.debugDateTime();
     const error = !text.indexOf("! ");
     if (error) text = text.substring(2);
-    console.log(time + " %c" + this.constructor.name + " (" + caller + "): %c" + text, "color: #cb7300; font-weight: bold", "color: " + ( error ? "#f00" : "inherit" ));
+    console.log(`${time} %c${this.constructor.name} (${caller}): %c${text}`, "color: #cb7300; font-weight: bold", `color: ${error ? "#f00" : "inherit"}`);
   }
 
   /**
@@ -81,7 +81,7 @@ class Socket {
       _debug("Creating socket");
       this.stompClient = webstomp.over(new sockjs(SOCKET_URL), { debug: SOCKET_TRAFFIC_DEBUG });
       _debug("Connecting...");
-      this.stompClient.connect({}, frame => {
+      this.stompClient.connect({}, (frame) => {
         if (frame.command === "CONNECTED") {
           this.connected = true;
           _debug("Connection successful, resolving");
@@ -126,7 +126,7 @@ class Socket {
 
     this.unsubscribeAll();
 
-    this.responsePromises.forEach(responsePromise => {
+    this.responsePromises.forEach((responsePromise) => {
       responsePromise.error("Socket closed");
     });
     this.responsePromises.splice(0, this.responsePromises.length);
@@ -146,7 +146,7 @@ class Socket {
   subscribe(destination, response) {
     if (!this.connected) {
       this._debug("! Socket not connected");
-      throw "Socket not connected";
+      return Promise.reject(new Error("Socket not connected"));
     }
     if (this.subscriptions[destination]) {
       if (response) return Promise.resolve({ alreadyExists: true });
@@ -177,7 +177,7 @@ class Socket {
 
   unsubscribe(destination) {
     this._debug(destination);
-    let sub = this.subscriptions[destination];
+    const sub = this.subscriptions[destination];
     if (sub) {
       sub.unsubscribe();
       delete this.subscriptions[destination];
@@ -185,7 +185,7 @@ class Socket {
   }
 
   unsubscribeAll() {
-    Object.keys(this.subscriptions).forEach(sub => {
+    Object.keys(this.subscriptions).forEach((sub) => {
       this.unsubscribe(sub);
     });
   }
@@ -201,7 +201,7 @@ class Socket {
   message(destination, data, response) {
     if (!this.connected) {
       this._debug("! Socket not connected");
-      throw "Socket not connected";
+      return Promise.reject(new Error("Socket not connected"));
     }
     if (response) {
       return new Promise((resolve, reject) => {
@@ -225,9 +225,9 @@ class Socket {
    * @private
    */
   _frameHandler(frame) {
-    if (frame.headers['response-id']) {
+    if (frame.headers["response-id"]) {
       const response = new SocketResponse(
-        parseInt(frame.headers['response-id']),
+        parseInt(frame.headers["response-id"], 10),
         frame.headers.cl,
         JSON.parse(frame.body),
       );
