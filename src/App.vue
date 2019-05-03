@@ -79,12 +79,12 @@
 </template>
 
 <script>
-  import ChatMessages from "@/components/ChatMessages";
-  import SidebarChats from "@/components/SidebarChats";
-  import FlaggedMessages from "@/components/FlaggedMessages";
-  import Settings from "@/components/Settings";
-  import LoginForm from "@/components/LoginForm";
-  import Notification from "@/components/Notification";
+  import ChatMessages from "@/components/Views/ChatMessages";
+  import SidebarChats from "@/components/Views/SidebarChats";
+  import FlaggedMessages from "@/components/Views/FlaggedMessages";
+  import Settings from "@/components/Views/Settings";
+  import LoginForm from "@/components/Views/LoginForm";
+  import Notification from "@/components/UI/Notification";
   import Overlays from "@/components/UI/Overlays";
   import SlideInOut from "@/components/UI/SlideInOut";
 

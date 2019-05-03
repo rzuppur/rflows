@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import { DEVCHAT_ID } from "../js/consts";
+  import { DEVCHAT_ID } from "@/js/consts";
 
   export default {
     name: "SidebarChats",

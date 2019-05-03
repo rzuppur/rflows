@@ -171,7 +171,7 @@
   import MessagePreview from "@/components/MessagePreview"
   import Editor from "@/components/UI/Editor"
   import FileUpload from "@/components/FileUpload"
-  import { DEVCHAT_ID } from "../js/consts";
+  import { DEVCHAT_ID } from "@/js/consts";
 
   export default {
     name: 'ChatMessages',
