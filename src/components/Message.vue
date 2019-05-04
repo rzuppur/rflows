@@ -21,17 +21,19 @@
           :onlyText="['NOTE', 'EMAIL'].indexOf(message.type) < 0"
           :placeholder="'Delete message?'"
           :initEmpty="false"
+          @keydown.ctrl.83.native.exact.capture.prevent="saveEdit"
+          @keydown.native.capture.esc="cancelEdit"
         )
 
         .field.is-grouped.edit-buttons
           .control
-            button.button.is-outlined(@click.stop="saveEdit()")
+            button.button.is-outlined(@click.stop="saveEdit")
               span.icon.is-small.has-text-success
                 i.fas.fa-check
               span Save
 
           .control
-            button.button.is-outlined(@click.stop="cancelEdit()")
+            button.button.is-outlined(@click.stop="cancelEdit")
               span.icon.is-small.has-text-grey
                 i.fas.fa-times
               span Cancel
