@@ -1,7 +1,8 @@
-import Vue from 'vue';
-import App from '@/App';
-import VTooltip from 'v-tooltip';
-import VueStash from 'vue-stash';
+import Vue from "vue";
+import VTooltip from "v-tooltip";
+import VueStash from "vue-stash";
+
+import App from "@/App.vue";
 
 import utils from "@/js/utils";
 import Flows from "@/js/flows";
@@ -18,15 +19,9 @@ Vue.config.productionTip = false;
 const eventBus = new Vue();
 
 Vue.mixin({
-  created() {
-    this.flows = this.$root.flows;
-    this.eventBus = eventBus;
-    this.utils = utils;
-    this.DEBUG = DEBUG;
-  },
   filters: {
     capitalize(value) {
-      if (!value) return '';
+      if (!value) return "";
       value = value.toString();
       return value.charAt(0).toUpperCase() + value.slice(1);
     },
@@ -36,12 +31,18 @@ Vue.mixin({
       return this.$root.mqMobileMatches;
     },
   },
+  created() {
+    this.flows = this.$root.flows;
+    this.eventBus = eventBus;
+    this.utils = utils;
+    this.DEBUG = DEBUG;
+  },
   methods: {
     _debug(text, ...extra) {
       if (this.DEBUG) {
-        const caller = new Error().stack.split('\n')[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
+        const caller = new Error().stack.split("\n")[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
         this._logDebug(text, caller);
-        if (extra) console.log(...extra);
+        if (extra) console.log(...extra); // eslint-disable-line no-console
       }
     },
     _logDebug(text, caller) {
@@ -51,7 +52,7 @@ Vue.mixin({
       if (error) text = text.substring(2);
       const parentVNodeTag = this.$options?._parentVnode?.tag?.split("-");
       const name = parentVNodeTag ? parentVNodeTag[parentVNodeTag.length - 1] : "unknown";
-      console.log(time + " %c" + name + ".vue (" + caller + "): %c" + text, "color: #3ba776; font-weight: bold", "color: " + (error ? "#f00" : "inherit"));
+      console.log(`${time} %c${name}.vue (${caller}): %c${text}`, "color: #3ba776; font-weight: bold", `color: ${error ? "#f00" : "inherit"}`); // eslint-disable-line no-console
     },
   },
 });
@@ -61,9 +62,9 @@ let alwaysFullHeightTimeout = null;
 function alwaysFullHeightSetSize(fixAnchor) {
   const elements = document.getElementsByClassName("alwaysFullHeight");
   if (fixAnchor && elements.length) {
-    const height = Math.round(fixAnchor.getBoundingClientRect().height || window.innerHeight) + "px";
+    const height = `${Math.round(fixAnchor.getBoundingClientRect().height || window.innerHeight)}px`;
     for (let i = 0; i < elements.length; i++) {
-      elements[i].setAttribute("style", "height:" + height + "; max-height:" + height);
+      elements[i].setAttribute("style", `height:${height}; max-height:${height}`);
     }
   }
   eventBus.$emit("debouncedResize");
@@ -72,7 +73,7 @@ function alwaysFullHeightSetSize(fixAnchor) {
 new Vue({
   data: {
     flows: null,
-    store: store,
+    store,
     mqMobileMatches: false,
   },
   created() {
@@ -88,7 +89,7 @@ new Vue({
     });
 
     this.mq = window.matchMedia("(max-width: 600px)");
-    this.mqListener = (q) => this.mqMobileMatches = q.matches;
+    this.mqListener = q => this.mqMobileMatches = q.matches;
     this.mq.addListener(this.mqListener);
     this.mqMobileMatches = this.mq.matches;
   },
@@ -96,4 +97,4 @@ new Vue({
     this.mq.removeListener(this.mqListener);
   },
   render: h => h(App),
-}).$mount('#app');
+}).$mount("#app");
