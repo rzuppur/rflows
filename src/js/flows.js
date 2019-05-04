@@ -885,7 +885,6 @@ class Flows {
     delete editedMessage.cryptoKey;
     delete editedMessage.previewSpecial;
     delete editedMessage.round;
-    //editedMessage.customData = {key: "value"}; //TODO: siia saab vajadusel custom datat salvestada, a la reactionid
     //editedMessage.childFileIds = [];  //TODO: note sees olevad pildid, nende id mis saab kohe base64 uploadeides
     return this.socket.message("/app/TopicItem.save", editedMessage, true);
   }

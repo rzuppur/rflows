@@ -19,16 +19,15 @@
             .desc {{ workspace.workspace.type.toLowerCase() }} workspace
 
         .chat(v-for="flagged, chatId in getFlaggedByWorkspaceId(workspace.workspace.id)")
-          .chat-title(@click="openChat(chatId)")
-            | {{ flows.getChatName(chatId) }} &nbsp;
-            span.icon.text-muted
-              i.far.fa-comment-alt
+          .chat-title(@click="openChat(chatId)") {{ flows.getChatName(chatId) }}
 
-          message-preview(
-            v-for="messageId in flagged.messageIds.sort()"
-            :messageId="messageId"
-            :key="messageId"
-            :clickable="false")
+          message-display(
+            v-for="message in flagged.messageIds.sort().map(getMessage)"
+            :utils="utils"
+            :flows="flows"
+            :key="message.id"
+            :message="message"
+          )
 
       .workspace-container(v-if="flaggedMessages !== undefined && Object.keys(flaggedMessages).length === 0")
         h3 No saved messages
@@ -37,11 +36,11 @@
 </template>
 
 <script>
-  import MessagePreview from "@/components/MessagePreview.vue";
+  import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
   export default {
     name: "FlaggedMessages",
-    components: { MessagePreview },
+    components: { MessageDisplay },
     store: ["currentUser", "topics"],
     data() {
       return {
@@ -116,8 +115,11 @@
 
         return flaggedMessages;
       },
+      getMessage(messageId) {
+        return this.flows.getChatMessage(messageId);
+      },
     },
-  }
+  };
 </script>
 
 <style lang="stylus" scoped>
@@ -153,14 +155,15 @@
 
     .workspace-container
       max-width 850px
-      padding 0 10px
       margin 0 auto
 
       &:not(:last-child)
         margin-bottom 30px
 
       .workspace
-        margin 0 0 10px
+        margin-top 0
+        margin-bottom 20px
+        margin-left 13px
 
         .text
           padding-left 10px
@@ -170,28 +173,25 @@
           box-shadow 0 0 0 1px rgba(0, 0, 0, 0.05)
 
       .chat
-        padding 15px
-        background #fff
+        padding 10px 0
         box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
         border-radius $border-radius
+        background #fff
 
         &:not(:last-child)
           margin-bottom 10px
 
         .chat-title
-          text-regular-30()
-          margin-bottom 6px
+          text-bold-24()
+          margin-bottom 8px
+          margin-left 20px
           cursor pointer
 
           &:hover
             text-decoration underline
 
-        .message-preview
-          background none
-          padding 0
-
-        .message-preview:not(:last-child)
-          margin-bottom 15px
-
+        /deep/ .chat-message
+          border-top 1px solid $color-light-border
+          padding-bottom 8px
 
 </style>

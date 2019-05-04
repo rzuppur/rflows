@@ -170,6 +170,35 @@ const utils = {
   logoPlaceholder(letter) {
     return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='42' width='42' style='background: %23b0b8c0'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='25' font-family='sans-serif'%3E${letter}%3C/text%3E%3C/svg%3E`;
   },
+
+  /*
+  MESSAGE
+   */
+
+  commitEmailParse(text) {
+    const parts = text.split("Commit: ");
+    parts.splice(0, 1);
+
+    const commits = [];
+    parts.forEach((commitPart) => {
+      commits.push({
+        url: commitPart.split(" ").filter(part => part)[1],
+        name: commitPart.split("-----------").filter(part => part)[1].split("Compare: ")[0].trim(),
+        changes: commitPart.split("Changed paths:").filter(part => part)[1].split("Log Message:")[0].trim().split("\n").map(change => change.trim()),
+        author: commitPart.split("Author: ").filter(part => part)[1].split("Date:")[0].trim(),
+      });
+    });
+
+    return commits;
+  },
+
+  fileMessagePreviewable(message) {
+    if (!message.url) return false;
+    if (message.originalFileName === "mime") return true;
+    let ext = message.url.split(".");
+    ext = ext[ext.length - 1];
+    return ["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) >= 0;
+  },
 };
 
 

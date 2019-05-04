@@ -1,31 +1,19 @@
 <template lang="pug">
 
-  .chat-message(:class="messageClass" @click="editorFocus()")
-    //-:title="Object.keys(message).reduce((a, k) => (a + k + `: ${message[k]} \n`), '')"
+  .chat-message-container
 
-    .avatar-container
-      .sticky-avatar
-        img.avatar.avatar-small(:src="flows.getAvatar(message.creatorUserId)")
-      .date(v-tooltip="messageIsEdited ? 'Edited ' + utils.dateTimeAddOtherYear(message.modifiedDate) : utils.weekdayDate(message.createDate)")
-        | {{ utils.time(message.createDate) + (messageIsEdited ? '*' : '') }}
-      .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
-        i.fas.fa-thumbtack
+    message-display(
+      :utils="utils"
+      :flows="flows"
+      :key="message.id"
+      :message="message"
+      :class="messageClass"
+    )
 
-    .content-container
-      //-b {{message.id}}
-      b.text-error.text-small(v-if="message.error") Message was not sent #{""}
-      //- TODO: resend
-      .name {{ flows.getFullName(message.creatorUserId) }}
-        span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
-          i.fas.fa-thumbtack
-      .date
-        span(v-tooltip="utils.weekdayDate(message.createDate)") {{ utils.time(message.createDate) }}
-        span(v-if="messageIsEdited") , edited {{ utils.dateTime(message.modifiedDate) }}
-      //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
+      template(v-if="message.referenceFromTopicItemId" v-slot:reply)
+        message-preview.reply-original(:messageId="message.referenceFromTopicItemId")
 
-      message-preview.reply-original(v-if="message.referenceFromTopicItemId" :messageId="message.referenceFromTopicItemId")
-
-      .edit(v-show="editMode")
+      template(v-if="editMode" v-slot:content)
 
         editor(
           ref="editor"
@@ -48,47 +36,7 @@
                 i.fas.fa-times
               span Cancel
 
-      template(v-if="!editMode")
-
-        .file-content(v-if="message.type === 'FILE'")
-          a.file-preview(:href="flows.getFilePath(message.url)" target="_blank" rel="noopener noreferrer nofollow")
-            .file-title.ellipsis #[i.fas.fa-paperclip] {{ message.text }}
-            .image-preview(v-if="imagePreviewUrl")
-              img(:src="imagePreviewUrl")
-
-        p.text-content(v-if="message.type === 'EVENT'") {{ message.text }}
-
-        p.text-content(v-if="message.type === 'CHAT'" v-html="flows.chatTextParse(message.text)")
-
-        .note-content(v-if="message.type === 'NOTE'" v-html="flows.noteTextParse(message.text)")
-
-        p.text-content(v-if="isNetlifyDeploy") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
-
-        template(v-if="message.type === 'EMAIL' && !isNetlifyDeploy")
-
-          template(v-if="commits && commits.length")
-            p.text-content #[i.fas.fa-plus] New commits in repository
-            .file-content(v-for="commit in commits")
-              a.file-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow" style="padding: 1px 5px 1px 0; color: inherit;")
-                .file-title #[i.fab.fa-github] #[b  {{ commit.name }}]
-
-          template(v-else)
-            .email-meta
-              | From: {{ message.from.address }}<br>
-              | To: {{ message.to.map(to => to.address).join(", ") }}<br>
-              | #[b {{ message.subject }}]
-            .email-frame-container(v-if="(message.contentType && message.contentType.toLowerCase()) === 'text/html'")
-              iframe.email-frame(
-              ref="emailframe"
-              :srcdoc="getEmailText(message.text)"
-              @load="setEmailFrameHeight()")
-            p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
-
-        p.text-content(v-if="['CHAT', 'NOTE', 'EMAIL', 'EVENT', 'FILE'].indexOf(message.type) < 0") #[b(style="color: #c00;") Unknown message type:] {{ message.type }}
-
-    .buttons-container(v-if="!editMode")
-      .field.has-addons
-
+      template(v-if="!editMode" v-slot:buttons)
         .control(v-if="!autoMarkAsRead && message.unread")
           button.button.is-outlined.has-text-success(
           @click.stop="markRead(message.id)"
@@ -136,13 +84,14 @@
 </template>
 
 <script>
-  import MessagePreview from "@/components/MessagePreview"
-  import Editor from "@/components/UI/Editor"
+  import MessagePreview from "@/components/MessagePreview.vue";
+  import Editor from "@/components/UI/Editor.vue";
+  import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
 
   export default {
     name: "Message",
-    components: {MessagePreview, Editor},
+    components: { MessagePreview, Editor, MessageDisplay },
     props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead", "firstUnreadMessageId"],
     store: ["currentUser"],
     data() {
@@ -152,28 +101,27 @@
 
         highlighted: false,
         highlightTimeout: null,
-      }
+      };
     },
     computed: {
       messageClass() {
         return {
-          event: this.message.type === 'EVENT' || this.commits || this.isNetlifyDeploy,
           noauthor: (this.i > 0)
             && this.sortedMessages[this.i - 1]
             && (this.sortedMessages[this.i - 1].creatorUserId === this.message.creatorUserId)
             && this.utils.datesAreSameDay(this.sortedMessages[this.i - 1].createDate, this.message.createDate)
             && this.firstUnreadMessageId !== this.message.id,
-          'message-highlight': this.replyToId === this.message.id,
-          'message-unread': this.message.unread,
-          'message-edit': this.editMode,
-          'message-softhighlight': this.highlighted,
-          'message-shadow': !this.editMode && !!this.editBackup || this.message.shadow,
-          'message-error': this.message.error,
-          'message-saved': this.message.flagged,
-        }
+          "message-highlight": this.replyToId === this.message.id,
+          "message-unread": this.message.unread,
+          "message-edit": this.editMode,
+          "message-softhighlight": this.highlighted,
+          "message-shadow": !this.editMode && !!this.editBackup || this.message.shadow,
+          "message-error": this.message.error,
+          "message-saved": this.message.flagged,
+        };
       },
       messageIsEdited() {
-        return this.message.modifiedDate !== this.message.createDate
+        return this.message.modifiedDate !== this.message.createDate;
       },
       referenceMessage() {
         return this.getMessage(this.message.referenceFromTopicItemId);
@@ -182,35 +130,6 @@
         if (this.currentUser) {
           return this.message.creatorUserId === this.currentUser.id && this.message.type !== "EVENT";
         }
-      },
-      imagePreviewUrl() {
-        if (!this.message.url) return false;
-        const previewUrl = this.flows.getFilePath(this.message.url);
-        if (this.message.originalFileName === "mime") return previewUrl;
-        let ext = this.message.url.split(".");
-        ext = ext[ext.length - 1] + "";
-        if (["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) > -1) return previewUrl;
-      },
-      commits() {
-        if (this.message.type === "EMAIL" && this.message.from.address === "noreply@github.com") {
-          const parts = this.message.text.split("Commit: ");
-          parts.splice(0, 1);
-
-          let commits = [];
-          parts.forEach(part => {
-            commits.push({
-              url: part.split(" ").filter(part => part)[1],
-              name: part.split("-----------").filter(part => part)[1].split("Compare: ")[0].trim(),
-              changes: part.split("Changed paths:").filter(part => part)[1].split("Log Message:")[0].trim().split("\n").map(change => change.trim()),
-              author: part.split("Author: ").filter(part => part)[1].split("Date:")[0].trim(),
-            })
-          });
-
-          return commits;
-        }
-      },
-      isNetlifyDeploy() {
-        return this.message.type === "EMAIL" && this.message.subject === "[Netlify] We just published a new Production deploy for rflows" && this.message.from.address === 'team@netlify.com';
       },
     },
     methods: {
@@ -222,12 +141,23 @@
       highlight() {
         this.highlighted = false;
         clearTimeout(this.highlightTimeout);
-        setTimeout( () => this.highlighted = true, 10);
-        this.highlightTimeout = setTimeout( () => this.highlighted = false, 5010);
+        setTimeout(() => {
+          this.highlighted = true;
+        }, 10);
+        this.highlightTimeout = setTimeout(() => {
+          this.highlighted = false;
+        }, 5010);
       },
       openEdit() {
-        this.$refs.editor.setMessage(this.message);
         this.editMode = true;
+        setTimeout(() => {
+          if (!this.$refs.editor) {
+            this.eventBus.$emit("notify", "Could not open message editor");
+            this._debug("! Editor missing");
+            return;
+          }
+          this.$refs.editor.setMessage(this.message);
+        }, 0);
       },
       cancelEdit() {
         this.editMode = false;
@@ -249,8 +179,8 @@
           return;
         }
 
-        this.editBackup = {...this.message};
-        let editedMessage = {...this.message};
+        this.editBackup = { ...this.message };
+        const editedMessage = { ...this.message };
         editedMessage.text = isHTML ? text : this.utils.unEscapeHTML(textCleared);
 
         this.$nextTick(() => {
@@ -258,7 +188,7 @@
             .then((response) => {
               this.editBackup = null;
             }).catch((error) => {
-              this._debug("Error editing message: " + error);
+              this._debug(`Error editing message: ${error}`);
               window.alert("Error editing message (see console for details)");
               this.flows.replaceLocalMessage(this.editBackup);
               this.editBackup = null;
@@ -282,26 +212,25 @@
       },
       getMessage(messageId) {
         if (this.sortedMessages) {
-          let message = this.sortedMessages.find(message => message.id === messageId);
+          const message = this.sortedMessages.find(message => message.id === messageId);
           if (message) return message;
         }
       },
       getEmailText(text) {
-        text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, "<img src='" + window.location + "/img_placeholder.svg' width=40 title='Image removed - RFlows'>");
+        text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
         if (text.includes("<head>")) {
-          return text.replace('<head>', '<head><base href="https://flows.contriber.com"><style>body { font-family: sans-serif; }</style>');
+          return text.replace("<head>", "<head><base href=\"https://flows.contriber.com\"><style>body { font-family: sans-serif; }</style>");
         }
-        return '<html><head><base href="https://flows.contriber.com"><style>body { font-family: sans-serif; }</style></head><body>' +
-          text + '</body></html>';
+        return `<html><head><base href="https://flows.contriber.com"><style>body { font-family: sans-serif; }</style></head><body>${text}</body></html>`;
       },
       setEmailFrameHeight() {
         const el = this.$refs.emailframe;
         if (el) {
-          el.height = el.contentWindow.document.body.scrollHeight + 17 + "px";
+          el.height = `${el.contentWindow.document.body.scrollHeight + 17}px`;
         }
       },
-    }
-  }
+    },
+  };
 </script>
 
 <style lang="stylus">
