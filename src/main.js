@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VTooltip from "v-tooltip";
 import VueStash from "vue-stash";
+import PortalVue from "portal-vue";
 
 import App from "@/App.vue";
 
@@ -14,6 +15,7 @@ import "@/assets/main.css";
 
 Vue.use(VTooltip);
 Vue.use(VueStash);
+Vue.use(PortalVue);
 Vue.config.productionTip = false;
 
 const eventBus = new Vue();

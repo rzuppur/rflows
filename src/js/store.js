@@ -10,16 +10,18 @@ const store = {
   errorMsg: "",
   reconnectTimeout: null,
 
-  topics: function () {
-    let topics = {};
-    ALL_TOPICS.forEach(t => {
+  topics: (function () {
+    const topics = {};
+    ALL_TOPICS.forEach((t) => {
       topics[t] = null;
     });
     return topics;
-  }(),
+  }()),
 
-  lastUpdateChat: null,  // for reactivity, stores the latest chat related update id
+  lastUpdateChat: null, // for reactivity, stores the latest chat related update id
   draftMessages: {},
+
+  modalsOpen: [],
 };
 
 export default store;

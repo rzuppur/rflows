@@ -5,6 +5,7 @@
     message-display(
       :utils="utils"
       :flows="flows"
+      :eventBus="eventBus"
       :key="message.id"
       :message="message"
       :class="messageClass"
@@ -83,17 +84,28 @@
             span.icon.is-small
               i.fas.fa-times
 
+    modal(v-if="message.type === 'EMAIL'" :title="message.subject" :sizeMedium="true" ref="emailModal")
+
+      .email-frame-container
+
+          iframe.email-frame(:srcdoc="getEmailText(message.text)")
+
+      template(v-slot:buttons)
+        span
+
+
 </template>
 
 <script>
   import MessagePreview from "@/components/MessagePreview.vue";
   import Editor from "@/components/UI/Editor.vue";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
+  import Modal from "@/components/UI/Modal.vue";
 
 
   export default {
     name: "Message",
-    components: { MessagePreview, Editor, MessageDisplay },
+    components: { MessagePreview, Editor, MessageDisplay, Modal },
     props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead", "firstUnreadMessageId"],
     store: ["currentUser"],
     data() {
@@ -133,6 +145,11 @@
           return this.message.creatorUserId === this.currentUser.id && this.message.type !== "EVENT";
         }
       },
+    },
+    mounted() {
+      this.eventBus.$on("openEmail", (messageId) => {
+        if (this.message.id === messageId) this.$refs.emailModal?.open();
+      });
     },
     methods: {
       editorFocus() {
@@ -224,12 +241,6 @@
           return text.replace("<head>", "<head><base href=\"https://flows.contriber.com\"><style>body { font-family: sans-serif; }</style>");
         }
         return `<html><head><base href="https://flows.contriber.com"><style>body { font-family: sans-serif; }</style></head><body>${text}</body></html>`;
-      },
-      setEmailFrameHeight() {
-        const el = this.$refs.emailframe;
-        if (el) {
-          el.height = `${el.contentWindow.document.body.scrollHeight + 17}px`;
-        }
       },
     },
   };

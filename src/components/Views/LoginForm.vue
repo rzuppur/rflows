@@ -2,7 +2,7 @@
   .login-container.alwaysFullHeight
     form.login-content(@submit.prevent="login")
       .field(style="margin-bottom: 20px;")
-        .title.is-1 RFlows
+        h2 RFlows
         .subtitle.is-6.has-text-grey Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials
       .field
         label.label Email
@@ -38,19 +38,19 @@
 
           this.loginLoading = true;
           this.flows.connect()
-          .then((successful) => {
-            this.loginLoading = false;
-            if (successful) {
-              this.connectionError = false;
-              this.errorMsg = "";
-            } else {
-              this.connectionError = true;
-            }
-          });
+            .then((successful) => {
+              this.loginLoading = false;
+              if (successful) {
+                this.connectionError = false;
+                this.errorMsg = "";
+              } else {
+                this.connectionError = true;
+              }
+            });
         }
-      }
+      },
     },
-  }
+  };
 </script>
 
 <style lang="stylus" scoped>

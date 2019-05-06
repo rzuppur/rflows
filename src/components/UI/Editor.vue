@@ -12,63 +12,62 @@
 
   .editor(v-if="editor")
 
-    slide-in-out(:duration=".075")
-      editor-menu-bar(v-if="showMenuBar" :editor="editor")
-        .menubar(slot-scope="{ commands, isActive }")
-          .buttons.has-addons
+    editor-menu-bar(v-if="showMenuBar" :editor="editor")
+      .menubar(slot-scope="{ commands, isActive }")
+        .buttons.has-addons
 
-            +editorButton("bold()", "Bold")
-              i.fas.fa-bold
-            +editorButton("italic()", "Italic")
-              i.fas.fa-italic
-            +editorButton("underline()", "Underline")
-              i.fas.fa-underline
+          +editorButton("bold()", "Bold")
+            i.fas.fa-bold
+          +editorButton("italic()", "Italic")
+            i.fas.fa-italic
+          +editorButton("underline()", "Underline")
+            i.fas.fa-underline
 
-            .button-spacer
+          .button-spacer
 
-            +editorButton("heading({ level: 1 })", "Heading 1")
-              b H1
-            +editorButton("heading({ level: 2 })", "Heading 2")
-              b H2
-            +editorButton("heading({ level: 3 })", "Heading 3")
-              b H3
+          +editorButton("heading({ level: 1 })", "Heading 1")
+            b H1
+          +editorButton("heading({ level: 2 })", "Heading 2")
+            b H2
+          +editorButton("heading({ level: 3 })", "Heading 3")
+            b H3
 
-            .button-spacer
+          .button-spacer
 
-            //-+editorButton("blockquote()", "Quote")
-              i.fas.fa-quote-right
-            +editorButton("code()", "Inline code")
-              i.fas.fa-code
-            +editorButton("code_block()", "Code block")
-              i.fas.fa-file-code
+          //-+editorButton("blockquote()", "Quote")
+            i.fas.fa-quote-right
+          +editorButton("code()", "Inline code")
+            i.fas.fa-code
+          +editorButton("code_block()", "Code block")
+            i.fas.fa-file-code
 
-            //-.button-spacer
+          //-.button-spacer
 
-            //- TODO: table icons
-              +editorButton("createTable({rowsCount: 2, colsCount: 2, withHeaderRow: false })", "Table", false)
-                i.fas.fa-table
-              template(v-if="isActive.table()")
-                +editorButton("deleteTable()", "Delete table", false)
-                  i.fas.fa-trash
-                +editorButton("addColumnBefore()", "Add column before", false)
-                  b +||
-                +editorButton("addColumnAfter()", "Add column after", false)
-                  b ||+
-                +editorButton("deleteColumn()", "Delete column", false)
-                  b |x|
-                +editorButton("addRowBefore()", "Add row before", false)
-                  b +==
-                +editorButton("addRowAfter()", "Add row after", false)
-                  b='==+'
-                +editorButton("deleteRow()", "Delete row", false)
-                  b='=x='
+          //- TODO: table icons
+            +editorButton("createTable({rowsCount: 2, colsCount: 2, withHeaderRow: false })", "Table", false)
+              i.fas.fa-table
+            template(v-if="isActive.table()")
+              +editorButton("deleteTable()", "Delete table", false)
+                i.fas.fa-trash
+              +editorButton("addColumnBefore()", "Add column before", false)
+                b +||
+              +editorButton("addColumnAfter()", "Add column after", false)
+                b ||+
+              +editorButton("deleteColumn()", "Delete column", false)
+                b |x|
+              +editorButton("addRowBefore()", "Add row before", false)
+                b +==
+              +editorButton("addRowAfter()", "Add row after", false)
+                b='==+'
+              +editorButton("deleteRow()", "Delete row", false)
+                b='=x='
 
-            .button-spacer
+          .button-spacer
 
-            +editorButton("undo()", "Undo", false)
-              i.fas.fa-undo
-            +editorButton("redo()", "Redo", false)
-              i.fas.fa-redo
+          +editorButton("undo()", "Undo", false)
+            i.fas.fa-undo
+          +editorButton("redo()", "Redo", false)
+            i.fas.fa-redo
 
     editor-content(ref="editor"
     :editor="editor"
@@ -78,7 +77,7 @@
 </template>
 
 <script>
-  import {Editor, EditorContent, EditorMenuBar, TextSelection} from 'tiptap'
+  import { Editor, EditorContent, EditorMenuBar, TextSelection } from "tiptap";
   import {
     Blockquote,
     CodeBlock,
@@ -92,22 +91,21 @@
     History,
     Table,
     TableHeader,
-		TableCell,
-		TableRow,
+    TableCell,
+    TableRow,
     Placeholder,
     HorizontalRule,
-  } from 'tiptap-extensions'
+  } from "tiptap-extensions";
   import HardBreakModifierOnly from "@/js/tiptap/HardBreakModifierOnly";
   import Italic from "@/js/tiptap/Italic";
   import Bold from "@/js/tiptap/Bold";
-  import SlideInOut from "@/components/UI/SlideInOut.vue";
 
   const extensions = [
     new Blockquote(),
     new BulletList(),
     new CodeBlock(),
     new HardBreakModifierOnly(),
-    new Heading({levels: [1, 2, 3]}),
+    new Heading({ levels: [1, 2, 3] }),
     new Image(),
     new ListItem(),
     new OrderedList(),
@@ -120,18 +118,18 @@
     new TableHeader(),
     new TableCell(),
     new TableRow(),
-    new Placeholder({emptyClass: 'is-empty'}),
+    new Placeholder({ emptyClass: "is-empty" }),
     new HorizontalRule(),
   ];
   const extensionsTextOnly = [
     new HardBreakModifierOnly(),
     new History(),
-    new Placeholder({emptyClass: 'is-empty'}),
+    new Placeholder({ emptyClass: "is-empty" }),
   ];
 
   export default {
     name: "Editor",
-    components: { EditorContent, EditorMenuBar, SlideInOut },
+    components: { EditorContent, EditorMenuBar },
     props: ["showButtons", "onlyText", "placeholder", "initEmpty"],
     data() {
       return {
@@ -148,8 +146,8 @@
     computed: {
       showMenuBar() {
         return !this.onlyText && (
-              this.showButtons === 'ALWAYS'
-          || (this.showButtons === 'MULTILINE' && this.multiline)
+              this.showButtons === "ALWAYS"
+          || (this.showButtons === "MULTILINE" && this.multiline)
         );
       },
     },
@@ -157,7 +155,7 @@
       _initOrSetContent(content, focus) {
         if (!this.editor) {
           this.editor = new Editor({
-            content: content,
+            content,
             extensions: this.onlyText ? extensionsTextOnly : extensions,
             onInit: () => {
               if (focus) setTimeout(this.focus, 10);
@@ -174,7 +172,7 @@
             },
             onBlur: () => {
               this.$emit("blur");
-            }
+            },
           });
         } else {
           this.editor.setContent(content);
@@ -216,7 +214,7 @@
         }
       },
     },
-  }
+  };
 </script>
 
 <style lang="stylus" scoped>

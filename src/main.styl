@@ -6,11 +6,37 @@ IntelliJ conf:
   Pattern: file:src/main.styl||file:src/shared.styl||file:src/style/*.styl
 */
 
+@import "style/bulma.styl"
+
 @import "shared.styl"
 @import "style/utils.styl"
 
 html, body
   overflow hidden
+
+.container-wide,
+.container-medium,
+.container-small,
+.container-tiny
+  padding 20px
+  margin 0 auto
+
+.container-wide
+  max-width 1200px
+
+.container-medium
+  max-width 870px
+
+.container-small
+  max-width 500px
+
+.container-tiny
+  max-width 380px
+
+.body-content.modalsOpen
+  user-select none
+  user-focus none
+  pointer-events none
 
 @import "style/scrollbar.styl"
 @import "style/tooltip.styl"

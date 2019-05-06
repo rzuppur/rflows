@@ -63,6 +63,10 @@
               | To: {{ props.message.to.map(to => to.address).join(", ") }}<br>
               | #[b {{ props.message.subject }}]
 
+            p.text-content.email-plain(v-if="!props.message.contentType || props.message.contentType.toLowerCase() !== 'text/html'" v-html="props.utils.textToHTML(props.message.text)")
+
+            button.button(v-else type="button" @click="props.eventBus.$emit('openEmail', props.message.id)") View email
+
         p.text-content.text-error(v-else) Unknown message type: {{ props.message.type }}
 
     .buttons-container

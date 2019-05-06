@@ -2,6 +2,8 @@
 
   .overlays
 
+    portal-target(name="modals" multiple)
+
     .drop-overlay(:class="{ dropping: dropping }")
       .drop-overlay-text #[span.icon #[i.fas.fa-upload]]
 
