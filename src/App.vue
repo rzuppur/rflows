@@ -2,7 +2,7 @@
 
   #app(v-cloak @click="documentClick")
 
-    notification
+    Controller
 
     .body-content(
       :tabindex="modalsOpen ? -1 : null"
@@ -11,9 +11,9 @@
       :aria-hidden="modalsOpen ? 'true' : false"
     )
 
-      login-form(v-if="!autoLogin && !currentUser && !reconnectTimeout")
+      login(v-if="$store.route === 'login'")
 
-      template(v-if="autoLogin || currentUser || reconnectTimeout")
+      template(v-if="$store.route === 'chat'")
         .main-container.alwaysFullHeight
           .sidebar
             .sidebar-content(v-if="allChats && allChats.length")
@@ -72,8 +72,8 @@
 
           .mainbar(v-show="openSection === 'CHAT'")
             div(v-if="!currentChatId" style="padding: 20px;")
-              .title {{ loginLoading ? 'Loading...' : 'No connection' }}
-              .buttons
+              h3 {{ loginLoading ? 'Loading...' : 'No connection' }}
+              .buttons.space-top-small
                 button.button(v-if="!loginLoading" @click="reloadPage()") Reload page
                 button.button.is-outlined(@click="flows.logout") Log out
             template(v-if="currentChatId")
@@ -85,25 +85,27 @@
 
     overlays
 
+    notify
+
 </template>
 
 <script>
+  import Controller from "@/components/App/Controller.vue";
   import ChatMessages from "@/components/Views/ChatMessages.vue";
   import SidebarChats from "@/components/Views/SidebarChats.vue";
   import FlaggedMessages from "@/components/Views/FlaggedMessages.vue";
   import Settings from "@/components/Views/Settings.vue";
-  import LoginForm from "@/components/Views/LoginForm.vue";
-  import Notification from "@/components/UI/Notification.vue";
+  import Login from "@/components/Views/Login.vue";
+  import Notify from "@/components/UI/Notify.vue";
   import Overlays from "@/components/UI/Overlays.vue";
   import SlideInOut from "@/components/UI/SlideInOut.vue";
 
   export default {
     name: "App",
-    components: { SlideInOut, Notification, ChatMessages, SidebarChats, FlaggedMessages, Settings, LoginForm, Overlays },
+    components: { Controller, SlideInOut, Notify, ChatMessages, SidebarChats, FlaggedMessages, Settings, Login, Overlays },
     store: ["currentChatId", "currentChatName", "currentUser", "topics", "loginLoading", "connectionError", "errorMsg", "reconnectTimeout"],
     data() {
       return {
-        autoLogin: true, // hide login form flash when session stored in localstorage
         openLastChat: true,
 
         showAllChats: false,
@@ -135,34 +137,16 @@
     },
     created() {
       this.eventBus.$on("logout", () => {
-        this.autoLogin = false;
         this.openLastChat = true;
 
         this.showAllChats = false;
         this.favouriteIds = [];
         this.recentIds = [];
         this.searchText = "";
-        this.openSection = "CHAT";
       });
       this.eventBus.$on("currentChatChange", () => {
         this.searchText = "";
       });
-    },
-    mounted() {
-      this.$root.updateFullHeight();
-      const token = this.flows.getLoginToken();
-      if (token) {
-        this.flows.setLogin({ token });
-        this.loginLoading = true;
-        this.flows.connect()
-        .then((successful) => {
-          this.loginLoading = false;
-          if (!successful) this.connectionError = true;
-          this.autoLogin = false;
-        });
-      } else {
-        this.autoLogin = false;
-      }
     },
     beforeDestroy() {
       this.flows.socket.close({type: "clientClose"});

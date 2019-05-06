@@ -255,6 +255,7 @@ class Flows {
       }
 
       delete this.loginData.password; // delete password from memory after log in
+      this.eventBus.$emit("socketLoginDone");
       _debug("Log in done");
     }
 
@@ -301,6 +302,27 @@ class Flows {
     }
     this._debug("No login token found");
     return null;
+  }
+
+  async loginAndConnect(loginData) {
+    this.store.loginLoading = true;
+    this.setLogin(loginData);
+    try {
+      const connectionSuccessful = await this.connect();
+      if (connectionSuccessful) {
+        this.store.connectionError = false;
+        this.store.errorMsg = "";
+        this.eventBus.$emit("loginDone");
+        return true;
+      }
+      this.store.connectionError = true;
+      return false;
+    } catch (error) {
+      this._debug("! Error connecting", error);
+      return false;
+    } finally {
+      this.store.loginLoading = false;
+    }
   }
 
   logout() {

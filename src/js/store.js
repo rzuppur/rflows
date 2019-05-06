@@ -22,6 +22,7 @@ const store = {
   draftMessages: {},
 
   modalsOpen: [],
+  route: "login",
 };
 
 export default store;

@@ -87,9 +87,6 @@
         return this.allChats.find(chat => chat.id === DEVCHAT_ID);
       },
     },
-    mounted() {
-      this.$root.updateFullHeight();
-    },
     methods: {
       changeChat(chatId) {
         this.flows.openChat(chatId);

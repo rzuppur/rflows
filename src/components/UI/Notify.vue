@@ -1,11 +1,18 @@
 <template lang="pug">
-  .toast-notification(:class="{ visible: visible }" @click="hideCurrent") {{ text && text.text }}
+
+  .toast-notification(
+    :class="{ visible: visible }"
+    @click="hideCurrent"
+  ) {{ text && text.text }}
+
 </template>
 
 <script>
+  /* eslint-disable no-plusplus */
+
   export default {
-    name: "Notification",
-    data () {
+    name: "Notify",
+    data() {
       return {
         timeout: null,
         visible: false,
@@ -16,19 +23,20 @@
     computed: {
       text() {
         if (this.queue.length) return this.queue[0];
+        return false;
       },
     },
     watch: {
       text(val) {
         if (val && !this.visible) {
-          this.visible = true;     // toast transitions in
+          this.visible = true; // toast transitions in
           clearTimeout(this.timeout);
           this.timeout = setTimeout(() => {
-            this.visible = false;  // toast transition out starts
+            this.visible = false; // toast transition out starts
             setTimeout(() => {
-              this.queue.shift();  // toast transition finished, remove text
+              this.queue.shift(); // toast transition finished, remove text
             }, 200);
-          }, 700 + (val.text.length * 70));
+          }, 700 + ( val.text.length * 70 ));
         }
       },
     },
@@ -43,7 +51,7 @@
         }
         this.queue.push({
           text: text.toString(),
-          index: this.index++,  // when text is identical watcher doesn't run
+          index: this.index++, // when text is identical watcher doesn't run
         });
         if (this.queue.length > 5) {
           this._debug("Notification queue > 5, deleting oldest");
@@ -52,9 +60,9 @@
       },
       hideCurrent() {
         clearTimeout(this.timeout);
-        this.visible = false;  // toast transition out starts
+        this.visible = false; // toast transition out starts
         setTimeout(() => {
-          this.queue.shift();  // toast transition finished, remove text
+          this.queue.shift(); // toast transition finished, remove text
         }, 200);
       },
     },
@@ -62,6 +70,7 @@
 </script>
 
 <style lang="stylus" scoped>
+
   @import "~@/shared.styl"
 
   .toast-notification

@@ -311,9 +311,6 @@
       const sidebarIsCollapsed = JSON.parse(localStorage.getItem("sidebarCollapsed"));
       if (sidebarIsCollapsed) this.sidebarCollapsed = true;
     },
-    mounted() {
-      this.$root.updateFullHeight();
-    },
     methods: {
       _getEditorContent() {
         return this.$refs.editor ? this.$refs.editor.getHTML() : "";

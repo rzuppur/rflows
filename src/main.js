@@ -10,7 +10,7 @@ import Flows from "@/js/flows";
 import store from "@/js/store";
 import { RESIZE_DEBOUNCE_TIME, DEBUG } from "@/js/consts";
 
-import "intersection-observer";
+// import "intersection-observer";
 import "@/assets/main.css";
 
 Vue.use(VTooltip);
