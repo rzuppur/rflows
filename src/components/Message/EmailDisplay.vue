@@ -2,7 +2,7 @@
 
   .email-display
 
-    modal(v-if="message" :title="message.subject" :sizeMedium="true" ref="emailModal")
+    modal(v-if="message" :title="message.subject" :sizeMedium="true" ref="emailModal" @close="message = null")
 
       .email-frame-container
 

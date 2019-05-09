@@ -86,6 +86,7 @@
       close() {
         this.modalsOpen.splice(this.modalsOpen.indexOf(this._id), 1);
         this.modalOpen = false;
+        this.$emit("close");
       },
       outsideClose() {
         if (!this.blocking) this.close();
