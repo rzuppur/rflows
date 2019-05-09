@@ -12,11 +12,19 @@
                 button.button.borderless.button-icon.modal-close(type="button" @click="close" aria-label="Close dialog" style="opacity: .5; background: rgba(0, 0, 0, 0.1);")
                   span.icon.material.white <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
 
-              .modal(ref="modal" role="dialog" @click.stop :aria-labelledby="`dialog-title-${_id}`" @keydown.native.capture.esc="close")
+              .modal(
+                ref="modal"
+                role="dialog"
+                @click.stop
+                :aria-labelledby="`dialog-title-${_id}`"
+                @keydown.native.capture.esc="outsideClose"
+              )
 
                 .modal-header(v-if="title !== false")
+
                   h3.title(:id="`dialog-title-${_id}`") {{ title }}
-                  button.button.borderless.button-icon.modal-close(type="button" @click="close" aria-label="Close dialog")
+
+                  button.button.borderless.button-icon.modal-close(v-if="!blocking" type="button" @click="close" aria-label="Close dialog")
                     span.icon.material.gray <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
 
                 slot

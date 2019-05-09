@@ -3,26 +3,26 @@
   .message-preview(
     @click="scrollToMessage()"
     @keyup.enter="e => e.target.click()"
-    :class="{ clickable: clickable, superCompact: superCompact }"
+    :class="{ clickable, superCompact }"
     :tabindex="clickable ? 0 : -1"
-    v-tooltip.left="{ content: (superCompact && message) ? flows.getFullName(message.creatorUserId) + ': ' + messageText.substring(0, 30) + '...' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+    v-tooltip.left="{ content: tooltipText, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
   )
+
     template(v-if="superCompact")
       .has-text-grey.text-small.has-text-centered
         span.icon.small.has-text-info(style="margin-left: -5px; margin-right: -4px;")
           i.fas.fa-thumbtack
-        | {{ flows.getFullName(message.creatorUserId).charAt(0) + flows.getFullName(message.creatorUserId).split(" ")[1].charAt(0) }}
+        | {{ initials }}
 
     template(v-else)
+
       .name(v-if="!message") ?
 
       template(v-else)
-        .name
-          | {{ flows.getFullName(message.creatorUserId) }}
-        .date {{ utils.fullDateAddOtherYear(message.createDate) }}
-        a.expand-toggle(v-if="!clickable && clamped && !expanded" @click="toggleClamp()") View more
 
-        .message-content.note-content(:class="{ clamped: !expanded }" ref="text" v-html="messageText")
+        .name {{ flows.getFullName(message.creatorUserId) }}
+        .date {{ utils.fullDateAddOtherYear(message.createDate) }}
+        .message-content.note-content.clamped(v-html="messageText")
 
 </template>
 
@@ -41,11 +41,6 @@
         default: false,
       },
     },
-    data: function () {
-      return {
-        expanded: false,
-      };
-    },
     computed: {
       message() {
         return this.flows.getChatMessage(this.messageId);
@@ -53,30 +48,30 @@
       messageText() {
         if (this.message) {
           if (this.message.type === "EMAIL") {
-            return "✉ " + this.message.subject + "\n" + this.message.from.address;
-          } else if (this.message.type === "NOTE") {
-            return this.flows.getMessageTextRepresentation(this.message.text);
-          } else {
-            return this.flows.getMessageTextRepresentation(this.flows.chatTextParse(this.message.text));
+            return `✉ ${this.message.subject}\n${this.message.from.address}`;
           }
+          if (this.message.type === "NOTE") {
+            return this.flows.getMessageTextRepresentation(this.message.text);
+          }
+          return this.flows.chatTextParse(this.message.text);
         }
       },
-      clamped() {
-        if (this.messageText && this.$refs.text) {
-          return this.$refs.text.offsetHeight < this.$refs.text.scrollHeight
-              || this.$refs.text.offsetWidth  < this.$refs.text.scrollWidth;
-        }
+      tooltipText() {
+        if (!this.superCompact || !this.message) return null;
+        return `${this.flows.getFullName(this.message.creatorUserId)}: ${this.messageText.substring(0, 30)}...`;
+      },
+      initials() {
+        const name = this.flows.getFullName(this.message.creatorUserId);
+        return name.charAt(0) + name.split(" ")[1].charAt(0);
       },
     },
     methods: {
       scrollToMessage() {
         if (this.clickable && this.message) this.eventBus.$emit("scrollToMessage", this.message.id);
       },
-      toggleClamp() {
-        this.expanded = !this.expanded;
-      },
-    }
-  }
+    },
+  };
+
 </script>
 
 <style lang="stylus" scoped>

@@ -76,7 +76,9 @@
         p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 
     .buttons-container
+
       .field.has-addons
+
         slot(name="buttons")
 
 </template>
@@ -106,4 +108,166 @@
 
 </script>
 
-<style lang="stylus" scoped src="@/components/Message.styl"></style>
+<style lang="stylus" scoped>
+
+  @import "~@/shared.styl"
+
+  .chat-message
+    padding 5px 20px
+    display flex
+    position relative
+
+    &:hover,
+    &:focus-within
+      background alpha($color-light-blue-background, 0.6)
+
+      .buttons-container
+        display block
+
+        .field
+          opacity 1
+
+    /*
+     BUTTONS
+     */
+
+    .buttons-container .field
+      opacity 0
+
+    .buttons-container
+      margin-top -3px
+      margin-bottom -3px
+      margin-left 10px
+      display block // @stylint ignore
+
+      @media (max-width $buttons-switch-to-mobile)
+        top -29px
+        right 15px
+        position absolute
+        z-index 10
+        display none // @stylint ignore
+        box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
+
+      .field
+        @media (min-width $buttons-switch-to-mobile+1px)
+          position sticky
+          top 20px
+          margin-top 10px
+          margin-bottom 10px
+
+        .button span:not(.icon)
+          color $color-text
+
+    &.noauthor
+      &:hover,
+      &:focus-within
+        .avatar-container
+          .date
+            display block
+
+          .saved-icon
+            display none
+
+      .sticky-avatar,
+      .content-container > .name,
+      .content-container > .date
+        display none
+
+      .avatar-container .saved-icon
+        display block
+
+      .buttons-container .field
+        @media (min-width $buttons-switch-to-mobile+1px)
+          margin-top 0
+          margin-bottom 0
+
+    /*
+    AVATAR
+     */
+
+    .avatar-container
+      min-width 45px
+      max-width 45px
+      padding-top 4px
+
+      .sticky-avatar
+        height calc(100% - 10px)
+
+      .avatar
+        position sticky
+        top 10px
+        margin-bottom -4px
+
+      .date
+        display none
+        margin-top -1px
+        margin-bottom -3px
+        color #aaa
+        line-height 1.2
+
+      .saved-icon
+        display none
+        font-size 12px
+        margin-left 25px
+
+    /*
+     NAME
+     */
+
+    .name,
+    .date
+      display inline-block
+      text-regular-13()
+
+    .name
+      text-bold-13()
+      margin-right 5px
+
+      .saved-icon
+        margin-left 3px
+        font-size 12px
+
+    .date
+      color $color-gray-text
+
+     /*
+     CONTENT
+      */
+
+    .content-container
+      word-wrap break-word
+      width 100%
+      min-width 0
+
+    .event-content
+      color $color-gray-text
+      font-style italic
+
+    .email-meta
+      color $color-gray-text
+      margin-bottom 5px
+
+      b
+        font-weight 600
+        color #4a4a4a
+
+    .email-plain
+      border 1px solid #ddd
+      padding 10px
+      border-radius 4px
+      max-width 700px
+      margin-bottom 10px
+      background #fff
+
+    .text-clamped
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+
+      @supports (-webkit-line-clamp: 3)
+        white-space pre-line
+        display -webkit-box
+        -webkit-box-orient vertical
+        -webkit-line-clamp 3
+
+</style>

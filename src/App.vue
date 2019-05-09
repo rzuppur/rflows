@@ -87,8 +87,6 @@
 
     overlays
 
-    notify
-
 </template>
 
 <script>
@@ -98,7 +96,6 @@
   import FlaggedMessages from "@/components/Views/FlaggedMessages.vue";
   import Settings from "@/components/Views/Settings.vue";
   import Login from "@/components/Views/Login.vue";
-  import Notify from "@/components/UI/Notify.vue";
   import Overlays from "@/components/UI/Overlays.vue";
   import SlideInOut from "@/components/UI/SlideInOut.vue";
   import EmailDisplay from "@/components/Message/EmailDisplay.vue";
@@ -109,7 +106,6 @@
       EmailDisplay,
       Controller,
       SlideInOut,
-      Notify,
       ChatMessages,
       SidebarChats,
       FlaggedMessages,

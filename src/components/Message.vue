@@ -82,16 +82,14 @@
 </template>
 
 <script>
-  import MessagePreview from "@/components/MessagePreview.vue";
   import Editor from "@/components/UI/Editor.vue";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
   import Modal from "@/components/UI/Modal.vue";
-  import FileDisplay from "@/components/Message/FileDisplay";
 
 
   export default {
     name: "Message",
-    components: { FileDisplay, MessagePreview, Editor, MessageDisplay, Modal },
+    components: { Editor, MessageDisplay, Modal },
     props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead", "firstUnreadMessageId"],
     store: ["currentUser"],
     data() {
@@ -104,18 +102,21 @@
       };
     },
     computed: {
+      noAuthor() {
+        const prevMessage = this.sortedMessages[this.i - 1];
+        return (this.i > 0)
+          && prevMessage?.creatorUserId === this.message.creatorUserId
+          && this.utils.datesAreSameDay(prevMessage.createDate, this.message.createDate)
+          && this.firstUnreadMessageId !== this.message.id;
+      },
       messageClass() {
         return {
-          noauthor: (this.i > 0)
-            && this.sortedMessages[this.i - 1]
-            && (this.sortedMessages[this.i - 1].creatorUserId === this.message.creatorUserId)
-            && this.utils.datesAreSameDay(this.sortedMessages[this.i - 1].createDate, this.message.createDate)
-            && this.firstUnreadMessageId !== this.message.id,
+          noauthor: this.noAuthor,
           "message-highlight": this.replyToId === this.message.id,
           "message-unread": this.message.unread,
           "message-edit": this.editMode,
           "message-softhighlight": this.highlighted,
-          "message-shadow": !this.editMode && !!this.editBackup || this.message.shadow,
+          "message-shadow": (!this.editMode && !!this.editBackup) || this.message.shadow,
           "message-error": this.message.error,
           "message-saved": this.message.flagged,
         };
@@ -130,6 +131,7 @@
         if (this.currentUser) {
           return this.message.creatorUserId === this.currentUser.id && this.message.type !== "EVENT";
         }
+        return false;
       },
     },
     methods: {
@@ -185,11 +187,11 @@
 
         this.$nextTick(() => {
           this.flows.editChatMessage(editedMessage)
-            .then((response) => {
+            .then(() => {
               this.editBackup = null;
             }).catch((error) => {
               this._debug(`Error editing message: ${error}`);
-              window.alert("Error editing message (see console for details)");
+              this.eventBus.$emit("notify", "Error editing message");
               this.flows.replaceLocalMessage(this.editBackup);
               this.editBackup = null;
             });
@@ -205,14 +207,14 @@
         this.flows.markChatMessageRead(id);
         this.eventBus.$emit("messagesScrollUpdate");
       },
-      deleteChatMessage(instant) {
-        if (instant || window.confirm("Delete message? You can ctrl+click for instant delete.")) {
+      async deleteChatMessage(instant) {
+        if (instant || await this.$root.confirm("Delete message? You can ctrl+click for instant delete.", "Delete", "Cancel")) {
           this.flows.deleteChatMessage(this.message.id);
         }
       },
       getMessage(messageId) {
         if (this.sortedMessages) {
-          const message = this.sortedMessages.find(message => message.id === messageId);
+          const message = this.sortedMessages.find(sortedMessage => sortedMessage.id === messageId);
           if (message) return message;
         }
       },
@@ -238,4 +240,74 @@
       line-height 1.6
 
 </style>
-<style lang="stylus" scoped src="./Message.styl"></style>
+<style lang="stylus" scoped>
+  @import "~@/shared.styl"
+
+  @keyframes highlight-soft
+    0%
+      background alpha($color-gold, 0.2)
+    20%
+      background alpha($color-gold, 0.2)
+    100%
+      background alpha($color-gold, 0.05)
+
+  .chat-message
+    /*
+     HOVER, HIGHLIGHTS
+     */
+
+    &.message-shadow
+      .text-content,
+      .note-content
+        opacity 0.4
+
+    &.message-unread
+      background alpha($color-unread-background, 0.1)
+
+    &.message-saved
+      background alpha(#409df1, 0.05)
+
+      &:hover
+        background alpha(#409df1, 0.08)
+
+    &.message-highlight
+      box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(68, 85, 114, 0.2)
+      margin 0 13px
+      padding 5px 7px
+      border-radius $border-radius
+      background #fff !important
+      z-index 10
+
+    &.message-softhighlight
+      animation highlight-soft 5s
+
+    &.message-error
+      background alpha($color-red, 0.05)
+
+      &:hover,
+      &:focus-within
+        background alpha($color-red, 0.08)
+
+    /*
+     EDITOR
+     */
+
+    .editor
+      margin 5px 0 10px
+
+    .edit-buttons
+      margin-bottom 5px
+
+    &.message-edit .buttons-container
+      display none
+
+    .unread-separator + &.noauthor
+      &:hover .avatar-container .date
+        display none
+
+      .sticky-avatar,
+      .content-container > .name,
+      .content-container > .date
+        display inline-block
+
+</style>

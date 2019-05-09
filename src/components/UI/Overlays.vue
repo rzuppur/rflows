@@ -4,15 +4,23 @@
 
     portal-target(name="modals" multiple)
 
-    .drop-overlay(:class="{ dropping: dropping }")
+    confirm-modal
+
+    .drop-overlay(:class="{ dropping }")
       .drop-overlay-text #[span.icon #[i.fas.fa-upload]]
+
+    notify
 
 </template>
 
 <script>
+  import ConfirmModal from "@/components/UI/ConfirmModal.vue";
+  import Notify from "@/components/UI/Notify.vue";
+
   export default {
     name: "Overlays",
-    data: function () {
+    components: { ConfirmModal, Notify },
+    data() {
       return {
         dropping: false,
       };
@@ -20,17 +28,13 @@
     created() {
       this.eventBus.$on("dropOverlay", this.dropOverlay);
     },
-    computed: {
-      text() {
-        if (this.queue.length) return this.queue[0];
-      },
-    },
     methods: {
       dropOverlay(visible) {
-        this.dropping = visible;
+        this.dropping = !!visible;
       },
     },
-  }
+  };
+
 </script>
 
 <style lang="stylus" scoped>
