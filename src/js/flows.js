@@ -1264,6 +1264,14 @@ class Flows {
     if (!openChatId || !token) {
       return Promise.reject(new Error("No token or currentChatId"));
     }
+    const file = formData.get("file");
+    if (!file) {
+      return Promise.reject(new Error("No file"));
+    }
+    if (file.size > 5242880) {
+      return Promise.reject(new Error("File too large"));
+    }
+
     formData.append("topicId", openChatId.toString());
     formData.append("token", token);
     formData.append("text", fileName);

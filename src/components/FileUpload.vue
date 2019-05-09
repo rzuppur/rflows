@@ -44,7 +44,7 @@
   export default {
     name: "FileUpload",
     props: ["chatId", "replyToId"],
-    data: function () {
+    data() {
       return {
         fileName: "",
         formData: null,
@@ -55,6 +55,18 @@
         expanded: false,
         dropping: false,
       };
+    },
+    watch: {
+      expanded(val) {
+        this.$emit("expandChange", val);
+        this.eventBus.$emit("messagesScrollUpdate");
+      },
+      previewUrl(val) {
+        this.eventBus.$emit("messagesScrollUpdate");
+      },
+      dropping(val, oldVal) {
+        if (val !== oldVal) this.eventBus.$emit("dropOverlay", val);
+      },
     },
     created() {
       window.addEventListener("paste", this._pasteFromClipboard);
@@ -116,18 +128,29 @@
         this.currentStatus = "UPLOADING";
         this._debug("Starting file upload");
         this.flows.uploadFileToChat(this.formData, this.fileName, this.replyToId)
-        .then(response => {
-          this.currentStatus = "SUCCESS";
-          this.fileName = "";
-          this._reset();
-          this.eventBus.$emit("notify", "File uploaded");
-          this.$emit("fileUploaded");
-        })
-        .catch(error => {
-          this.uploadError = error.response;
-          this.currentStatus = "ERROR";
-          this.eventBus.$emit("notify", "Error uploading file");
-        });
+          .then((response) => {
+            if (response.status !== 200) {
+              console.log(response);
+              this.currentStatus = "ERROR";
+              this.eventBus.$emit("notify", "Error uploading file");
+              return;
+            }
+            this.currentStatus = "SUCCESS";
+            this._reset();
+            this.eventBus.$emit("notify", "File uploaded");
+            this.$emit("fileUploaded");
+          })
+          .catch((error) => {
+            if (error.message === "File too large") {
+              this.uploadError = error.message;
+              this.currentStatus = "ERROR";
+              this.eventBus.$emit("notify", "File too large, maximum 5MB");
+              return;
+            }
+            this.uploadError = error.response;
+            this.currentStatus = "ERROR";
+            this.eventBus.$emit("notify", "Error uploading file");
+          });
       },
       _reset() {
         this.formData = null;
@@ -141,7 +164,7 @@
           return;
         }
         if (event.clipboardData.items?.length) {
-          const items = event.clipboardData.items;
+          const { items } = event.clipboardData;
           for (let i = 0; i < items.length; i++) {
             if (items[i].kind === "file") {
               this._setFile(items[0].getAsFile());
@@ -155,15 +178,14 @@
             reader.onload = function(event){
               this._debug(event.target.result)}; // data url!
             reader.readAsDataURL(blob);
-        }*/
+        } */
       },
       _filesChange(fileList) {
         if (fileList.length !== 1) return this._reset();
         this._setFile(fileList[0]);
-
       },
       _setFile(file) {
-        const type = file.type;
+        const { type } = file;
         const formData = new FormData();
         formData.append("file", file, file.name);
         this.formData = formData;
@@ -174,7 +196,7 @@
           this.previewUrl = URL.createObjectURL(file);
         } else {
           this.previewUrl = null;
-          this._debug("uploadFileType " + type);
+          this._debug(`uploadFileType ${type}`);
         }
 
         this.$nextTick(() => {
@@ -182,19 +204,7 @@
         });
       },
     },
-    watch: {
-      expanded: function(val) {
-        this.$emit("expandChange", val);
-        this.eventBus.$emit("messagesScrollUpdate");
-      },
-      previewUrl: function(val) {
-        this.eventBus.$emit("messagesScrollUpdate");
-      },
-      dropping: function(val, oldVal) {
-        if (val !== oldVal) this.eventBus.$emit("dropOverlay", val);
-      }
-    },
-  }
+  };
 </script>
 
 <style lang="stylus" scoped>
