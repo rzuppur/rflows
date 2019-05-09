@@ -59,9 +59,9 @@
 
           template(v-else-if="message.type === 'EMAIL' && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
             p.event-content #[i.fas.fa-plus] New commits in repository
-            .file-content(v-for="commit in utils.commitEmailParse(message.text)")
-              a.file-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow" style="padding: 1px 5px 1px 0; color: inherit;")
-                .file-title #[i.fab.fa-github] #[b  {{ commit.name }}]
+            .commit(v-for="commit in utils.commitEmailParse(message.text)")
+              a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
+                .commit-title #[i.fab.fa-github] #[b  {{ commit.name }}]
 
           template(v-else)
             .email-meta
@@ -269,5 +269,28 @@
         display -webkit-box
         -webkit-box-orient vertical
         -webkit-line-clamp 3
+
+    .commit-preview
+      display inline-block
+      vertical-align top
+      margin 3px 8px 8px 0
+      color inherit
+      background  $color-light-blue-background
+      border-radius $border-radius
+      overflow hidden
+
+      &:hover,
+      &:focus
+        background darken($color-light-blue-background, 1)
+
+      &:focus
+        outline none
+
+        .commit-title
+          text-decoration underline
+
+      .commit-title
+        padding 5px 10px
+
 
 </style>
