@@ -25,6 +25,7 @@
             v-for="message in flagged.messageIds.sort().map(getMessage)"
             :utils="utils"
             :flows="flows"
+            :eventBus="eventBus"
             :key="message.id"
             :message="message"
           )

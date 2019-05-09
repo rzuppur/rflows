@@ -150,15 +150,37 @@
         | Forward emails to chat: #{""}
         span.ellipsis(@click="flowsEmailCopy()" v-tooltip="'Copy to clipboard'" style="text-decoration: underline; cursor: pointer;") {{ flowsEmail }}
 
-      .flagged(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
+      .flagged.show-wide(v-if="!hidden && flaggedMessageIds && flaggedMessageIds.length")
         h4
           .show-wide #[i.fas.fa-thumbtack.has-text-info] Saved messages
-        message-preview.sidebar-saved(
-          v-for="messageId in flaggedMessageIds"
-          :messageId="messageId"
-          :superCompact="sidebarCollapsed"
-          :key="messageId"
+
+        message-display.sidebar-saved(
+          v-for="message in flaggedMessages"
+          :utils="utils"
+          :flows="flows"
+          :eventBus="eventBus"
+          :key="message.id + '_flagged_preview'"
+          :message="message"
+          :compact="true"
         )
+          template(v-slot:buttons)
+
+            .control
+              button.button.is-small.is-outlined.has-text-info(
+                @click.stop="eventBus.$emit('scrollToMessage', message.id)"
+                v-tooltip="'Scroll to message'"
+              )
+                span.icon.is-small
+                  i.fas.fa-search
+
+            .control
+              button.button.is-small.is-outlined.has-text-grey-light(
+                @click.stop="flows.setFlag(message.id, false)"
+                v-tooltip="'Remove from saved'"
+              )
+                span.icon.is-small
+                  i.fas.fa-times
+
 
 </template>
 
@@ -171,11 +193,12 @@
   import MessagePreview from "@/components/MessagePreview.vue";
   import Editor from "@/components/UI/Editor.vue";
   import FileUpload from "@/components/FileUpload.vue";
+  import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
   export default {
     name: "ChatMessages",
     directives: { imagesLoaded },
-    components: { Message, MessagePreview, Editor, FileUpload },
+    components: { Message, MessagePreview, Editor, FileUpload, MessageDisplay },
     props: {
       favouriteIds: Array,
       hidden: Boolean,
@@ -281,6 +304,9 @@
       },
       isDevChat() {
         return this.currentChatId === DEVCHAT_ID;
+      },
+      flaggedMessages() {
+        return this.flaggedMessageIds.map(this.flows.getChatMessage);
       },
     },
     watch: {

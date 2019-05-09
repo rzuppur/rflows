@@ -1,6 +1,6 @@
 <template lang="pug" functional>
 
-  .chat-message(v-on="listeners" :class="data.class")
+  .chat-message(v-on="listeners" :class="[data.class, data.staticClass]")
 
     .avatar-container
 
@@ -22,8 +22,12 @@
           i.fas.fa-thumbtack
 
       .date
-        span(v-tooltip="props.utils.weekdayDate(props.message.createDate)") {{ props.utils.time(props.message.createDate) }}
-        span(v-if="props.message.modifiedDate !== props.message.createDate") , edited {{ props.utils.dateTime(props.message.modifiedDate) }}
+
+        span(v-if="props.compact") {{ props.utils.dateTimeAddOtherYear(props.message.createDate) }}
+
+        template(v-else)
+          span(v-tooltip="props.utils.weekdayDate(props.message.createDate)") {{ props.utils.time(props.message.createDate) }}
+          span(v-if="props.message.modifiedDate !== props.message.createDate") , edited {{ props.utils.dateTime(props.message.modifiedDate) }}
 
       //-span.text-small.text-error(v-if="props.message.customData && Object.keys(props.message.customData).length") &nbsp; customData: {{ props.message.customData }}
 
@@ -34,9 +38,13 @@
 
         p.event-content(v-if="props.message.type === 'EVENT'") {{ props.message.text }}
 
-        p.text-content(v-else-if="props.message.type === 'CHAT'" v-html="props.flows.chatTextParse(props.message.text)")
+        template(v-else-if="props.message.type === 'CHAT'")
+          .text-clamped(v-if="props.compact" v-html="props.flows.chatTextParse(props.message.text)")
+          p.text-content(v-else v-html="props.flows.chatTextParse(props.message.text)")
 
-        .note-content(v-else-if="props.message.type === 'NOTE'" v-html="props.flows.noteTextParse(props.message.text)")
+        template(v-else-if="props.message.type === 'NOTE'")
+          .text-clamped(v-if="props.compact") {{ props.flows.getMessageTextRepresentation(props.message.text) }}
+          .note-content(v-else v-html="props.flows.noteTextParse(props.message.text)")
 
         .file-content(v-else-if="props.message.type === 'FILE'")
 

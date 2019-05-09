@@ -83,6 +83,8 @@
                 :hidden="openSection !== 'CHAT'"
                 @viewSavedMessages="openSection = 'SAVED'")
 
+    email-display
+
     overlays
 
     notify
@@ -99,10 +101,22 @@
   import Notify from "@/components/UI/Notify.vue";
   import Overlays from "@/components/UI/Overlays.vue";
   import SlideInOut from "@/components/UI/SlideInOut.vue";
+  import EmailDisplay from "@/components/Message/EmailDisplay.vue";
 
   export default {
     name: "App",
-    components: { Controller, SlideInOut, Notify, ChatMessages, SidebarChats, FlaggedMessages, Settings, Login, Overlays },
+    components: {
+      EmailDisplay,
+      Controller,
+      SlideInOut,
+      Notify,
+      ChatMessages,
+      SidebarChats,
+      FlaggedMessages,
+      Settings,
+      Login,
+      Overlays,
+    },
     store: ["currentChatId", "currentChatName", "currentUser", "topics", "loginLoading", "connectionError", "errorMsg", "reconnectTimeout"],
     data() {
       return {

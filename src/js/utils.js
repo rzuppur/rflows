@@ -199,6 +199,14 @@ const utils = {
     ext = ext[ext.length - 1];
     return ["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) >= 0;
   },
+
+  getEmailText(text) {
+    text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
+    if (text.includes("<head>")) {
+      return text.replace("<head>", "<head><base href=\"https://flows.contriber.com\"><style>body { font-family: sans-serif; }</style>");
+    }
+    return `<html><head><base href="https://flows.contriber.com"><style>body { font-family: sans-serif; }</style></head><body>${text}</body></html>`;
+  },
 };
 
 

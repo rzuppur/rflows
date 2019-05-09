@@ -251,16 +251,14 @@
     margin-bottom 10px
     background #fff
 
-.email-frame
-  width 100%
-  display block
-  box-shadow inset 0 1px 3px 0 rgba(0, 0, 0, 0.1)
-  background #fff
-  min-height 350px
-  height calc(100vh - 230px)
 
-.email-frame-container
-  border 1px solid #eee
-  border-radius 4px
-  width 100%
-  margin-bottom 10px
+  .text-clamped
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
+
+    @supports (-webkit-line-clamp: 3)
+      white-space pre-line
+      display -webkit-box
+      -webkit-box-orient vertical
+      -webkit-line-clamp 3

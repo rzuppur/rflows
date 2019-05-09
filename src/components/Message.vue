@@ -84,15 +84,6 @@
             span.icon.is-small
               i.fas.fa-times
 
-    modal(v-if="message.type === 'EMAIL'" :title="message.subject" :sizeMedium="true" ref="emailModal")
-
-      .email-frame-container
-
-          iframe.email-frame(:srcdoc="getEmailText(message.text)")
-
-      template(v-slot:buttons)
-        span
-
 
 </template>
 
@@ -145,11 +136,6 @@
           return this.message.creatorUserId === this.currentUser.id && this.message.type !== "EVENT";
         }
       },
-    },
-    mounted() {
-      this.eventBus.$on("openEmail", (messageId) => {
-        if (this.message.id === messageId) this.$refs.emailModal?.open();
-      });
     },
     methods: {
       editorFocus() {
@@ -234,13 +220,6 @@
           const message = this.sortedMessages.find(message => message.id === messageId);
           if (message) return message;
         }
-      },
-      getEmailText(text) {
-        text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
-        if (text.includes("<head>")) {
-          return text.replace("<head>", "<head><base href=\"https://flows.contriber.com\"><style>body { font-family: sans-serif; }</style>");
-        }
-        return `<html><head><base href="https://flows.contriber.com"><style>body { font-family: sans-serif; }</style></head><body>${text}</body></html>`;
       },
     },
   };
