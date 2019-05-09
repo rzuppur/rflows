@@ -30,6 +30,7 @@
     },
     computed: {
       attachments() {
+        if (!this.message) return [];
         return this.flows.messageChilds(this.message.id);
       },
     },
