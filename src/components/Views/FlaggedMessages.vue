@@ -29,6 +29,15 @@
             :key="message.id"
             :message="message"
           )
+            template(v-slot:buttons)
+
+              .control
+                button.button.is-small.is-outlined.has-text-grey-light(
+                  @click.stop="flows.setFlag(message.id, false)"
+                  v-tooltip="'Remove from saved'"
+                )
+                  span.icon.is-small
+                    i.fas.fa-times
 
       .workspace-container(v-if="flaggedMessages !== undefined && Object.keys(flaggedMessages).length === 0")
         h3 No saved messages
@@ -192,7 +201,6 @@
             text-decoration underline
 
         /deep/ .chat-message
-          border-top 1px solid $color-light-border
           padding-bottom 8px
 
 </style>
