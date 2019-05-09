@@ -54,7 +54,7 @@
       opacity 0
 
     .content-container
-      overflow hidden
+      word-wrap break-word
 
   &.message-error
     background alpha($color-red, 0.05)
@@ -199,35 +199,6 @@
     p
       margin-top -2px
       margin-bottom 2px
-
-  .file-preview
-    display inline-block
-    vertical-align top
-    margin 3px 0
-    background  $color-light-blue-background
-    border-radius $border-radius
-    overflow hidden
-    max-width $message-item-max-width
-
-    &:hover,
-    &:focus
-      background darken($color-light-blue-background, 1)
-
-    &:focus
-      outline none
-
-      .file-title
-        text-decoration underline
-
-    .file-title
-      padding 5px 10px
-
-    .image-preview
-      padding 0 10px 10px
-
-      img
-        display block
-        max-height 280px
 
   .email-meta
     color $color-gray-text

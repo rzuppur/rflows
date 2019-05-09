@@ -156,17 +156,16 @@
 
         message-display.sidebar-saved(
           v-for="message in flaggedMessages"
-          :utils="utils"
-          :flows="flows"
-          :eventBus="eventBus"
           :key="message.id + '_flagged_preview'"
           :message="message"
           :compact="true"
+          :showReplyMessage="false"
         )
+
           template(v-slot:buttons)
 
             .control
-              button.button.is-small.is-outlined.has-text-info(
+              button.button.is-outlined.has-text-info(
                 @click.stop="eventBus.$emit('scrollToMessage', message.id)"
                 v-tooltip="'Scroll to message'"
               )
@@ -174,7 +173,7 @@
                   i.fas.fa-search
 
             .control
-              button.button.is-small.is-outlined.has-text-grey-light(
+              button.button.is-outlined.has-text-grey-light(
                 @click.stop="flows.setFlag(message.id, false)"
                 v-tooltip="'Remove from saved'"
               )
@@ -194,11 +193,12 @@
   import Editor from "@/components/UI/Editor.vue";
   import FileUpload from "@/components/FileUpload.vue";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
+  import FileDisplay from "@/components/Message/FileDisplay.vue";
 
   export default {
     name: "ChatMessages",
     directives: { imagesLoaded },
-    components: { Message, MessagePreview, Editor, FileUpload, MessageDisplay },
+    components: { FileDisplay, Message, MessagePreview, Editor, FileUpload, MessageDisplay },
     props: {
       favouriteIds: Array,
       hidden: Boolean,

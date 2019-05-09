@@ -3,16 +3,10 @@
   .chat-message-container
 
     message-display(
-      :utils="utils"
-      :flows="flows"
-      :eventBus="eventBus"
       :key="message.id"
       :message="message"
       :class="messageClass"
     )
-
-      template(v-if="message.referenceFromTopicItemId" v-slot:reply)
-        message-preview.reply-original(:messageId="message.referenceFromTopicItemId")
 
       template(v-if="editMode" v-slot:content)
 
@@ -92,11 +86,12 @@
   import Editor from "@/components/UI/Editor.vue";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
   import Modal from "@/components/UI/Modal.vue";
+  import FileDisplay from "@/components/Message/FileDisplay";
 
 
   export default {
     name: "Message",
-    components: { MessagePreview, Editor, MessageDisplay, Modal },
+    components: { FileDisplay, MessagePreview, Editor, MessageDisplay, Modal },
     props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead", "firstUnreadMessageId"],
     store: ["currentUser"],
     data() {

@@ -23,16 +23,14 @@
 
           message-display(
             v-for="message in flagged.messageIds.sort().map(getMessage)"
-            :utils="utils"
-            :flows="flows"
-            :eventBus="eventBus"
             :key="message.id"
             :message="message"
+            :showReplyMessage="false"
           )
             template(v-slot:buttons)
 
               .control
-                button.button.is-small.is-outlined.has-text-grey-light(
+                button.button.is-outlined.has-text-grey-light(
                   @click.stop="flows.setFlag(message.id, false)"
                   v-tooltip="'Remove from saved'"
                 )

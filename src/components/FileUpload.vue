@@ -61,7 +61,7 @@
         this.$emit("expandChange", val);
         this.eventBus.$emit("messagesScrollUpdate");
       },
-      previewUrl(val) {
+      previewUrl() {
         this.eventBus.$emit("messagesScrollUpdate");
       },
       dropping(val, oldVal) {
