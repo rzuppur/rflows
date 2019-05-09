@@ -726,6 +726,20 @@ class Flows {
   }
 
   /**
+   *
+   * @param messageId {number}
+   * @returns {Object[]}
+   */
+  messageChilds(messageId) {
+    if (!this.store.topics.TopicItem) return [];
+
+    let messages = JSON.parse(JSON.stringify(this.store.topics.TopicItem));
+    messages = messages.filter(message => !message.deleted && message.parentTopicItemId === messageId);
+    messages.sort((a, b) => a.id - b.id);
+    return messages;
+  }
+
+  /**
    * @param chatId {number}
    * @returns {Array<Object>}
    */
