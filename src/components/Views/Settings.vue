@@ -119,8 +119,8 @@
           this.eventBus.$emit("notify", "Name can't be empty");
         }
       },
-      removeAvatar() {
-        if (window.confirm('Delete avatar?')) this.flows.removeAvatar();
+      async removeAvatar() {
+        if (await this.$root.confirm("Delete avatar?", "Delete", "Cancel")) this.flows.removeAvatar();
       },
       notificationGranted() {
         return window.Notification.permission === "granted";

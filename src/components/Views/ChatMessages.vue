@@ -540,8 +540,8 @@
           this.leavingOrJoining = false;
         });
       },
-      leaveChat() {
-        if (window.confirm("Leave chat?")) {
+      async leaveChat() {
+        if (await this.$root.confirm(`Leave chat ${this.currentChatName}?`, "Leave", "Cancel")) {
           this.leavingOrJoining = true;
           this.flows.leaveChat(this.currentChatId).then(() => {
             this.eventBus.$emit("notify", `Left ${this.currentChatName}`);
