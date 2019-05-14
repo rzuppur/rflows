@@ -11,7 +11,7 @@
         handler(val) {
           this.$root.updateFullHeight();
 
-          if (val === "login") document.title = "RFlows | Sign in";
+          if (val === "login") document.title = "RFlows";
         },
       },
     },

@@ -159,14 +159,11 @@
     flex 1
     overflow-y auto
     background $color-light-gray-background
-    padding 15px 0 60px
+    padding-top 15px
 
     .workspace-container
       max-width 850px
-      margin 0 auto
-
-      &:not(:last-child)
-        margin-bottom 30px
+      margin 0 auto 30px
 
       .workspace
         margin-top 0

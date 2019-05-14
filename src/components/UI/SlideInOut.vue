@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import { TweenMax, Power2 } from "gsap/TweenMax";
+  import "velocity-animate/velocity.ui.min.js";
 
   export default {
     name: "SlideInOut",
@@ -26,10 +26,12 @@
         el.style.overflow = "hidden";
       },
       enter(el, done) {
-        TweenMax.to(el, this.duration, {
-          ease: Power2.easeOut,
+        Velocity(el, {
           maxHeight: el.scrollHeight,
-          onComplete: done,
+        }, {
+          duration: this.duration,
+          easing: "ease-out",
+          complete: done,
         });
       },
       afterEnter(el) {
@@ -41,10 +43,12 @@
         el.style.maxHeight = el.scrollHeight + "px";
       },
       leave(el, done) {
-        TweenMax.to(el, this.duration, {
+        Velocity(el, {
           maxHeight: "0",
-          ease: Power2.easeOut,
-          onComplete: done,
+        }, {
+          duration: this.duration,
+          easing: "ease-out",
+          complete: done,
         });
       },
     },
