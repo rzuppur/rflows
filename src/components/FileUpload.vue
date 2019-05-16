@@ -1,6 +1,8 @@
 <template lang="pug">
   .file-upload
 
+    .text-muted(v-if="fileQueue.length" style="margin: -5px 0 3px;") +{{ fileQueue.length }} more file#[span(v-if="fileQueue.length > 1") s] in queue
+
     img.image-preview(v-if="previewUrl" :src="previewUrl")
 
     form.field.is-grouped(
@@ -54,6 +56,7 @@
         currentStatus: "INITIAL",
         expanded: false,
         dropping: false,
+        fileQueue: [],
       };
     },
     watch: {
@@ -119,8 +122,10 @@
           event.preventDefault();
           this.dropping = false;
 
-          const file = event.dataTransfer?.files?.[0];
-          if (file) this._setFile(file);
+          if (event.dataTransfer?.files?.length > 0) {
+            this.fileQueue = Array.from(event.dataTransfer.files);
+            this._processQueue();
+          }
         }
       },
       upload() {
@@ -136,9 +141,10 @@
               return;
             }
             this.currentStatus = "SUCCESS";
-            this._reset();
+            this._reset(true);
             this.eventBus.$emit("notify", "File uploaded");
             this.$emit("fileUploaded");
+            this._processQueue();
           })
           .catch((error) => {
             if (error.message === "File too large") {
@@ -152,11 +158,12 @@
             this.eventBus.$emit("notify", "Error uploading file");
           });
       },
-      _reset() {
+      _reset(keepQueue) {
         this.formData = null;
         this.fileName = "";
         this.previewUrl = null;
         this.expanded = false;
+        if (!keepQueue) this.fileQueue = [];
       },
       _pasteFromClipboard(event) {
         if (event.clipboardData.files?.length === 1) {
@@ -202,6 +209,11 @@
         this.$nextTick(() => {
           if (this.$refs.fileName) this.$refs.fileName.focus();
         });
+      },
+      _processQueue() {
+        if (this.fileQueue.length) {
+          this._setFile(this.fileQueue.pop());
+        }
       },
     },
   };

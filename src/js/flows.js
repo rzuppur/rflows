@@ -926,12 +926,13 @@ class Flows {
   }
 
   /**
-   * TODO: if type is FILE, delete the file itself as well
-   *
    * @param messageId {number}
    * @returns {Promise}
    */
   deleteChatMessage(messageId) {
+    const message = this.getChatMessage(messageId);
+    if (message?.type === "FILE") this.deleteFile(message.url);
+
     const messageIndex = this.store.topics.TopicItem.findIndex(message => message.id === messageId);
     if (messageIndex) {
       Vue.delete(this.store.topics.TopicItem, messageIndex);
