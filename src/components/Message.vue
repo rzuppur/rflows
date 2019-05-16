@@ -253,7 +253,7 @@
 
   .chat-message
     /*
-     HOVER, HIGHLIGHTS
+     HIGHLIGHTS
      */
 
     &.message-shadow
@@ -266,9 +266,6 @@
 
     &.message-saved
       background alpha(#409df1, 0.05)
-
-      &:hover
-        background alpha(#409df1, 0.08)
 
     &.message-highlight
       box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(68, 85, 114, 0.2)
@@ -283,10 +280,6 @@
 
     &.message-error
       background alpha($color-red, 0.05)
-
-      &:hover,
-      &:focus-within
-        background alpha($color-red, 0.08)
 
     /*
      EDITOR

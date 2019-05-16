@@ -119,7 +119,7 @@
 
     &:hover,
     &:focus-within
-      background alpha($color-light-blue-background, 0.6)
+      background alpha($color-light-blue-background, 0.6) !important
 
       .buttons-container
         display block
