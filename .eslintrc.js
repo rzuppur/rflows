@@ -26,7 +26,7 @@ module.exports = {
     "object-curly-newline": 0,
     "no-unused-expressions": 0,
     "lines-between-class-members": 0,
-    "no-plusplus": [1, { "allowForLoopAfterthoughts": true }],
+    "no-plusplus": 0,
     "no-await-in-loop": 0,
   },
 

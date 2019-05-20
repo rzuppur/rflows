@@ -51,7 +51,7 @@ class Flows {
     const frameDestination = frame.headers.destination.split(".");
 
     if (frameDestination[frameDestination.length - 1] === "deleted") {
-      const itemIndex = this.store.topics[frameType].findIndex(item => item.id === parseInt(frameBody.id));
+      const itemIndex = this.store.topics[frameType].findIndex(item => item.id === parseInt(frameBody.id, 10));
       this._debug("Delete", frameType, frameBody);
       if (itemIndex > -1) {
         Vue.delete(this.store.topics[frameType], itemIndex);
@@ -860,8 +860,8 @@ class Flows {
    * @param newMessage {Object}
    */
   sendChatMessage(newMessage) {
-    if (!this.store.currentUser.id) return Promise.reject(new Error("No currentUser in store"));
-    if (!this.store.currentChatId) return Promise.reject(new Error("No currentChatId in store"));
+    if (!this.store.currentUser.id) throw new Error("No currentUser in store");
+    if (!this.store.currentChatId) throw new Error("No currentChatId in store");
 
     newMessage.creatorUserId = this.store.currentUser.id;
     newMessage.topicId = this.store.currentChatId;

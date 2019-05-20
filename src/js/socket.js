@@ -1,6 +1,6 @@
 import autoBind from "auto-bind";
-import sockjs from 'sockjs-client';
-import webstomp from 'webstomp-client';
+import sockjs from "sockjs-client";
+import webstomp from "webstomp-client";
 import utils from "@/js/utils";
 import { SOCKET_URL, DEBUG, SOCKET_TRAFFIC_DEBUG } from "@/js/consts";
 
@@ -79,6 +79,7 @@ class Socket {
     }
     return new Promise((resolve, reject) => {
       _debug("Creating socket");
+      // eslint-disable-next-line new-cap
       this.stompClient = webstomp.over(new sockjs(SOCKET_URL), { debug: SOCKET_TRAFFIC_DEBUG });
       _debug("Connecting...");
       this.stompClient.connect({}, (frame) => {
@@ -165,14 +166,14 @@ class Socket {
           },
         );
       });
-    } else {
-      this.subscriptions[destination] = this.stompClient.subscribe(
-        destination,
-        this._frameHandler.bind(this), {
-          id: this.nextSubId++,
-        },
-      );
     }
+    this.subscriptions[destination] = this.stompClient.subscribe(
+      destination,
+      this._frameHandler.bind(this), {
+        id: this.nextSubId++,
+      },
+    );
+    return Promise.resolve();
   }
 
   unsubscribe(destination) {
@@ -215,6 +216,7 @@ class Socket {
       });
     }
     this.stompClient.send(destination, JSON.stringify(data));
+    return Promise.resolve();
   }
 
   /**
