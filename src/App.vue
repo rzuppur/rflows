@@ -13,7 +13,9 @@
 
       login(v-if="$store.route === 'login'")
 
-      template(v-if="$store.route === 'chat'")
+      chat(v-if="$store.route === 'chat'")
+
+      template(v-if="$store.route === 'chat_old'")
         .main-container.alwaysFullHeight
           .sidebar
             .sidebar-content(v-if="allChats && allChats.length")
@@ -99,10 +101,12 @@
   import Overlays from "@/components/UI/Overlays.vue";
   import SlideInOut from "@/components/UI/SlideInOut.vue";
   import EmailDisplay from "@/components/Message/EmailDisplay.vue";
+  import Chat from "@/components/Views/Chat.vue";
 
   export default {
     name: "App",
     components: {
+      Chat,
       EmailDisplay,
       Controller,
       SlideInOut,
