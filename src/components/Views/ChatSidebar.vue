@@ -14,6 +14,8 @@
         span.icon
           i.fas.fa-cog
 
+    img(:src="$flows.utils.placeholderImageChar('Y', 100, 150, 80, 'f0b068')")
+
 
 </template>
 

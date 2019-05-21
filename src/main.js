@@ -7,6 +7,7 @@ import App from "@/App.vue";
 
 import utils from "@/js/utils";
 import Flows from "@/js/flows";
+import Flows2 from "@/js/flows/main";
 import store from "@/js/store";
 import { RESIZE_DEBOUNCE_TIME, DEBUG } from "@/js/consts";
 
@@ -35,6 +36,7 @@ Vue.mixin({
   },
   created() {
     this.flows = this.$root.flows;
+    this.$flows = this.$root.$flows;
     this.eventBus = eventBus;
     this.utils = utils;
     this.DEBUG = DEBUG;
@@ -80,6 +82,7 @@ new Vue({
   },
   created() {
     this.flows = new Flows(this.$store, eventBus);
+    this.$flows = new Flows2(this.$store, eventBus);
 
     const fixAnchor = document.getElementById("fixAnchor");
     this.updateFullHeight = () => {
