@@ -15,7 +15,7 @@
 
       chat(v-if="$store.route === 'chat'")
 
-      template(v-if="$store.route === 'chat_old'")
+      //-template(v-if="$store.route === 'chat_old'")
         .main-container.alwaysFullHeight
           .sidebar
             .sidebar-content(v-if="allChats && allChats.length")
@@ -50,20 +50,14 @@
                     slide-in-out(:duration="100")
                       .popup-menu(v-if="workspaceMenuOpen")
                         .popup-menu-item(
-                          @click="workspaceFilter = null"
-                          :class="{ active: workspaceFilter === null }"
+                          @click="workspaceFilter = null" :class="{ active: workspaceFilter === null }"
                           ) All workspaces
                         .popup-menu-item(
                           v-for="workspace in userWorkspaces"
-                          @click="workspaceFilter = workspace.workspace"
-                          :class="{ active: workspaceFilter && workspaceFilter.id === workspace.workspace.id }"
+                          @click="workspaceFilter = workspace.workspace" :class="{ active: workspaceFilter && workspaceFilter.id === workspace.workspace.id }"
                           ) {{ workspace.workspace.name }}
 
-              sidebar-chats(
-                :allChats="allChats"
-                :favouriteIds="favouriteIds"
-                :recentIds="recentIds"
-                :searchText="searchText")
+              sidebar-chats(:allChats="allChats" :favouriteIds="favouriteIds" :recentIds="recentIds" :searchText="searchText")
 
 
           .mainbar(v-if="openSection === 'SAVED'")
@@ -80,9 +74,7 @@
                 button.button.is-outlined(@click="flows.logout") Log out
             template(v-if="currentChatId")
               chat-messages(
-                ref="messages"
-                :favouriteIds="favouriteIds"
-                :hidden="openSection !== 'CHAT'"
+                ref="messages" :favouriteIds="favouriteIds" :hidden="openSection !== 'CHAT'"
                 @viewSavedMessages="openSection = 'SAVED'")
 
     email-display

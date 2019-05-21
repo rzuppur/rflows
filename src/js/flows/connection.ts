@@ -2,18 +2,19 @@
 import autoBind from "auto-bind";
 import { Vue } from "vue/types/vue";
 
+import STORE from "@/js/store";
 import LoginData from "@/js/model/LoginData";
 import localstorage from "@/js/flows/localstorage";
 import Socket, { OpenResult } from "@/js/socket";
 
 
 class Connection {
-  store: any;
+  store: STORE;
   eventBus: Vue;
   socket: Socket;
   reconnect: boolean = false;
 
-  constructor(store: any, eventBus: Vue) {
+  constructor(store: STORE, eventBus: Vue) {
     this.store = store;
     this.eventBus = eventBus;
 

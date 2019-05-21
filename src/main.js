@@ -20,12 +20,15 @@ Vue.config.productionTip = false;
 
 Vue.component("btn", Button);
 
-const events = new Vue();
+const storeModel = { init: STORE };
+storeModel.init();
+
 const store = new Vue({
   data() {
-    return STORE;
+    return storeModel ;
   },
 });
+const events = new Vue();
 
 Vue.mixin({
   filters: {
@@ -88,7 +91,7 @@ new Vue({
     mqMobileMatches: false,
   },
   created() {
-    this.flows = new Flows(this.$store, events);
+    //this.flows = new Flows(this.$store, events);
     this.$flows = new Flows2(this.$store, events);
 
     const fixAnchor = document.getElementById("fixAnchor");

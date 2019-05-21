@@ -1,21 +1,22 @@
 import { Vue } from "vue/types/vue.d";
 
+import STORE from "@/js/store";
 import utils from "@/js/flows/utils";
 import localstorage from "@/js/flows/localstorage";
 import Connection from "@/js/flows/connection";
 
 class Flows2 {
-  store: any;
-  eventBus: Vue;
+  store: STORE;
+  events: Vue;
   connection: Connection;
 
   readonly utils = utils;
   readonly localstorage = localstorage;
 
-  constructor(store: any, eventBus: Vue) {
+  constructor(store: STORE, events: Vue) {
     this.store = store;
-    this.eventBus = eventBus;
-    this.connection = new Connection(store, eventBus);
+    this.events = events;
+    this.connection = new Connection(store, events);
   }
 }
 

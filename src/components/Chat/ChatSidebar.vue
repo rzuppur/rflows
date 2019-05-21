@@ -7,7 +7,7 @@
       img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser($store.currentUser)")
 
       .text
-        .name.ellipsis {{ flows.getFullNameFromUser($store.currentUser) }}
+        .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
         .details.ellipsis {{ $store.currentUser.email }}
 
       //-button.button.settings(v-tooltip.right="'Settings'")
