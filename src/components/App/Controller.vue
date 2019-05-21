@@ -9,34 +9,46 @@
       "$store.route": {
         immediate: true,
         handler(val) {
-          this.$root.updateFullHeight();
-
+          setTimeout(() => this.$root.updateFullHeight(), 0);
           if (val === "login") document.title = "RFlows";
+        },
+      },
+      "$store.currentUser": {
+        immediate: true,
+        handler(val, oldVal) {
+          if ((typeof oldVal === "undefined") || val?.email !== oldVal?.email) {
+            if (val == null) {
+              this._debug("Log out");
+              this.$store.route = "login";
+            } else {
+              this._debug(`User: ${val.email}`);
+              this.$store.route = "chat";
+            }
+          }
         },
       },
     },
     created() {
-      this.eventBus.$on("logout", this.logout);
       this.eventBus.$on("loginDone", this.loginDone);
     },
     mounted() {
       this.loginIfHasToken();
     },
     methods: {
-      logout() {
-        this.$store.route = "login";
-      },
       loginDone() {
         this.$store.route = "chat";
       },
       async loginIfHasToken() {
-        const loginToken = this.flows.getLoginToken();
+        const loginToken = this.$flows.localstorage.getSessionToken();
 
         if (loginToken) {
-          this.$store.route = "chat";
+          const user = this.$flows.localstorage.getSessionUser();
+          if (user) this.$store.currentUser = user;
 
-          const successful = await this.flows.loginAndConnect({ token: loginToken });
-          if (!successful) this.$store.route = "login";
+          const successful = await this.$flows.connection.login({ token: loginToken });
+          if (!successful) {
+            this.$store.currentUser = null;
+          }
         }
       },
     },

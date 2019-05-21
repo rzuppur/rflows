@@ -8,14 +8,14 @@
 
         h4 Logged in as
         .user.user-with-name.space-top-small
-          img.avatar.avatar-small(:src="flows.getAvatarFromUser($store.currentUser)")
+          img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser($store.currentUser)")
           .text
-            .name.ellipsis {{ flows.getFullNameFromUser($store.currentUser) }}
+            .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
             .details.ellipsis {{ $store.currentUser.email }}
 
         .buttons.space-top-medium
           button.button.is-fullwidth.is-info(type="button" @click="$store.route = 'chat'") Continue
-          button.button.is-fullwidth(type="button" @click="flows.logout") Log out
+          button.button.is-fullwidth(type="button" @click="$flows.connection.logout") Log out
 
       form(v-else @submit.prevent="login")
 
@@ -26,16 +26,16 @@
         .field
           label.label Email
           .control
-            input.input#email(v-model.trim="loginData.email" type="email" autofocus name="email" required autocomplete="email")
+            input.input#email(v-model.trim="loginData.email" type="email" autofocus name="email" required autocomplete="email" :disabled="loginLoading")
 
         .field(style="margin-bottom: 30px;")
           label.label Password
           .control
-            input.input#password(@keyup.enter="login" v-model="loginData.password" type="password" name="password" required autocomplete="password")
+            input.input#password(@keyup.enter="login" v-model="loginData.password" type="password" name="password" required autocomplete="password" :disabled="loginLoading")
 
         .field
           .control
-            button.button.is-info.is-fullwidth(type="submit" :class="{ 'is-loading': $store.loginLoading }") Sign in
+            button.button.is-info.is-fullwidth(type="submit" :class="{ 'is-loading': loginLoading }") Sign in
 
       .text-error(v-if="$store.connectionError") {{ $store.errorMsg }}
 
@@ -47,23 +47,28 @@
     data() {
       return {
         loginData: {},
-        loggingIn: false,
       };
     },
-    created() {
-      this.eventBus.$on("socketLoginDone", () => {
-        if (this.loggingIn) this.$store.route = "chat";
-      });
+    computed: {
+      loginLoading() {
+        return this.$store.loginLoading;
+      },
     },
     methods: {
       async login() {
         if (this.loginData.email && this.loginData.password) {
-          this.loggingIn = true;
+          this.$store.loginLoading = true;
 
-          const successful = await this.flows.loginAndConnect(this.loginData);
-          if (!successful) this.$store.route = "login";
-
-          this.loggingIn = false;
+          try {
+            const successful = await this.$flows.connection.login(this.loginData);
+            if (!successful) {
+              this.$store.route = "login";
+            }
+          } catch (error) {
+            this._debug("! Error", error);
+          } finally {
+            this.$store.loginLoading = false;
+          }
         }
       },
     },

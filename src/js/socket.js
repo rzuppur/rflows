@@ -86,14 +86,14 @@ class Socket {
         if (frame.command === "CONNECTED") {
           this.connected = true;
           _debug("Connection successful, resolving");
-          resolve(frame);
+          resolve({ frame });
         } else {
           _debug("! Connection failed, rejecting");
-          reject(frame);
+          reject({ error: true, frame });
         }
       }, (CloseEvent) => {
         _debug("Connection closed, rejecting");
-        reject(CloseEvent);
+        reject({ error: true, CloseEvent });
         this.closeCleanup(CloseEvent);
       });
     });
@@ -151,6 +151,7 @@ class Socket {
     }
     if (this.subscriptions[destination]) {
       if (response) return Promise.resolve({ alreadyExists: true });
+      return Promise.resolve();
     }
     if (response) {
       return new Promise((resolve, reject) => {

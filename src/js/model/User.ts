@@ -1,6 +1,6 @@
 import Id from "@/js/model/Id";
 
-class User extends Id {
+interface User extends Id {
   avatarUrl: string;
   email: string;
   firstName: string;

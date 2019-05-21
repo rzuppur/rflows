@@ -4,17 +4,19 @@
 
     .user.user-with-name(v-if="$store.currentUser && !$store.connectionError")
 
-      img.avatar.avatar-small(:src="flows.getAvatarFromUser($store.currentUser)")
+      img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser($store.currentUser)")
 
       .text
         .name.ellipsis {{ flows.getFullNameFromUser($store.currentUser) }}
         .details.ellipsis {{ $store.currentUser.email }}
 
-      button.button.settings(v-tooltip.right="'Settings'")
+      //-button.button.settings(v-tooltip.right="'Settings'")
         span.icon
           i.fas.fa-cog
 
-    img(:src="$flows.utils.placeholderImageChar('Y', 100, 150, 80, 'f0b068')")
+      button.button(v-tooltip.right="'Log out'" @click="$flows.connection.logout()")
+        span.icon
+          i.fas.fa-sign-out-alt
 
 
 </template>

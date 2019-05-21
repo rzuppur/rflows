@@ -1,4 +1,4 @@
-class Id {
+interface Id {
   id: number;
 }
 

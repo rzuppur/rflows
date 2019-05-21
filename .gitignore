@@ -20,3 +20,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# Built .ts files
+src/js/flows/*.js
+src/js/model/*.js
