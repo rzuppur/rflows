@@ -4,6 +4,7 @@ import VueStash from "vue-stash";
 import PortalVue from "portal-vue";
 
 import App from "@/App.vue";
+import Button from "@/components/UI/global/Button.vue";
 
 import utils from "@/js/utils";
 import Flows from "@/js/flows";
@@ -18,6 +19,8 @@ Vue.use(VTooltip);
 Vue.use(VueStash);
 Vue.use(PortalVue);
 Vue.config.productionTip = false;
+
+Vue.component("btn", Button);
 
 const eventBus = new Vue();
 

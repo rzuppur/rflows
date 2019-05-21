@@ -14,17 +14,42 @@
         span.icon
           i.fas.fa-cog
 
-      button.button(v-tooltip.right="'Log out'" @click="$flows.connection.logout()")
+      btn.button(:action="$flows.connection.logout" rtip="Log out" icon)
         span.icon
           i.fas.fa-sign-out-alt
 
+    .sidebar-chats
+
+      h4.chats-section
+        btn.button-reset(:action="toggleAllChats" label="Toggle all chats")
+          i.fas(:class="`fa-angle-${showAllChats ? 'up' : 'down'}`")
+          | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
+
+      chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat")
 
 </template>
 
 <script>
+  import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
 
   export default {
     name: "ChatSidebar",
+    components: { ChatSidebarChatDisplay },
+    data() {
+      return {
+        showAllChats: true,
+      };
+    },
+    computed: {
+      allChats() {
+        return [];
+      },
+    },
+    methods: {
+      toggleAllChats() {
+        this.showAllChats = !this.showAllChats;
+      },
+    },
   };
 
 </script>
@@ -46,6 +71,7 @@
     .user
       .details
         color $color-gray-text-light
+        text-regular-13()
 
       .button
         color alpha(#fff, 0.5)
@@ -104,7 +130,14 @@
         background #fff
         color $color-text
         &::placeholder
-          color $color-text
+          color $color-
 
+  .sidebar-chats
+    width $sidebar-width
+    overflow hidden
+
+  .chats-section
+    padding 20px 10px 5px
+    color $color-red-text
 
 </style>

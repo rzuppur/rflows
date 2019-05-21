@@ -14,8 +14,8 @@
             .details.ellipsis {{ $store.currentUser.email }}
 
         .buttons.space-top-medium
-          button.button.is-fullwidth.is-info(type="button" @click="$store.route = 'chat'") Continue
-          button.button.is-fullwidth(type="button" @click="$flows.connection.logout") Log out
+          btn.button.is-fullwidth.is-info(:action="openChat") Continue
+          btn.button.is-fullwidth(:action="$flows.connection.logout") Log out
 
       form(v-else @submit.prevent="login")
 
@@ -35,7 +35,7 @@
 
         .field
           .control
-            button.button.is-info.is-fullwidth(type="submit" :class="{ 'is-loading': loginLoading }") Sign in
+            btn.button.is-info.is-fullwidth(submit :loading="loginLoading") Sign in
 
       .text-error(v-if="$store.connectionError") {{ $store.errorMsg }}
 
@@ -70,6 +70,9 @@
             this.$store.loginLoading = false;
           }
         }
+      },
+      openChat() {
+        this.$store.route = "chat";
       },
     },
   };
