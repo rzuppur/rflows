@@ -1,28 +1,31 @@
 import Vue from "vue";
 import VTooltip from "v-tooltip";
-import VueStash from "vue-stash";
 import PortalVue from "portal-vue";
 
-import App from "@/App.vue";
-import Button from "@/components/UI/global/Button.vue";
-
+import STORE from "@/js/store";
 import utils from "@/js/utils";
 import Flows from "@/js/flows";
 import Flows2 from "@/js/flows/main";
-import store from "@/js/store";
 import { RESIZE_DEBOUNCE_TIME, DEBUG } from "@/js/consts";
+
+import App from "@/App.vue";
+import Button from "@/components/UI/global/Button.vue";
 
 // import "intersection-observer";
 import "@/assets/main.css";
 
 Vue.use(VTooltip);
-Vue.use(VueStash);
 Vue.use(PortalVue);
 Vue.config.productionTip = false;
 
 Vue.component("btn", Button);
 
-const eventBus = new Vue();
+const events = new Vue();
+const store = new Vue({
+  data() {
+    return STORE;
+  },
+});
 
 Vue.mixin({
   filters: {
@@ -37,10 +40,13 @@ Vue.mixin({
       return this.$root.mqMobileMatches;
     },
   },
+  beforeCreate() {
+    this.$store = store;
+  },
   created() {
     this.flows = this.$root.flows;
     this.$flows = this.$root.$flows;
-    this.eventBus = eventBus;
+    this.$events = events;
     this.utils = utils;
     this.DEBUG = DEBUG;
   },
@@ -74,18 +80,16 @@ function alwaysFullHeightSetSize(fixAnchor) {
       elements[i].setAttribute("style", `height:${height}; max-height:${height}`);
     }
   }
-  eventBus.$emit("debouncedResize");
+  events.$emit("debouncedResize");
 }
 
 new Vue({
   data: {
-    flows: null,
-    store,
     mqMobileMatches: false,
   },
   created() {
-    this.flows = new Flows(this.$store, eventBus);
-    this.$flows = new Flows2(this.$store, eventBus);
+    this.flows = new Flows(this.$store, events);
+    this.$flows = new Flows2(this.$store, events);
 
     const fixAnchor = document.getElementById("fixAnchor");
     this.updateFullHeight = () => {

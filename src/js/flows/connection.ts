@@ -137,7 +137,7 @@ class Connection {
       }
     } else if (frameType === "Error") {
       this._debug("! Socket error", frameBody);
-      if (frameBody.description) this.eventBus.$emit("notify", frameBody.description);
+      if (frameBody.description) this.$events.$emit("notify", frameBody.description);
     } else {
       this._debug(`! UNHANDLED MESSAGE: ${frameType}`, frame.headers, frameBody);
     }

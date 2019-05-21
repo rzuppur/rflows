@@ -35,7 +35,7 @@
       },
     },
     mounted() {
-      this.eventBus.$on("openEmail", (messageId) => {
+      this.$events.$on("openEmail", (messageId) => {
         const message = this.flows.getChatMessage(messageId);
         if (message) {
           this.message = message;

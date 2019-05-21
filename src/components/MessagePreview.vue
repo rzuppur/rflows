@@ -67,7 +67,7 @@
     },
     methods: {
       scrollToMessage() {
-        if (this.clickable && this.message) this.eventBus.$emit("scrollToMessage", this.message.id);
+        if (this.clickable && this.message) this.$events.$emit("scrollToMessage", this.message.id);
       },
     },
   };

@@ -62,13 +62,13 @@
     watch: {
       expanded(val) {
         this.$emit("expandChange", val);
-        this.eventBus.$emit("messagesScrollUpdate");
+        this.$events.$emit("messagesScrollUpdate");
       },
       previewUrl() {
-        this.eventBus.$emit("messagesScrollUpdate");
+        this.$events.$emit("messagesScrollUpdate");
       },
       dropping(val, oldVal) {
-        if (val !== oldVal) this.eventBus.$emit("dropOverlay", val);
+        if (val !== oldVal) this.$events.$emit("dropOverlay", val);
       },
     },
     created() {
@@ -137,12 +137,12 @@
             if (response.status !== 200) {
               console.log(response);
               this.currentStatus = "ERROR";
-              this.eventBus.$emit("notify", "Error uploading file");
+              this.$events.$emit("notify", "Error uploading file");
               return;
             }
             this.currentStatus = "SUCCESS";
             this._reset(true);
-            this.eventBus.$emit("notify", "File uploaded");
+            this.$events.$emit("notify", "File uploaded");
             this.$emit("fileUploaded");
             this._processQueue();
           })
@@ -150,12 +150,12 @@
             if (error.message === "File too large") {
               this.uploadError = error.message;
               this.currentStatus = "ERROR";
-              this.eventBus.$emit("notify", "File too large, maximum 5MB");
+              this.$events.$emit("notify", "File too large, maximum 5MB");
               return;
             }
             this.uploadError = error.response;
             this.currentStatus = "ERROR";
-            this.eventBus.$emit("notify", "Error uploading file");
+            this.$events.$emit("notify", "Error uploading file");
           });
       },
       _reset(keepQueue) {

@@ -165,7 +165,7 @@
               setTimeout(this.cursorToEnd, 5);
             },
             onUpdate: () => {
-              this.eventBus.$emit("messagesScrollUpdate");
+              this.$events.$emit("messagesScrollUpdate");
               this.multiline = this.$refs.editor ? this.$refs.editor.$el.clientHeight > 40 : false;
               this.$emit("update");
             },
@@ -181,7 +181,7 @@
           if (focus) setTimeout(this.focus, 10);
           setTimeout(() => {
             this.multiline = this.$refs.editor ? this.$refs.editor.$el.clientHeight > 40 : false;
-            this.eventBus.$emit("messagesScrollUpdate");
+            this.$events.$emit("messagesScrollUpdate");
             this.cursorToEnd();
           }, 5);
         }
@@ -204,7 +204,7 @@
       focus() {
         if (this.editor) {
           this.editor.focus();
-          this.eventBus.$emit("messagesScrollUpdate");
+          this.$events.$emit("messagesScrollUpdate");
         }
       },
       cursorToEnd() {

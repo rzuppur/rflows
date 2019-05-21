@@ -117,7 +117,6 @@
       Login,
       Overlays,
     },
-    store: ["currentChatId", "currentChatName", "currentUser", "topics", "loginLoading", "connectionError", "errorMsg", "reconnectTimeout"],
     data() {
       return {
         openLastChat: true,
@@ -150,7 +149,7 @@
       },
     },
     created() {
-      this.eventBus.$on("logout", () => {
+      this.$events.$on("logout", () => {
         this.openLastChat = true;
 
         this.showAllChats = false;
@@ -158,7 +157,7 @@
         this.recentIds = [];
         this.searchText = "";
       });
-      this.eventBus.$on("currentChatChange", () => {
+      this.$events.$on("currentChatChange", () => {
         this.searchText = "";
       });
     },
@@ -171,13 +170,13 @@
       },
       documentClick(event) {
         const path = event.composedPath();
-        //this.eventBus.$emit("documentClick", path);
+        //this.$events.$emit("documentClick", path);
         if (!path.find(element => element.classList?.contains("menu-open"))) {
           this.workspaceMenuOpen = false;
         }
       },
     },
-    watch: {
+    /*watch: {
       lastOpenChatCanBeOpened (newVal) {
         if (!newVal) return;
         this._debug(`Loading last opened chat: ${  this.recentIds[0]}`);
@@ -212,7 +211,7 @@
         }
         document.title = `RFlows${workspace}`;
       },
-    },
+    },*/
   };
 </script>
 

@@ -26,7 +26,7 @@
       };
     },
     created() {
-      this.eventBus.$on("dropOverlay", this.dropOverlay);
+      this.$events.$on("dropOverlay", this.dropOverlay);
     },
     methods: {
       dropOverlay(visible) {

@@ -71,7 +71,7 @@
 
             p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
 
-            button.button(v-else type="button" @click="eventBus.$emit('openEmail', message.id)") View email
+            button.button(v-else type="button" @click="$events.$emit('openEmail', message.id)") View email
 
         p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 

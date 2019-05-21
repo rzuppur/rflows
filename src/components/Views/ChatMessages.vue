@@ -166,7 +166,7 @@
 
             .control
               button.button.is-outlined.has-text-info(
-                @click.stop="eventBus.$emit('scrollToMessage', message.id)"
+                @click.stop="$events.$emit('scrollToMessage', message.id)"
                 v-tooltip="'Scroll to message'"
               )
                 span.icon.is-small
@@ -328,11 +328,11 @@
       },
     },
     created() {
-      this.eventBus.$on("messagesScrollUpdate", this.scrollUpdate);
-      this.eventBus.$on("debouncedResize", this.scrollUpdate);
-      this.eventBus.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
-      this.eventBus.$on("currentChatChange", this.markNewChat);
-      this.eventBus.$on("currentChatChange", this.saveRestoreMessage);
+      this.$events.$on("messagesScrollUpdate", this.scrollUpdate);
+      this.$events.$on("debouncedResize", this.scrollUpdate);
+      this.$events.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
+      this.$events.$on("currentChatChange", this.markNewChat);
+      this.$events.$on("currentChatChange", this.saveRestoreMessage);
 
       const sidebarIsCollapsed = JSON.parse(localStorage.getItem("sidebarCollapsed"));
       if (sidebarIsCollapsed) this.sidebarCollapsed = true;
@@ -369,10 +369,10 @@
       toggleFavourite() {
         if (this.isStarred) {
           this.flows.removeChatFromStarred(this.currentChatId)
-            .then(() => this.eventBus.$emit("notify", `${this.currentChatName} removed from favorites`));
+            .then(() => this.$events.$emit("notify", `${this.currentChatName} removed from favorites`));
         } else {
           this.flows.addChatToStarred(this.currentChatId)
-            .then(() => this.eventBus.$emit("notify", `${this.currentChatName} added to favorites`));
+            .then(() => this.$events.$emit("notify", `${this.currentChatName} added to favorites`));
         }
       },
       editorFocus() {
@@ -488,10 +488,10 @@
       flowsEmailCopy() {
         navigator.clipboard.writeText(this.flowsEmail)
           .then(() => {
-            this.eventBus.$emit("notify", "Copied chat email to clipboard");
+            this.$events.$emit("notify", "Copied chat email to clipboard");
           })
           .catch(() => {
-            this.eventBus.$emit("notify", "Copying failed");
+            this.$events.$emit("notify", "Copying failed");
           });
       },
       editLastMessage(event) {
@@ -535,7 +535,7 @@
       joinChat() {
         this.leavingOrJoining = true;
         this.flows.joinChat(this.currentChatId).then(() => {
-          this.eventBus.$emit("notify", `Joined ${this.currentChatName}`);
+          this.$events.$emit("notify", `Joined ${this.currentChatName}`);
         }).finally(() => {
           this.leavingOrJoining = false;
         });
@@ -544,7 +544,7 @@
         if (await this.$root.confirm(`Leave chat ${this.currentChatName}?`, "Leave", "Cancel")) {
           this.leavingOrJoining = true;
           this.flows.leaveChat(this.currentChatId).then(() => {
-            this.eventBus.$emit("notify", `Left ${this.currentChatName}`);
+            this.$events.$emit("notify", `Left ${this.currentChatName}`);
           }).finally(() => {
             this.leavingOrJoining = false;
           });

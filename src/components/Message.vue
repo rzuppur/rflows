@@ -154,7 +154,7 @@
         this.editMode = true;
         setTimeout(() => {
           if (!this.$refs.editor) {
-            this.eventBus.$emit("notify", "Could not open message editor");
+            this.$events.$emit("notify", "Could not open message editor");
             this._debug("! Editor missing");
             return;
           }
@@ -163,7 +163,7 @@
       },
       cancelEdit() {
         this.editMode = false;
-        this.eventBus.$emit("messagesScrollUpdate");
+        this.$events.$emit("messagesScrollUpdate");
       },
       saveEdit() {
         const text = this.$refs.editor.getHTML();
@@ -191,7 +191,7 @@
               this.editBackup = null;
             }).catch((error) => {
               this._debug(`Error editing message: ${error}`);
-              this.eventBus.$emit("notify", "Error editing message");
+              this.$events.$emit("notify", "Error editing message");
               this.flows.replaceLocalMessage(this.editBackup);
               this.editBackup = null;
             });
@@ -205,7 +205,7 @@
       },
       markRead(id) {
         this.flows.markChatMessageRead(id);
-        this.eventBus.$emit("messagesScrollUpdate");
+        this.$events.$emit("messagesScrollUpdate");
       },
       async deleteChatMessage(instant) {
         if (instant || await this.$root.confirm("Delete message? You can ctrl+click for instant delete.", "Delete", "Cancel")) {

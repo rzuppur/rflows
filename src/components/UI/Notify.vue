@@ -41,7 +41,7 @@
       },
     },
     created() {
-      this.eventBus.$on("notify", this.notify);
+      this.$events.$on("notify", this.notify);
     },
     methods: {
       notify(text) {

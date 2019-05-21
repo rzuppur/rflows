@@ -88,7 +88,7 @@
       };
     },
     created() {
-      this.eventBus.$on("currentChatChange", () => {this.$emit('closeSettings')});
+      this.$events.$on("currentChatChange", () => {this.$emit('closeSettings')});
       if (this.topics.UserProperty) {
         this.autoMarkAsRead = this.flows.autoMarkAsRead;
         this.desktopNotifications = this.flows.desktopNotifications;
@@ -116,7 +116,7 @@
           this.flows.setUserName(this.user.firstName, this.user.lastName);
           this.nameEdit = false;
         } else {
-          this.eventBus.$emit("notify", "Name can't be empty");
+          this.$events.$emit("notify", "Name can't be empty");
         }
       },
       async removeAvatar() {
@@ -144,9 +144,9 @@
         if (val === true) {
           if (Notification.permission === "default") {
             Notification.requestPermission().then(result => {
-              if (result === "default") this.eventBus.$emit("notify", "Notifications are disabled");
-              if (result === "denied") this.eventBus.$emit("notify", "Notifications are blocked, you can change this in site settings");
-              if (result === "granted") this.eventBus.$emit("notify", "Notifications enabled");
+              if (result === "default") this.$events.$emit("notify", "Notifications are disabled");
+              if (result === "denied") this.$events.$emit("notify", "Notifications are blocked, you can change this in site settings");
+              if (result === "granted") this.$events.$emit("notify", "Notifications enabled");
             });
           }
         }

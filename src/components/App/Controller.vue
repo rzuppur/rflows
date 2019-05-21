@@ -29,7 +29,7 @@
       },
     },
     created() {
-      this.eventBus.$on("loginDone", this.loginDone);
+      this.$events.$on("loginDone", this.loginDone);
     },
     mounted() {
       this.loginIfHasToken();

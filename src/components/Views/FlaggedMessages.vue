@@ -107,7 +107,7 @@
     },
     created() {
       this.userPropsRequestedChatIds = [];
-      this.eventBus.$on("currentChatChange", () => { this.$emit("closeSavedMessages"); });
+      this.$events.$on("currentChatChange", () => { this.$emit("closeSavedMessages"); });
     },
     methods: {
       openChat(chatId) {
