@@ -1,5 +1,6 @@
 <template lang="pug">
 
+  .p(style="white-space: pre; overflow: auto; height: 90vh;") {{ $store.flows }}
 
 
 </template>

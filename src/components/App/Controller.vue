@@ -37,6 +37,7 @@
     methods: {
       loginDone() {
         this.$store.route = "chat";
+        this.$flows.chats.getChats();
       },
       async loginIfHasToken() {
         const loginToken = this.$flows.localstorage.getSessionToken();

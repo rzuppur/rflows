@@ -1,7 +1,7 @@
 <template lang="pug" functional>
 
   .chat
-    .chat-title.ellipsis {{ props.chat.name }}
+    .chat-title.ellipsis(:class="{ placeholder: !props.chat.name }") {{ props.chat.name }}
 
 </template>
 
@@ -41,6 +41,12 @@
 
     .chat-title
       flex 1
+
+      &.placeholder
+        background alpha(#fff, .1)
+        max-width 200px
+        height 13px
+        border-radius @height
 
     .chat-removerecent
       display none

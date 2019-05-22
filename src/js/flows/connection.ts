@@ -3,48 +3,99 @@ import autoBind from "auto-bind";
 import { Vue } from "vue/types/vue";
 
 import STORE from "@/js/store";
+import Chats from "@/js/flows/chats";
 import LoginData from "@/js/model/LoginData";
 import localstorage from "@/js/flows/localstorage";
-import Socket, { OpenResult } from "@/js/socket";
+import Socket, { OpenResult, SocketResult, SubResult } from "@/js/socket";
 
 
 class Connection {
   store: STORE;
-  eventBus: Vue;
+  events: Vue;
   socket: Socket;
+  chats: Chats;
   reconnect: boolean = false;
 
-  constructor(store: STORE, eventBus: Vue) {
+  constructor(store: STORE, events: Vue) {
     this.store = store;
-    this.eventBus = eventBus;
+    this.events = events;
 
     autoBind(this);
   }
 
+  message(destination: string, data: Object): void {
+    if (this.canMessage) this.socket.message(destination, data);
+    throw new Error("Can not message, socket closed");
+  }
+
+  messageWithResponse(destination: string, data: Object): Promise<SocketResult> {
+    // @ts-ignore
+    if (this.canMessage) return this.socket.message(destination, data, true);
+    return Promise.reject(new Error("Can not message, socket closed"));
+  }
+
+  async findByUser(topic: string) {
+    if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
+    // @ts-ignore
+    const currentUserId = this.store.currentUser.id;
+    return await this.messageWithResponse(`/app/${topic}.findByUser`, { id: currentUserId });
+  }
+
+  subscribe(destination: string): void {
+    this.socket.subscribe(destination);
+  }
+
+  subscribeWithResponse(destination: string): Promise<SubResult> {
+    // @ts-ignore
+    return this.socket.subscribe(destination, true);
+  }
+
+  subscribeUserTopic(topic: string): Promise<SubResult[]> {
+    if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
+    // @ts-ignore
+    const currentUserId = this.store.currentUser.id;
+    const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/topic/User.${currentUserId}.${topic}.${type}`));
+    return Promise.all(promises);
+  }
+
+  get canMessage(): boolean {
+    return !!(this.socket && this.socket.connected);
+  }
+
+  get canMessageAuth(): boolean {
+    return !!(this.canMessage && this.store.currentUser);
+  }
+
   async login(loginData: LoginData): Promise<boolean> {
-    const openResult = await this.openSocket();
+    const result = await (async () => {
+      const openResult = await this.openSocket();
 
-    if (openResult.error) return false;
-    loginData.clientType = "WEB";
-    loginData.clientInfo = "RFlows";
+      if (openResult.error) return false;
+      loginData.clientType = "WEB";
+      loginData.clientInfo = "RFlows";
 
-    await this.socket.message("/app/Login.logout", {}, true);
-    try {
-      await this.socket.message("/app/Login.login", loginData, true);
-      return true;
-    } catch (error) {
-      console.log("loginError", error);
-      if (error.body.description !== "You are already logged in. Please logoff or disconnect first (refreshing the page helps)!") {
-        this.logout();
+      try {
+        await this.messageWithResponse("/app/Login.logout", {});
+        await this.messageWithResponse("/app/Login.login", loginData);
+        return true;
+      } catch (error) {
+        console.log("loginError", error);
+        if (error.body.description !== "You are already logged in. Please logoff or disconnect first (refreshing the page helps)!") {
+          this.logout();
+        }
       }
-    }
-    return false;
+      return false;
+    })();
+
+    if (result === true) this.events.$emit("loginDone");
+    return result;
+
   }
 
   logout(): void {
     try {
-      if (this.socket && this.socket.connected) {
-        this.socket.message("/app/Login.logout", {}, true);
+      if (this.canMessage) {
+        this.messageWithResponse("/app/Login.logout", {});
         this.socket.unsubscribeAll();
       }
     } catch (error) {
@@ -54,7 +105,7 @@ class Connection {
       this.store.currentUser = null;
     }
 
-    this.eventBus.$emit("logout");
+    this.events.$emit("logout");
   }
 
   private async openSocket(): Promise<OpenResult> {
@@ -64,10 +115,8 @@ class Connection {
     try {
       const result: OpenResult = await this.socket.open();
       if (result.error) return result;
-      await Promise.all([
-        this.socket.subscribe("/user/queue/response"),
-        this.socket.subscribe("/topic/common"),
-      ]);
+      this.subscribe("/user/queue/response");
+      this.subscribe("/topic/common");
       this.reconnect = true;
       return result;
 
@@ -82,7 +131,6 @@ class Connection {
     const frameBody = JSON.parse(frame.body);
     const frameDestination = frame.headers.destination.split(".");
 
-    console.log(frame);
     this.store.connectionError = false;
     switch (type) {
       case "LoginResponse": {
@@ -91,13 +139,25 @@ class Connection {
         if (frameBody.user) this.store.currentUser = frameBody.user;
         break;
       }
+      case "Topic": {
+        this.chats.parseChats(frameBody);
+        break;
+      }
+      case "TopicUser": {
+        this.chats.parseChatUsers(frameBody);
+        break;
+      }
       case "Error": {
         this.store.errorMsg = frameBody.description;
         this.store.connectionError = true;
+        break;
+      }
+      case "SubscribeResponse": {
+        break;
       }
       default: {
         console.log("Unknown frame type " + type);
-        //console.log(frame);
+        console.log(frame);
       }
     }
     /*

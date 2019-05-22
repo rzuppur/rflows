@@ -15,7 +15,7 @@ export interface SubResult {
 export interface SocketResult {
   id: number;
   type: string;
-  body: Object;
+  body: any;
 }
 
 export default class Socket {

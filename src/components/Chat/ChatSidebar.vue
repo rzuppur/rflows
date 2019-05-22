@@ -42,7 +42,7 @@
     },
     computed: {
       allChats() {
-        return [];
+        return this.$store.flows.chats.chats;
       },
     },
     methods: {
