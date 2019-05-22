@@ -58,7 +58,7 @@
           p.event-content(v-if="message.type === 'EMAIL' && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
 
           template(v-else-if="message.type === 'EMAIL' && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
-            p.event-content #[i.fas.fa-plus] New commits in repository
+            p.event-content #[i.fas.fa-plus] New commits in branch {{ utils.commitEmailBranch(message.text) }}
             .commit(v-for="commit in utils.commitEmailParse(message.text)")
               a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
                 .commit-title #[i.fab.fa-github] #[b  {{ commit.name }}]

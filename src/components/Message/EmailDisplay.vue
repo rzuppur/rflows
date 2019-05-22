@@ -8,7 +8,7 @@
 
         iframe.email-frame(:srcdoc="utils.getEmailText(message.text)" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
 
-      file-display(v-for="file in attachments" :message="file")
+      file-display(v-for="file in attachments" :message="file" :key="file.id")
 
       template(v-slot:buttons)
         span

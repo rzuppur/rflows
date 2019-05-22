@@ -192,6 +192,11 @@ const utils = {
     return commits;
   },
 
+  commitEmailBranch(text) {
+    return text.split("Branch: ").filter(part => part.trim())[0].split(" ")[0].trim();
+  },
+
+
   fileMessagePreviewable(message) {
     if (!message.url) return false;
     if (message.originalFileName === "mime") return true;
