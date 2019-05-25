@@ -83,27 +83,24 @@ class Chats {
           }
         }
       }
+
+      const myChatUser = this.store.flows.chatUsers.d.find(chatUser => chatUser.userId === currentUserId && chatUser.topicId === chat.id);
+      if (myChatUser) {
+        if (chat.unread !== myChatUser.unreadItemsCount
+          || chat.unreadImportant !== myChatUser.unreadItemsToMeCount
+          || chat.unreadAtme !== myChatUser.atItemsToMeCount
+          || chat.flagged !== myChatUser.flaggedItemsCount
+        ) {
+          chat.unread = myChatUser.unreadItemsCount;
+          chat.unreadImportant = myChatUser.unreadItemsToMeCount;
+          chat.unreadAtme = myChatUser.atItemsToMeCount;
+          chat.flagged = myChatUser.flaggedItemsCount;
+          changed = true;
+        }
+      }
     });
 
     if (changed) this.store.flows.chats.v += 1;
-
-    /*
-    .map(chat => {
-      const myUser = this.store.flows.d.d.find(chatUser => {
-        return chatUser.userId === currentUserId &&
-          chatUser.topicId === chat.id;
-      });
-
-      if (myUser) {
-        chat.unread = myUser.unreadItemsCount;
-        chat.unreadImportant = myUser.unreadItemsToMeCount;
-        chat.unreadAtme = myUser.atItemsToMeCount;
-        chat.flagged = myUser.flaggedItemsCount;
-      }
-
-      return chat;
-    })
-     */
   }
 
   private static mapChat(chat: any): Chat {
