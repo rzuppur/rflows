@@ -17,18 +17,23 @@ class STORE {
   flows: StoreFlows = {
     chats: {
       v: 0,
-      chats: [],
+      d: [],
     },
     chatUsers: {
       v: 0,
-      chatUsers: [],
-    }
+      d: [],
+    },
+    users: {
+      v: 0,
+      d: [],
+    },
   };
 }
 
 interface StoreFlows {
-  chats: { v: number, chats: Chat[] };
-  chatUsers: { v: number, chatUsers: ChatUser[] };
+  chats: { v: number, d: Chat[] };
+  chatUsers: { v: number, d: ChatUser[] };
+  users: { v: number, d: User[] };
 }
 
 export default STORE;

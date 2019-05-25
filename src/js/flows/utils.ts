@@ -25,7 +25,10 @@ const utils = {
   },
 
   getFullNameFromUser(user: User) {
-    if (user) return `${user.firstName || "?"} ${user.lastName || "?"}`;
+    if (user) {
+      if (user.firstName || user.lastName) return `${user.firstName || "?"} ${user.lastName || "?"}`;
+      if (user.email) return user.email;
+    }
     return "?";
   }
 };

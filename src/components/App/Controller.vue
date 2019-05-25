@@ -38,6 +38,7 @@
       loginDone() {
         this.$store.route = "chat";
         this.$flows.chats.getChats();
+        this.$flows.users.getUsers();
       },
       async loginIfHasToken() {
         const loginToken = this.$flows.localstorage.getSessionToken();

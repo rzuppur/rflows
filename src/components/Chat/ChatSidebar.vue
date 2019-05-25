@@ -25,7 +25,7 @@
           i.fas(:class="`fa-angle-${showAllChats ? 'up' : 'down'}`")
           | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
 
-      chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat")
+      chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :currentChatId="$store.currentChatId")
 
 </template>
 
@@ -42,7 +42,7 @@
     },
     computed: {
       allChats() {
-        return this.$store.flows.chats.chats;
+        return this.$store.flows.chats.d;
       },
     },
     methods: {

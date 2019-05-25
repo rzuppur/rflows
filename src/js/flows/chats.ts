@@ -3,18 +3,19 @@ import autoBind from "auto-bind";
 import { Vue } from "vue/types/vue";
 
 import STORE from "@/js/store";
+import utils from "@/js/flows/utils";
 import Connection from "@/js/flows/connection";
 import Chat from "@/js/model/Chat";
 import ChatUser from "@/js/model/ChatUser";
 
 class Chats {
   store: STORE;
-  eventBus: Vue;
+  events: Vue;
   connection: Connection;
 
-  constructor(store: STORE, eventBus: Vue) {
+  constructor(store: STORE, events: Vue) {
     this.store = store;
-    this.eventBus = eventBus;
+    this.events = events;
 
     autoBind(this);
   }
@@ -22,36 +23,87 @@ class Chats {
   async getChats(): Promise<void> {
     this.connection.subscribeUserTopic("Topic");
     this.connection.subscribeUserTopic("TopicUser");
+    this.connection.subscribeUserTopic("Organization");
+    this.connection.subscribeUserTopic("TopicLocation");
     await Promise.all([
       this.connection.findByUser("Topic"),
       this.connection.findByUser("TopicUser"),
+      this.connection.findByUser("Organization"),
+      this.connection.findByUser("TopicLocation"),
     ]);
   }
 
   parseChats(chats: any[]) {
-    if (chats.length === undefined) {
-      chats = [chats];
-    }
     const mapped = chats
     .filter(chat => !chat.integration && chat.type === "MEETING")
     .map(Chats.mapChat);
 
     const ids = mapped.map(chat => chat.id);
-    this.store.flows.chats.chats = this.store.flows.chats.chats.filter(chat => ids.indexOf(chat.id) === -1);
-    this.store.flows.chats.chats = this.store.flows.chats.chats.concat(mapped);
+    this.store.flows.chats.d = this.store.flows.chats.d.filter(chat => ids.indexOf(chat.id) === -1);
+    this.store.flows.chats.d = this.store.flows.chats.d.concat(mapped);
     this.store.flows.chats.v += 1;
+
+    this.updateChatData();
   }
 
   parseChatUsers(chatUsers: any[]) {
-    if (chatUsers.length === undefined) {
-      chatUsers = [chatUsers];
-    }
     const mapped = chatUsers.map(Chats.mapChatUser);
 
     const ids = mapped.map(chatUser => chatUser.id);
-    this.store.flows.chatUsers.chatUsers = this.store.flows.chatUsers.chatUsers.filter(chatUser => ids.indexOf(chatUser.id) === -1);
-    this.store.flows.chatUsers.chatUsers = this.store.flows.chatUsers.chatUsers.concat(mapped);
+    this.store.flows.chatUsers.d = this.store.flows.chatUsers.d.filter(chatUser => ids.indexOf(chatUser.id) === -1);
+    this.store.flows.chatUsers.d = this.store.flows.chatUsers.d.concat(mapped);
     this.store.flows.chatUsers.v += 1;
+
+    this.updateChatData();
+  }
+
+  updateChatData(): void {
+    console.log("updateChatData");
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    if (!currentUserId) {
+      console.log("! No currentUser while updating chat unreads");
+      return;
+    }
+
+    let changed = false;
+
+    this.store.flows.chats.d.forEach(chat => {
+      if (!chat.name) {
+        const otherUsers = this.store.flows.chatUsers.d.filter(chatUser => chatUser.userId !== currentUserId && chatUser.topicId === chat.id);
+        if (otherUsers.length) {
+          const names = otherUsers.map(chatUser => {
+            const user = this.store.flows.users.d.find(user => user.id === chatUser.userId);
+            if (user) {
+              return utils.getFullNameFromUser(user);
+            }
+          });
+          if (names.length) {
+            chat.name = names.join(", ");
+            changed = true;
+          }
+        }
+      }
+    });
+
+    if (changed) this.store.flows.chats.v += 1;
+
+    /*
+    .map(chat => {
+      const myUser = this.store.flows.d.d.find(chatUser => {
+        return chatUser.userId === currentUserId &&
+          chatUser.topicId === chat.id;
+      });
+
+      if (myUser) {
+        chat.unread = myUser.unreadItemsCount;
+        chat.unreadImportant = myUser.unreadItemsToMeCount;
+        chat.unreadAtme = myUser.atItemsToMeCount;
+        chat.flagged = myUser.flaggedItemsCount;
+      }
+
+      return chat;
+    })
+     */
   }
 
   private static mapChat(chat: any): Chat {

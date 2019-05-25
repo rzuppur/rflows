@@ -4,6 +4,7 @@ import { Vue } from "vue/types/vue";
 
 import STORE from "@/js/store";
 import Chats from "@/js/flows/chats";
+import Users from "@/js/flows/users";
 import LoginData from "@/js/model/LoginData";
 import localstorage from "@/js/flows/localstorage";
 import Socket, { OpenResult, SocketResult, SubResult } from "@/js/socket";
@@ -14,6 +15,7 @@ class Connection {
   events: Vue;
   socket: Socket;
   chats: Chats;
+  users: Users;
   reconnect: boolean = false;
 
   constructor(store: STORE, events: Vue) {
@@ -34,7 +36,7 @@ class Connection {
     return Promise.reject(new Error("Can not message, socket closed"));
   }
 
-  async findByUser(topic: string) {
+  async findByUser(topic: GlobalUserTopic) {
     if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
     // @ts-ignore
     const currentUserId = this.store.currentUser.id;
@@ -50,7 +52,7 @@ class Connection {
     return this.socket.subscribe(destination, true);
   }
 
-  subscribeUserTopic(topic: string): Promise<SubResult[]> {
+  subscribeUserTopic(topic: GlobalUserTopic): Promise<SubResult[]> {
     if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
     // @ts-ignore
     const currentUserId = this.store.currentUser.id;
@@ -103,6 +105,12 @@ class Connection {
     } finally {
       localstorage.clearSession();
       this.store.currentUser = null;
+      Object.keys(this.store.flows).forEach(key => {
+        // @ts-ignore
+        this.store.flows[key].d = [];
+        // @ts-ignore
+        this.store.flows[key].v += 1;
+      });
     }
 
     this.events.$emit("logout");
@@ -132,6 +140,7 @@ class Connection {
     const frameDestination = frame.headers.destination.split(".");
 
     this.store.connectionError = false;
+    console.log(type);
     switch (type) {
       case "LoginResponse": {
         localstorage.setSessionToken(frameBody.token);
@@ -140,11 +149,15 @@ class Connection {
         break;
       }
       case "Topic": {
-        this.chats.parseChats(frameBody);
+        this.chats.parseChats(Connection.makeArrayIfNotArray(frameBody));
         break;
       }
       case "TopicUser": {
-        this.chats.parseChatUsers(frameBody);
+        this.chats.parseChatUsers(Connection.makeArrayIfNotArray(frameBody));
+        break;
+      }
+      case "User": {
+        this.users.parseUsers(Connection.makeArrayIfNotArray(frameBody));
         break;
       }
       case "Error": {
@@ -214,6 +227,13 @@ class Connection {
     }*/
   }
 
+  private static makeArrayIfNotArray(x: any) {
+    if (x.length === undefined) {
+      x = [x];
+    }
+    return x;
+  }
+
   private _socketClose(CloseEvent: any): void {
     console.log("Close", CloseEvent);
     /*this.store.connectionError = true;
@@ -241,5 +261,7 @@ class Connection {
     }*/
   }
 }
+
+type GlobalUserTopic = ("TopicUser" | "UserProperty" | "Topic" | "Organization" | "TopicLocation" | "User" | "OrganizationContact" | "UserAccess");
 
 export default Connection;

@@ -24,3 +24,4 @@ yarn-error.log*
 # Built .ts files
 src/js/flows/*.js
 src/js/model/*.js
+src/js/store.js

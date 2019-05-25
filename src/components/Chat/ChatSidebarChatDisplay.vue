@@ -1,7 +1,13 @@
 <template lang="pug" functional>
 
-  .chat
+  .chat(
+    :class="{ unread: !!props.chat.unread, active: props.chat.id === props.currentChatId }"
+  )
     .chat-title.ellipsis(:class="{ placeholder: !props.chat.name }") {{ props.chat.name }}
+      span.icon.is-small.chat-flagged(v-if="props.chat.name && props.chat.flagged > 0")
+        i.fas.fa-thumbtack
+    .chat-unread(:class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
+      | {{ (!!props.chat.unreadAtme ? '@' : '') + props.chat.unread }}
 
 </template>
 
@@ -44,7 +50,7 @@
 
       &.placeholder
         background alpha(#fff, .1)
-        max-width 200px
+        margin-right 40px
         height 13px
         border-radius @height
 
