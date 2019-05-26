@@ -28,14 +28,14 @@ class Connection {
   }
 
   message(destination: string, data: Object): void {
-    if (this.canMessage) this.socket.message(destination, data);
-    throw new Error("Can not message, socket closed");
+    if (!this.canMessage) throw new Error("Can not message, socket closed");
+    this.socket.message(destination, data);
   }
 
   messageWithResponse(destination: string, data: Object): Promise<SocketResult> {
+    if (!this.canMessage) return Promise.reject(new Error("Can not message, socket closed"));
     // @ts-ignore
-    if (this.canMessage) return this.socket.message(destination, data, true);
-    return Promise.reject(new Error("Can not message, socket closed"));
+    return this.socket.message(destination, data, true);
   }
 
   async findByUser(topic: GlobalUserTopic) {
@@ -107,6 +107,7 @@ class Connection {
     } finally {
       localstorage.clearSession();
       this.store.currentUser = null;
+      this.store.currentChatId = null;
       Object.keys(this.store.flows).forEach(key => {
         // @ts-ignore
         this.store.flows[key].d = [];

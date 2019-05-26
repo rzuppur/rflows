@@ -27,6 +27,18 @@
           }
         },
       },
+      "$store.currentChatId": {
+        immediate: true,
+        handler(val, oldVal) {
+          if (val === oldVal) return;
+          if (this.$events) this.$events.$emit("currentChatChange", oldVal, val);
+          if (oldVal !== null && val) {
+            let chatIds = this.$flows.chats.recentChatIds.filter(chatId => chatId !== val);
+            chatIds.unshift(val);
+            this.$flows.chats.recentChatIds = chatIds;
+          }
+        }
+      }
     },
     created() {
       this.$events.$on("loginDone", this.loginDone);

@@ -33,6 +33,29 @@ class Chats {
     ]);
   }
 
+  get recentChatIds(): number[] {
+    const recents = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
+    if (recents && recents.value.length) {
+      return recents.value
+      .filter((recent: recentTool) => recent.type === "MEETING")
+      .map((recent: recentTool) => recent.id)
+      .filter((recent: recentTool) => recent);
+    }
+    return [];
+  }
+
+  set recentChatIds(chatIds: number[]) {
+    const prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
+    if (!prop) throw new Error("Could not find userProperty for recents");
+    prop.value = chatIds.map(chatId => ({id: chatId, type: "MEETING"}));
+    try {
+      this.connection.message("/app/UserProperty.save", prop);
+    } catch (error) {
+      console.log(error);
+      this.events.$emit("notify", `Error saving recent chats`);
+    }
+  }
+
   parseChats(chats: any[]) {
     const mapped = chats
     .filter(chat => !chat.integration && chat.type === "MEETING")
@@ -58,7 +81,6 @@ class Chats {
   }
 
   updateChatData(): void {
-    console.log("updateChatData");
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {
       console.log("! No currentUser while updating chat unreads");
@@ -136,3 +158,5 @@ class Chats {
 }
 
 export default Chats;
+
+type recentTool = { type: string, id: number; };

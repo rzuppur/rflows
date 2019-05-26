@@ -1,11 +1,17 @@
 <template lang="pug" functional>
 
   .chat(
-    :class="{ unread: !!props.chat.unread, active: props.chat.id === props.currentChatId }"
+    :class="[data.staticClass, { unread: !!props.chat.unread, active: props.chat.id === props.store.currentChatId }]"
+    @click="props.store.currentChatId = props.chat.id"
   )
+
     .chat-title.ellipsis(:class="{ placeholder: !props.chat.name }") {{ props.chat.name }}
       span.icon.is-small.chat-flagged(v-if="props.chat.name && props.chat.flagged > 0")
         i.fas.fa-thumbtack
+
+    .chat-removerecent(v-if="props.recentRemove" @click.stop="props.recentRemove(props.chat.id)")
+      i.fa.fa-times
+
     .chat-unread(:class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
       | {{ (!!props.chat.unreadAtme ? '@' : '') + props.chat.unread }}
 

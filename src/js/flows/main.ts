@@ -34,6 +34,7 @@ class Flows2 {
 
     this.connection.chats = this.chats;
     this.users.chats = this.chats;
+    this.settings.chats = this.chats;
 
     this.connection.users = this.users;
 
