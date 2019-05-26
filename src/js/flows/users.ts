@@ -32,7 +32,7 @@ class Users {
   parseUsers(users: any[]) {
     const mapped = users.map(Users.mapUser);
 
-    const ids = users.map(user => user.id);
+    const ids = mapped.map(user => user.id);
     this.store.flows.users.d = this.store.flows.users.d.filter(user => ids.indexOf(user.id) === -1);
     this.store.flows.users.d = this.store.flows.users.d.concat(mapped);
     this.store.flows.users.v += 1;

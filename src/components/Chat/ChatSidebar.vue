@@ -10,7 +10,7 @@
         .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
         .details.ellipsis {{ $store.currentUser.email }}
 
-      //-button.button.settings(v-tooltip.right="'Settings'")
+      button.button.settings(v-tooltip.right="'Settings'" @click="$events.$emit('openSettings')")
         span.icon
           i.fas.fa-cog
 

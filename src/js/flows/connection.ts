@@ -5,6 +5,7 @@ import { Vue } from "vue/types/vue";
 import STORE from "@/js/store";
 import Chats from "@/js/flows/chats";
 import Users from "@/js/flows/users";
+import Settings from "@/js/flows/settings";
 import LoginData from "@/js/model/LoginData";
 import localstorage from "@/js/flows/localstorage";
 import Socket, { OpenResult, SocketResult, SubResult } from "@/js/socket";
@@ -16,6 +17,7 @@ class Connection {
   socket: Socket;
   chats: Chats;
   users: Users;
+  settings: Settings;
   reconnect: boolean = false;
 
   constructor(store: STORE, events: Vue) {
@@ -140,7 +142,6 @@ class Connection {
     const frameDestination = frame.headers.destination.split(".");
 
     this.store.connectionError = false;
-    console.log(type);
     switch (type) {
       case "LoginResponse": {
         localstorage.setSessionToken(frameBody.token);
@@ -158,6 +159,10 @@ class Connection {
       }
       case "User": {
         this.users.parseUsers(Connection.makeArrayIfNotArray(frameBody));
+        break;
+      }
+      case "UserProperty": {
+        this.settings.parseSettings(Connection.makeArrayIfNotArray(frameBody));
         break;
       }
       case "Error": {

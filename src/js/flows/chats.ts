@@ -76,7 +76,8 @@ class Chats {
             if (user) {
               return utils.getFullNameFromUser(user);
             }
-          });
+          }).filter(name => name);
+
           if (names.length) {
             chat.name = names.join(", ");
             changed = true;
@@ -100,7 +101,10 @@ class Chats {
       }
     });
 
-    if (changed) this.store.flows.chats.v += 1;
+    if (changed) {
+      this.store.flows.chats.d.sort((a, b) => ( a.name ? a.name : "" ).localeCompare(b.name ? b.name : ""));
+      this.store.flows.chats.v += 1;
+    }
   }
 
   private static mapChat(chat: any): Chat {

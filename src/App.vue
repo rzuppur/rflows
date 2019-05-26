@@ -64,7 +64,7 @@
             flagged-messages(@closeSavedMessages="openSection = 'CHAT'")
 
           .mainbar(v-if="openSection === 'SETTINGS'")
-            settings(@closeSettings="openSection = 'CHAT'")
+            settings-old(@closeSettings="openSection = 'CHAT'")
 
           .mainbar(v-show="openSection === 'CHAT'")
             div(v-if="!currentChatId" style="padding: 20px;")
@@ -79,6 +79,8 @@
 
     email-display
 
+    settings
+
     overlays
 
 </template>
@@ -89,10 +91,11 @@
   import SidebarChats from "@/components/Views/SidebarChats.vue";
   import FlaggedMessages from "@/components/Views/FlaggedMessages.vue";
   import Settings from "@/components/Views/Settings.vue";
+  import SettingsOld from "@/components/Views/SettingsOld.vue";
   import Login from "@/components/Views/Login.vue";
   import Overlays from "@/components/UI/Overlays.vue";
   import SlideInOut from "@/components/UI/SlideInOut.vue";
-  import EmailDisplay from "@/components/Message/EmailDisplay.vue";
+  import EmailDisplay from "@/components/Views/EmailDisplay.vue";
   import Chat from "@/components/Views/Chat.vue";
 
   export default {
@@ -106,6 +109,7 @@
       SidebarChats,
       FlaggedMessages,
       Settings,
+      SettingsOld,
       Login,
       Overlays,
     },
