@@ -14,10 +14,6 @@
         span.icon
           i.fas.fa-cog
 
-      btn.button(:action="$flows.connection.logout" rtip="Log out" icon)
-        span.icon
-          i.fas.fa-sign-out-alt
-
     .sidebar-chats
 
       h4.chats-section
