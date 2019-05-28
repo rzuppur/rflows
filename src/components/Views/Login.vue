@@ -85,6 +85,7 @@
     background  $color-light-blue-background
     min-height 100%
     padding 30px 0
+    overflow-y auto
 
     .login-content
       padding 30px
