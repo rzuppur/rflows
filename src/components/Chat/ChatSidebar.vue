@@ -20,7 +20,7 @@
         span.icon.is-small.is-right
           i.fas.fa-search
 
-    .workspace-filter(v-if="!searchText")
+    .workspace-filter(v-if="showWorkspaceFilter")
       popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
         template(v-slot:trigger="open")
           button.button(type="button" @pointerdown.prevent @click.stop="open.menuOpenClickStop")
@@ -76,6 +76,13 @@
       };
     },
     computed: {
+      showWorkspaceFilter() {
+        this.$store.flows.userProperties.v;
+
+        if (this.searchText.length) return false;
+        if (this.workspaces.length <= 1) return false;
+        return this.$flows.settings.getBooleanUserProp("showWorkspaceSwitcher");
+      },
       workspaces() {
         this.$store.flows.workspaceAccesses.v;
         this.$store.flows.workspaces.v;
@@ -121,7 +128,7 @@
           const text = this.searchText.toLowerCase();
           return this.$store.flows.chats.d.filter(chat => chat.name.toLowerCase().includes(text));
         }
-        if (this.filterWorkspaceId) {
+        if (this.showWorkspaceFilter && this.filterWorkspaceId) {
           return this.$store.flows.chatWorkspaces.d
             .filter(chatWorkspace => chatWorkspace.workspaceId === this.filterWorkspaceId)
             .map(chatWorkspace => this.$store.flows.chats.d.find(chat => chat.id === chatWorkspace.chatId))
