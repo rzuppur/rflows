@@ -3,9 +3,9 @@
   table
     tr
       td(v-for="value, key in $store.flows")
-        h4 {{ key }} &nbsp;
+        b.text-small {{ key }}<br>
         code v: {{ value.v }}
-        div(style="height: 95vh; overflow: auto; max-width: 150px")
+        div(style="height: 90vh; overflow: auto; max-width: 150px")
           template(v-if="key === 'users'")
             div(v-for="user in value.d")
               .user.user-with-name.space-top-small

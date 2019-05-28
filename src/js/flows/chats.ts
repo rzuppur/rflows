@@ -60,7 +60,21 @@ class Chats {
     return [];
   }
 
+  get userWorkspaceIds(): number[] {
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    if (!currentUserId) {
+      return [];
+    }
+
+    console.log(this.store.flows.workspaceAccesses.d.filter(workspaceAccess => workspaceAccess.userId === currentUserId));
+
+    return this.store.flows.workspaceAccesses.d
+    .filter(workspaceAccess => workspaceAccess.userId === currentUserId)
+    .map(workspaceAccess => workspaceAccess.orgId);
+  }
+
   set recentChatIds(chatIds: number[]) {
+    chatIds = Chats.numberArray(chatIds);
     const prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
     if (!prop) throw new Error("Could not find userProperty for recents");
     prop.value = chatIds.map(chatId => ({id: chatId, type: "MEETING"}));
@@ -128,7 +142,7 @@ class Chats {
   updateChatData(): void {
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {
-      console.log("! No currentUser while updating chat unreads");
+      console.log("! No currentUser while updating chat data");
       return;
     }
 
@@ -225,6 +239,10 @@ class Chats {
       orgId: workspaceAccess.orgId,
       userId: workspaceAccess.userId,
     };
+  }
+
+  private static numberArray(array: any[]): number[] {
+    return array.map(x => +x);
   }
 }
 
