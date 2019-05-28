@@ -47,7 +47,7 @@ class Users {
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl,
-      homeOrgId: user.homeOrgId,
+      workspaceId: user.homeOrgId,
       online: user.online,
       status: user.status,
       lastLoggedIn: user.lastLoggedIn,

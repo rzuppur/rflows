@@ -167,6 +167,18 @@ class Connection {
         this.chats.parseChatUsers(Connection.makeArrayIfNotArray(frameBody));
         break;
       }
+      case "Organization": {
+        this.chats.parseWorkspaces(Connection.makeArrayIfNotArray(frameBody));
+        break;
+      }
+      case "TopicLocation": {
+        this.chats.parseChatWorkspaces(Connection.makeArrayIfNotArray(frameBody));
+        break;
+      }
+      case "UserAccess": {
+        this.chats.parseChatWorkspaceAccesses(Connection.makeArrayIfNotArray(frameBody));
+        break;
+      }
       case "User": {
         this.users.parseUsers(Connection.makeArrayIfNotArray(frameBody));
         break;

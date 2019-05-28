@@ -4,7 +4,7 @@ interface User extends Id {
   avatarUrl: string;
   email: string;
   firstName: string;
-  homeOrgId: number;
+  workspaceId: number;
   lastLoggedIn: number;
   lastLoggedOut: number;
   lastName: string;

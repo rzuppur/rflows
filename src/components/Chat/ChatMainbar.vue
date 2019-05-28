@@ -3,9 +3,9 @@
   table
     tr
       td(v-for="value, key in $store.flows")
-        h4(style="display: inline-block") {{ key }} &nbsp;
+        h4 {{ key }} &nbsp;
         code v: {{ value.v }}
-        div(style="height: 95vh; overflow: auto; max-width: 300px")
+        div(style="height: 95vh; overflow: auto; max-width: 150px")
           template(v-if="key === 'users'")
             div(v-for="user in value.d")
               .user.user-with-name.space-top-small
@@ -14,7 +14,7 @@
                   .name.ellipsis {{ $flows.utils.getFullNameFromUser(user) }}
                   .details.text-small id: {{ user.id }}
               .data email: {{ user.email }}
-              .data homeOrgId: {{ user.homeOrgId }}
+              .data workspaceId: {{ user.workspaceId }}
               .data status: {{ user.status }}
           div(v-else)
             .data {{ value.d }}

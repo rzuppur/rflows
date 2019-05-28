@@ -7,6 +7,9 @@ import utils from "@/js/flows/utils";
 import Connection from "@/js/flows/connection";
 import Chat from "@/js/model/Chat";
 import ChatUser from "@/js/model/ChatUser";
+import Workspace from "@/js/model/Workspace";
+import ChatWorkspace from "@/js/model/ChatWorkspace";
+import WorkspaceAccess from "@/js/model/WorkspaceAccess";
 
 class Chats {
   store: STORE;
@@ -34,6 +37,8 @@ class Chats {
   }
 
   get favChatIds(): number[] {
+    // todo: cache
+
     const favs = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "favorites");
     if (favs && favs.value.length) {
       return favs.value
@@ -44,6 +49,8 @@ class Chats {
   }
 
   get recentChatIds(): number[] {
+    // todo: cache
+
     const recents = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
     if (recents && recents.value.length) {
       return recents.value
@@ -87,6 +94,35 @@ class Chats {
     this.connection.storeUpdate("chatUsers");
 
     this.updateChatData();
+  }
+
+  parseWorkspaces(workspaces: any[]) {
+    const mapped = workspaces
+    .filter(workspace => !workspace.integration)
+    .map(Chats.mapWorkspace);
+
+    const ids = mapped.map(workspace => workspace.id);
+    this.store.flows.workspaces.d = this.store.flows.workspaces.d.filter(workspace => ids.indexOf(workspace.id) === -1);
+    this.store.flows.workspaces.d = this.store.flows.workspaces.d.concat(mapped);
+    this.connection.storeUpdate("workspaces");
+  }
+
+  parseChatWorkspaces(chatWorkspaces: any[]) {
+    const mapped = chatWorkspaces.map(Chats.mapChatWorkspace);
+
+    const ids = mapped.map(chatWorkspace => chatWorkspace.id);
+    this.store.flows.chatWorkspaces.d = this.store.flows.chatWorkspaces.d.filter(chatWorkspace => ids.indexOf(chatWorkspace.id) === -1);
+    this.store.flows.chatWorkspaces.d = this.store.flows.chatWorkspaces.d.concat(mapped);
+    this.connection.storeUpdate("chatWorkspaces");
+  }
+
+  parseChatWorkspaceAccesses(workspaceAccesses: any[]) {
+    const mapped = workspaceAccesses.map(Chats.mapWorkspaceAccess);
+
+    const ids = mapped.map(workspaceAccess => workspaceAccess.id);
+    this.store.flows.workspaceAccesses.d = this.store.flows.workspaceAccesses.d.filter(workspaceAccess => ids.indexOf(workspaceAccess.id) === -1);
+    this.store.flows.workspaceAccesses.d = this.store.flows.workspaceAccesses.d.concat(mapped);
+    this.connection.storeUpdate("workspaceAccesses");
   }
 
   updateChatData(): void {
@@ -162,6 +198,32 @@ class Chats {
       flaggedItemsCount: chatUser.flaggedItemsCount,
       unreadItemsCount: chatUser.unreadItemsCount,
       unreadItemsToMeCount: chatUser.unreadItemsToMeCount,
+    };
+  }
+
+  private static mapWorkspace(workspace: any): Workspace {
+    return {
+      id: workspace.id,
+      name: workspace.name,
+      logoUrl: workspace.logoUrl,
+      type: workspace.type,
+    };
+  }
+
+  private static mapChatWorkspace(chatWorkspace: any): ChatWorkspace {
+    return {
+      id: chatWorkspace.id,
+      orgId: chatWorkspace.orgId,
+      topicId: chatWorkspace.topicId,
+    };
+  }
+
+  private static mapWorkspaceAccess(workspaceAccess: any): WorkspaceAccess {
+    return {
+      id: workspaceAccess.id,
+      role: workspaceAccess.role,
+      orgId: workspaceAccess.orgId,
+      userId: workspaceAccess.userId,
     };
   }
 }
