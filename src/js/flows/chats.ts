@@ -73,7 +73,7 @@ class Chats {
     const ids = mapped.map(chat => chat.id);
     this.store.flows.chats.d = this.store.flows.chats.d.filter(chat => ids.indexOf(chat.id) === -1);
     this.store.flows.chats.d = this.store.flows.chats.d.concat(mapped);
-    this.store.flows.chats.v += 1;
+    this.connection.storeUpdate("chats");
 
     this.updateChatData();
   }
@@ -84,7 +84,7 @@ class Chats {
     const ids = mapped.map(chatUser => chatUser.id);
     this.store.flows.chatUsers.d = this.store.flows.chatUsers.d.filter(chatUser => ids.indexOf(chatUser.id) === -1);
     this.store.flows.chatUsers.d = this.store.flows.chatUsers.d.concat(mapped);
-    this.store.flows.chatUsers.v += 1;
+    this.connection.storeUpdate("chatUsers");
 
     this.updateChatData();
   }
@@ -134,7 +134,7 @@ class Chats {
 
     if (changed) {
       this.store.flows.chats.d.sort((a, b) => ( a.name ? a.name : "" ).localeCompare(b.name ? b.name : ""));
-      this.store.flows.chats.v += 1;
+      this.connection.storeUpdate("chats");
     }
   }
 

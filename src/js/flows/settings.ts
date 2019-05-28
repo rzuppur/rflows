@@ -61,7 +61,7 @@ class Settings {
     const ids = mapped.map(property => property.id);
     this.store.flows.userProperties.d = this.store.flows.userProperties.d.filter(property => ids.indexOf(property.id) === -1);
     this.store.flows.userProperties.d = this.store.flows.userProperties.d.concat(mapped);
-    this.store.flows.userProperties.v += 1;
+    this.connection.storeUpdate("userProperties");
 
     if (this.getBooleanUserProp("desktopNotifications") && Notification.permission === "default") {
       Notification.requestPermission();

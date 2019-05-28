@@ -27,39 +27,48 @@ class Connection {
     autoBind(this);
   }
 
-  message(destination: string, data: Object): void {
+  public message(destination: string, data: Object): void {
     if (!this.canMessage) throw new Error("Can not message, socket closed");
     this.socket.message(destination, data);
   }
 
-  messageWithResponse(destination: string, data: Object): Promise<SocketResult> {
+  public messageWithResponse(destination: string, data: Object): Promise<SocketResult> {
     if (!this.canMessage) return Promise.reject(new Error("Can not message, socket closed"));
     // @ts-ignore
     return this.socket.message(destination, data, true);
   }
 
-  async findByUser(topic: GlobalUserTopic) {
+  public async findByUser(topic: GlobalUserTopic) {
     if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
     // @ts-ignore
     const currentUserId = this.store.currentUser.id;
     return await this.messageWithResponse(`/app/${topic}.findByUser`, { id: currentUserId });
   }
 
-  subscribe(destination: string): void {
+  public subscribe(destination: string): void {
     this.socket.subscribe(destination);
   }
 
-  subscribeWithResponse(destination: string): Promise<SubResult> {
+  public subscribeWithResponse(destination: string): Promise<SubResult> {
     // @ts-ignore
     return this.socket.subscribe(destination, true);
   }
 
-  subscribeUserTopic(topic: GlobalUserTopic): Promise<SubResult[]> {
+  public subscribeUserTopic(topic: GlobalUserTopic): Promise<SubResult[]> {
     if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
     // @ts-ignore
     const currentUserId = this.store.currentUser.id;
     const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/topic/User.${currentUserId}.${topic}.${type}`));
     return Promise.all(promises);
+  }
+
+  public storeUpdate(key: string): void {
+    if (key in this.store.flows) {
+      // @ts-ignore
+      this.store.flows[key].v += 1;
+    } else {
+      console.log("! Unknown key", key);
+    }
   }
 
   get canMessage(): boolean {

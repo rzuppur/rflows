@@ -20,14 +20,25 @@ Vue.config.productionTip = false;
 
 Vue.component("btn", Button);
 
+/*
+ * STORE
+ * Data (flows[key].d) does not get a watcher
+ * Components should be watching Version (flows[key].v)
+ */
 const storeModel = { init: STORE };
 storeModel.init();
-
+delete storeModel.init;
+Object.keys(storeModel.flows).forEach(key => delete storeModel.flows[key].d);
 const store = new Vue({
   data() {
-    return storeModel ;
+    return storeModel;
   },
 });
+Object.keys(storeModel.flows).forEach(key => store.flows[key].d = []);
+
+/*
+ * EVENT BUS
+ */
 const events = new Vue();
 
 Vue.mixin({

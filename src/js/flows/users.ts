@@ -35,7 +35,7 @@ class Users {
     const ids = mapped.map(user => user.id);
     this.store.flows.users.d = this.store.flows.users.d.filter(user => ids.indexOf(user.id) === -1);
     this.store.flows.users.d = this.store.flows.users.d.concat(mapped);
-    this.store.flows.users.v += 1;
+    this.connection.storeUpdate("users");
 
     this.chats.updateChatData();
   }
