@@ -158,9 +158,13 @@
           .filter(chat => chat);
       },
       unreadChats() {
+        this.$store.flows.userProperties.v;
+
         return this.allChats.filter(chat => chat.unread && !this.ignoreIds.includes(chat.id));
       },
       recentChats() {
+        this.$store.flows.userProperties.v;
+
         return this.$flows.chats.recentChatIds
           .filter(recentId => !this.ignoreIds.includes(recentId))
           .map(recentId => this.allChats.find(chat => chat.id === recentId))
