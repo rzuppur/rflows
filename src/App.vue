@@ -164,50 +164,10 @@
       reloadPage() {
         location.reload();
       },
-      documentClick(event) {
-        const path = event.composedPath();
-        //this.$events.$emit("documentClick", path);
-        if (!path.find(element => element.classList?.contains("menu-open"))) {
-          this.workspaceMenuOpen = false;
-        }
+      documentClick() {
+        this.$store.openMenu = null;
       },
     },
-    /*watch: {
-      lastOpenChatCanBeOpened (newVal) {
-        if (!newVal) return;
-        this._debug(`Loading last opened chat: ${  this.recentIds[0]}`);
-        this.flows.openChat(this.recentIds[0]);
-        this.openLastChat = false;
-      },
-      "topics.UserProperty": function (newVal) {
-        if (!newVal) return;
-        const favs = newVal.find(userProperty => userProperty.name === "favorites");
-        this.favouriteIds = favs
-          ? favs.value.map(v => v.id)
-          : [];
-        const recents = newVal.find(userProperty => userProperty.name === "recentTools");
-        this.recentIds = recents
-          ? recents.value.filter(recentTools => recentTools.type === "MEETING" && recentTools.id).map(v => v.id)
-          : [];
-      },
-      "topics.Organization": function () {
-        this.userWorkspaces = this.flows.getCurrentUserWorkspaces();
-      },
-      "topics.UserAccess": function () {
-        this.userWorkspaces = this.flows.getCurrentUserWorkspaces();
-      },
-      allChats(newVal) {
-        const workspace = this.workspaceFilter ? ` - ${this.workspaceFilter.name}` : "";
-        if (newVal.length) {
-          const unread = newVal.map(chat => chat.unread).reduce((a, b) => a + b, 0);
-          if (unread) {
-            document.title = `(${unread}) RFlows${workspace}`;
-            return;
-          }
-        }
-        document.title = `RFlows${workspace}`;
-      },
-    },*/
   };
 </script>
 

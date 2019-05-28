@@ -66,11 +66,9 @@ class Chats {
       return [];
     }
 
-    console.log(this.store.flows.workspaceAccesses.d.filter(workspaceAccess => workspaceAccess.userId === currentUserId));
-
     return this.store.flows.workspaceAccesses.d
     .filter(workspaceAccess => workspaceAccess.userId === currentUserId)
-    .map(workspaceAccess => workspaceAccess.orgId);
+    .map(workspaceAccess => workspaceAccess.workspaceId);
   }
 
   set recentChatIds(chatIds: number[]) {
@@ -227,8 +225,8 @@ class Chats {
   private static mapChatWorkspace(chatWorkspace: any): ChatWorkspace {
     return {
       id: chatWorkspace.id,
-      orgId: chatWorkspace.orgId,
-      topicId: chatWorkspace.topicId,
+      workspaceId: chatWorkspace.orgId,
+      chatId: chatWorkspace.topicId,
     };
   }
 
@@ -236,7 +234,7 @@ class Chats {
     return {
       id: workspaceAccess.id,
       role: workspaceAccess.role,
-      orgId: workspaceAccess.orgId,
+      workspaceId: workspaceAccess.orgId,
       userId: workspaceAccess.userId,
     };
   }

@@ -13,12 +13,14 @@
 </template>
 
 <script>
+  // eslint-disable-next-line import/extensions
   import "velocity-animate/velocity.ui.min.js";
 
   export default {
     name: "SlideInOut",
     props: {
-      duration: Number,
+      inDuration: Number,
+      outDuration: Number,
     },
     methods: {
       beforeEnter(el) {
@@ -26,10 +28,11 @@
         el.style.overflow = "hidden";
       },
       enter(el, done) {
+        // eslint-disable-next-line no-undef
         Velocity(el, {
           maxHeight: el.scrollHeight,
         }, {
-          duration: this.duration,
+          duration: this.inDuration,
           easing: "ease-out",
           complete: done,
         });
@@ -40,13 +43,14 @@
       },
       beforeLeave(el) {
         el.style.overflow = "hidden";
-        el.style.maxHeight = el.scrollHeight + "px";
+        el.style.maxHeight = `${el.scrollHeight}px`;
       },
       leave(el, done) {
+        // eslint-disable-next-line no-undef
         Velocity(el, {
           maxHeight: "0",
         }, {
-          duration: this.duration,
+          duration: this.outDuration,
           easing: "ease-out",
           complete: done,
         });

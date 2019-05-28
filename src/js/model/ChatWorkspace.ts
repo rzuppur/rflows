@@ -1,8 +1,8 @@
 import Id from "@/js/model/Id";
 
 interface ChatWorkspace extends Id {
-  topicId: number;
-  orgId: number;
+  chatId: number;
+  workspaceId: number;
 }
 
 export default ChatWorkspace;

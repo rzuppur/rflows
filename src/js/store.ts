@@ -16,6 +16,7 @@ class STORE {
   errorMsg: string = "";
 
   modalsOpen: string[] = [];
+  openMenu: string | null = null;
   route: string = "login";
 
   flows: StoreFlows = {

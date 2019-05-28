@@ -10,7 +10,7 @@
         .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
         .details.ellipsis {{ $store.currentUser.email }}
 
-      button.button.settings(v-tooltip.right="'Settings'" @click="$events.$emit('openSettings')")
+      btn.button.settings(rtip="Settings" :action="() => { $events.$emit('openSettings') }")
         span.icon
           i.fas.fa-cog
 
@@ -19,6 +19,16 @@
         input.input(type="search" placeholder="Search chats" v-model="searchText")
         span.icon.is-small.is-right
           i.fas.fa-search
+
+    .workspace-filter(v-if="!searchText")
+      popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
+        template(v-slot:trigger="open")
+          button.button(type="button" @pointerdown.prevent @click.stop="open.menuOpenClickStop")
+            .workspace
+              img.logo(v-if="activeWorkspace.id" :src="$flows.utils.getLogoFromWorkspace(activeWorkspace)" :alt="activeWorkspace.name")
+              .name {{ activeWorkspace.name }}
+            span.icon.is-small
+              i.fas.fa-angle-down
 
     .sidebar-chats
 
@@ -51,25 +61,71 @@
 </template>
 
 <script>
-  import { DEVCHAT_ID } from "@/js/consts";
+  import { BLANK_DATA_SVG_IMAGE, DEVCHAT_ID } from "@/js/consts";
   import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
+  import PopupMenu from "@/components/UI/PopupMenu.vue";
 
   export default {
     name: "ChatSidebar",
-    components: { ChatSidebarChatDisplay },
+    components: { ChatSidebarChatDisplay, PopupMenu },
     data() {
       return {
         showAllChats: false,
         searchText: "",
+        filterWorkspaceId: null,
       };
     },
     computed: {
+      workspaces() {
+        this.$store.flows.workspaceAccesses.v;
+        this.$store.flows.workspaces.v;
+
+        return [{
+          id: null,
+          name: "All workspaces",
+        }].concat(this.$flows.chats.userWorkspaceIds
+          .map(id => this.$store.flows.workspaces.d.find(workspace => workspace.id === id))
+          .filter(workspace => workspace)
+          .sort((a, b) => a.name.localeCompare(b.name)));
+      },
+      workspaceMenu() {
+        const active = this.workspaces.find(workspace => workspace.id === this.filterWorkspaceId);
+        const list = [{
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          func: () => { this.filterWorkspaceId = active.id; },
+          text: active.name,
+          image: active.id ? this.$flows.utils.getLogoFromWorkspace(active) : null,
+        }];
+        if (this.workspaces.length <= 1) return list;
+
+        list.push({ hr: true });
+        return list.concat(
+          this.workspaces
+            .filter(workspace => workspace.id !== this.filterWorkspaceId)
+            .map(workspace => ( {
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              func: () => { this.filterWorkspaceId = workspace.id; },
+              text: workspace.name,
+              image: workspace.id ? this.$flows.utils.getLogoFromWorkspace(workspace) : BLANK_DATA_SVG_IMAGE,
+            } )),
+        );
+      },
+      activeWorkspace() {
+        return this.workspaces.find(workspace => workspace.id === this.filterWorkspaceId);
+      },
       allChats() {
         this.$store.flows.chats.v;
+        this.$store.flows.chatWorkspaces.v;
 
         if (this.searchText.length) {
           const text = this.searchText.toLowerCase();
           return this.$store.flows.chats.d.filter(chat => chat.name.toLowerCase().includes(text));
+        }
+        if (this.filterWorkspaceId) {
+          return this.$store.flows.chatWorkspaces.d
+            .filter(chatWorkspace => chatWorkspace.workspaceId === this.filterWorkspaceId)
+            .map(chatWorkspace => this.$store.flows.chats.d.find(chat => chat.id === chatWorkspace.chatId))
+            .filter(chat => chat);
         }
         return this.$store.flows.chats.d;
       },
@@ -149,11 +205,19 @@
     .workspace-filter
       padding 10px 10px 0
 
-      .menu-open,
-      .popup-menu-container
+      .button,
+      & /deep/ .popup-menu
         width $sidebar-width - 20px
+        max-width $sidebar-width - 20px
 
-      .menu-open
+      & /deep/ .popup-menu-container
+        position relative
+        top -50px
+
+      .button
+        padding-top 0
+        padding-bottom 0
+        height 48px
         border-color transparent
         background alpha(#fff, .08)
         color alpha(#fff, 0.6)
@@ -163,6 +227,17 @@
         &:hover
           background alpha(#fff, .12)
           color alpha(#fff, 0.8)
+
+      .workspace
+        margin 0
+
+        .name
+          margin-bottom -1px
+
+        .logo
+          margin-right 10px
+          width 24px
+          height @width
 
   .connection-error,
   .user

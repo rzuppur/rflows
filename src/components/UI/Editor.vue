@@ -12,7 +12,7 @@
 
   .editor(v-if="editor")
 
-    slide-in-out(:duration="60")
+    slide-in-out(:inDuration="60" :outDuration="60")
       editor-menu-bar(v-if="showMenuBar" :editor="editor")
         .menubar(slot-scope="{ commands, isActive }")
           .buttons.has-addons

@@ -1,5 +1,6 @@
 import { oc } from "ts-optchain";
 import User from "@/js/model/User";
+import Workspace from "@/js/model/Workspace";
 
 const utils = {
   relativeToFullPath(url: string): string {
@@ -12,6 +13,14 @@ const utils = {
     }
     const char = oc(user).firstName("?").charAt(0);
     return this.placeholderImageChar(char, 42, 56);
+  },
+
+  getLogoFromWorkspace(workspace: Workspace): string {
+    if (oc(workspace).logoUrl()) {
+      return this.relativeToFullPath(workspace.logoUrl);
+    }
+    const char = oc(workspace).name("?").charAt(0);
+    return this.placeholderImageChar(char, 42, 42);
   },
 
   placeholderImageChar(
