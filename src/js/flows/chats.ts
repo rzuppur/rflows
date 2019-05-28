@@ -33,13 +33,22 @@ class Chats {
     ]);
   }
 
+  get favChatIds(): number[] {
+    const favs = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "favorites");
+    if (favs && favs.value.length) {
+      return favs.value
+      .filter((fav: propChat) => fav.type === "MEETING" && fav.id)
+      .map((fav: propChat) => fav.id);
+    }
+    return [];
+  }
+
   get recentChatIds(): number[] {
     const recents = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
     if (recents && recents.value.length) {
       return recents.value
-      .filter((recent: recentTool) => recent.type === "MEETING")
-      .map((recent: recentTool) => recent.id)
-      .filter((recent: recentTool) => recent);
+      .filter((recent: propChat) => recent.type === "MEETING" && recent.id)
+      .map((recent: propChat) => recent.id);
     }
     return [];
   }
@@ -159,4 +168,4 @@ class Chats {
 
 export default Chats;
 
-type recentTool = { type: string, id: number; };
+type propChat = { type: string, id: number; };

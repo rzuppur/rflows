@@ -1,8 +1,9 @@
 <template lang="pug" functional>
 
-  .chat(
+  btn.button-reset.chat(
+    :action="(() => {props.store.currentChatId = props.chat.id})"
+    :label="props.chat.name"
     :class="[data.staticClass, { unread: !!props.chat.unread, active: props.chat.id === props.store.currentChatId }]"
-    @click="props.store.currentChatId = props.chat.id"
   )
 
     .chat-title.ellipsis(:class="{ placeholder: !props.chat.name }") {{ props.chat.name }}
@@ -25,7 +26,7 @@
     display flex
     height $chat-height
     text-regular-16()
-    padding 3px 10px
+    padding 0 10px
     color $color-gray-text-light
     align-items center
     cursor pointer

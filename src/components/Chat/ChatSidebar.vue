@@ -16,6 +16,15 @@
 
     .sidebar-chats
 
+      h4.chats-section #[i.far.fa-comment] RFlows
+      chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store")
+
+      h4.chats-section(v-if="favChats.length") #[i.far.fa-star] Favorites
+      chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store")
+
+      h4.chats-section(v-if="unreadChats.length") #[i.far.fa-bell] Unread
+      chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store")
+
       h4.chats-section(v-if="recentChats.length") #[i.far.fa-clock] Recent
       chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove")
 
@@ -27,9 +36,12 @@
       template(v-if="showAllChats")
         chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store")
 
+      h4.chats-section
+
 </template>
 
 <script>
+  import { DEVCHAT_ID } from "@/js/consts";
   import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
 
   export default {
@@ -37,7 +49,7 @@
     components: { ChatSidebarChatDisplay },
     data() {
       return {
-        showAllChats: true,
+        showAllChats: false,
       };
     },
     computed: {
@@ -46,13 +58,35 @@
 
         return this.$store.flows.chats.d;
       },
-      recentChats() {
-        this.$store.flows.userProperties.v;
+      devChat() {
         this.$store.flows.chats.v;
 
-        return this.$flows.chats.recentChatIds
-        .map(recentId => this.$store.flows.chats.d.find(chat => chat.id === recentId))
+        const devChat = this.$store.flows.chats.d.find(chat => chat.id === DEVCHAT_ID);
+        return devChat || {
+          id: DEVCHAT_ID,
+          name: "Features & support",
+        };
+      },
+      ignoreIds() {
+        this.$store.flows.userProperties.v;
+
+        return this.$flows.chats.favChatIds.concat(DEVCHAT_ID);
+      },
+      favChats() {
+        this.$store.flows.userProperties.v;
+
+        return this.$flows.chats.favChatIds
+        .map(favId => this.allChats.find(chat => chat.id === favId))
         .filter(chat => chat);
+      },
+      unreadChats() {
+        return this.allChats.filter(chat => chat.unread && !this.ignoreIds.includes(chat.id));
+      },
+      recentChats() {
+        return this.$flows.chats.recentChatIds
+        .filter(recentId => !this.ignoreIds.includes(recentId))
+        .map(recentId => this.allChats.find(chat => chat.id === recentId))
+        .filter(chat => chat && !chat.unread);
       },
     },
     methods: {
@@ -61,7 +95,7 @@
       },
       recentRemove(chatId) {
         this.$flows.chats.recentChatIds = this.$flows.chats.recentChatIds.filter(recentId => recentId !== chatId);
-      }
+      },
     },
   };
 
