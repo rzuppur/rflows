@@ -14,26 +14,36 @@
         span.icon
           i.fas.fa-cog
 
+    .search
+      .control.has-icons-right
+        input.input(type="search" placeholder="Search chats" v-model="searchText")
+        span.icon.is-small.is-right
+          i.fas.fa-search
+
     .sidebar-chats
 
-      h4.chats-section #[i.far.fa-comment] RFlows
-      chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store")
+      div(v-if="searchText.length" style="height: 10px;")
 
-      h4.chats-section(v-if="favChats.length") #[i.far.fa-star] Favorites
-      chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store")
+      template(v-else)
 
-      h4.chats-section(v-if="unreadChats.length") #[i.far.fa-bell] Unread
-      chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store")
+        h4.chats-section #[i.far.fa-comment] RFlows
+        chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store")
 
-      h4.chats-section(v-if="recentChats.length") #[i.far.fa-clock] Recent
-      chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove")
+        h4.chats-section(v-if="favChats.length") #[i.far.fa-star] Favorites
+        chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store")
 
-      h4.chats-section(v-if="allChats.length")
-        btn.button-reset(:action="toggleAllChats" label="Toggle all chats")
-          i.fas(:class="`fa-angle-${showAllChats ? 'up' : 'down'}`")
-          | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
+        h4.chats-section(v-if="unreadChats.length") #[i.far.fa-bell] Unread
+        chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store")
 
-      template(v-if="showAllChats")
+        h4.chats-section(v-if="recentChats.length") #[i.far.fa-clock] Recent
+        chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove")
+
+        h4.chats-section(v-if="allChats.length")
+          btn.button-reset(:action="toggleAllChats" label="Toggle all chats")
+            i.fas(:class="`fa-angle-${showAllChats ? 'up' : 'down'}`")
+            | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
+
+      template(v-if="showAllChats || searchText.length")
         chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store")
 
       h4.chats-section
@@ -50,12 +60,17 @@
     data() {
       return {
         showAllChats: false,
+        searchText: "",
       };
     },
     computed: {
       allChats() {
         this.$store.flows.chats.v;
 
+        if (this.searchText.length) {
+          const text = this.searchText.toLowerCase();
+          return this.$store.flows.chats.d.filter(chat => chat.name.toLowerCase().includes(text));
+        }
         return this.$store.flows.chats.d;
       },
       devChat() {
@@ -76,18 +91,23 @@
         this.$store.flows.userProperties.v;
 
         return this.$flows.chats.favChatIds
-        .map(favId => this.allChats.find(chat => chat.id === favId))
-        .filter(chat => chat);
+          .map(favId => this.allChats.find(chat => chat.id === favId))
+          .filter(chat => chat);
       },
       unreadChats() {
         return this.allChats.filter(chat => chat.unread && !this.ignoreIds.includes(chat.id));
       },
       recentChats() {
         return this.$flows.chats.recentChatIds
-        .filter(recentId => !this.ignoreIds.includes(recentId))
-        .map(recentId => this.allChats.find(chat => chat.id === recentId))
-        .filter(chat => chat && !chat.unread);
+          .filter(recentId => !this.ignoreIds.includes(recentId))
+          .map(recentId => this.allChats.find(chat => chat.id === recentId))
+          .filter(chat => chat && !chat.unread);
       },
+    },
+    created() {
+      this.$events.$on("currentChatChange", () => {
+        this.searchText = "";
+      });
     },
     methods: {
       toggleAllChats() {
