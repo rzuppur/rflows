@@ -40,9 +40,9 @@
         });
       },
       afterEnter(el) {
-        el.style.overflow = "visible";
-        el.style.maxHeight = "none";
-        el.style.opacity = 1;
+        el.style.overflow = null;
+        el.style.maxHeight = null;
+        el.style.opacity = null;
       },
       beforeLeave(el) {
         el.style.overflow = "hidden";

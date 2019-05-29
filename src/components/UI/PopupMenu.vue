@@ -10,7 +10,7 @@
     .popup-menu-container(ref="container")
       portal(to="popupMenu")
         slide-in-out(:inDuration="60" :outDuration="0")
-          .popup-menu(v-if="menuOpen" :style="{ 'min-width': minWidth, top, left }")
+          .popup-menu(v-if="menuOpen" :style="{ 'min-width': minWidth, top, left, '--top': top, }")
             template(v-for="action in actions")
 
               .popup-menu-item.item-title(
@@ -102,6 +102,8 @@
     display flex
     flex-direction column
     min-width 220px
+    max-height calc(100vh - var(--top) - 10px)
+    overflow-y auto
     padding 5px 0
     background #fff
     border 1px solid $color-gray-border
