@@ -225,6 +225,7 @@
       & /deep/ .popup-menu-container
         position relative
         top -50px
+        width $sidebar-width - 20px
 
       .button
         padding-top 0

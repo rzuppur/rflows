@@ -95,11 +95,23 @@
         });
       },
       chatMembersOverflow() {
-        return this.chatMembers.slice(this.chatMembers.length - (this.membersHiddenCount + 1), this.chatMembers.length)
+        const start = Math.max(0, this.chatMembers.length - this.membersHiddenCount);
+        return this.chatMembers
+          .slice(start, this.chatMembers.length)
           .map(member => ({
             func: () => {},
             text: member.name,
           }));
+      },
+    },
+    watch: {
+      chatMembers: {
+        handler() {
+          if (this.$refs.users) {
+            const overflow = this.$refs.users.scrollWidth - (this.$refs.users.clientWidth + 4);
+            this.membersHiddenCount = (overflow > 0) ? Math.ceil((overflow + 35) / 40) : 0;
+          }
+        },
       },
     },
     mounted() {
@@ -181,6 +193,9 @@
       margin-right -5px
       padding-bottom 3px
       margin-bottom -3px
+
+      & /deep/ .menu-container
+        height 0
 
       .user.invisible
         visibility hidden

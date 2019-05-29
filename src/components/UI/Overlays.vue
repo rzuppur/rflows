@@ -4,6 +4,8 @@
 
     portal-target(name="modals" multiple)
 
+    portal-target(name="popupMenu" multiple)
+
     confirm-modal
 
     .drop-overlay(:class="{ dropping }")

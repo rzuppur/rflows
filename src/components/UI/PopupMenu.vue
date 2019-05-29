@@ -7,28 +7,29 @@
         span.icon.is-small.has-text-grey
           i.fas.fa-caret-down
 
-    .popup-menu-container
-      slide-in-out(:inDuration="60" :outDuration="0")
-        .popup-menu(v-if="menuOpen")
-          template(v-for="action in actions")
+    .popup-menu-container(ref="container")
+      portal(to="popupMenu")
+        slide-in-out(:inDuration="60" :outDuration="0")
+          .popup-menu(v-if="menuOpen" :style="{ 'min-width': minWidth, top, left }")
+            template(v-for="action in actions")
 
-            .popup-menu-item.item-title(
-              v-if="action.title"
-              @click.stop) {{ action.text }}
+              .popup-menu-item.item-title(
+                v-if="action.title"
+                @click.stop) {{ action.text }}
 
-            .popup-menu-item.item-details(
-              v-else-if="action.details"
-              @click.stop) {{ action.text }}
+              .popup-menu-item.item-details(
+                v-else-if="action.details"
+                @click.stop) {{ action.text }}
 
-            button.popup-menu-item.item-clickable(
-              v-else-if="action.func"
-              type="button"
-              @click="menuItemSelect(action.func)"
-            )
-              img.image(v-if="action.image" :src="action.image")
-              span.text {{ action.text }}
+              button.popup-menu-item.item-clickable(
+                v-else-if="action.func"
+                type="button"
+                @click="menuItemSelect(action.func)"
+              )
+                img.image(v-if="action.image" :src="action.image")
+                span.text {{ action.text }}
 
-            hr(v-else-if="action.hr")
+              hr(v-else-if="action.hr")
 
 </template>
 
@@ -42,9 +43,37 @@
       menuId: String,
       actions: Array,
     },
+    data() {
+      return {
+        top: "10px",
+        left: "10px",
+        minWidth: null,
+      };
+    },
     computed: {
       menuOpen() {
         return this.$store.openMenu === this.menuId;
+      },
+    },
+    watch: {
+      menuOpen: {
+        initial: true,
+        handler(val, oldVal) {
+          if (val === oldVal) return;
+          if (val) {
+            const rect = this.$refs.container?.getBoundingClientRect();
+            if (!rect) {
+              this.top = "10px";
+              this.left = "10px";
+              this.minWidth = null;
+              return;
+            }
+            const minWidth = Math.max(220, rect.width);
+            this.top = `${rect.y}px`;
+            this.left = `${Math.min(window.innerWidth - minWidth - 10, rect.x)}px`;
+            this.minWidth = `${minWidth}px`;
+          }
+        },
       },
     },
     methods: {
@@ -70,15 +99,12 @@
     display flex
     flex-direction column
     min-width 220px
-    left 0
-    right 0
-    top 0
     padding 5px 0
     background #fff
     border 1px solid $color-gray-border
     border-radius $border-radius
     box-shadow 0 4px 5px -1px alpha(#000, 0.1)
-    z-index 100
+    z-index 10001
 
     .popup-menu-item
       display block
