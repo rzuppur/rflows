@@ -176,9 +176,9 @@
 
     .name
       text-title-20()
-      margin-right 20px
-      flex 1 1 300px
-      min-width 100px
+      margin-right 10px
+      min-width 150px
+      flex 1 1 auto
 
     .users
       display flex
@@ -191,6 +191,9 @@
       padding-bottom 3px
       margin-bottom -3px
 
+      @media (max-width $media-mobile-width)
+       display none
+
       & /deep/ .menu-container
         height 0
 
@@ -199,7 +202,6 @@
 
       .all-users-button
         min-width 40px
-        margin-left 10px
 
         .avatar
           margin 0 0 0 10px
