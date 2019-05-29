@@ -26,11 +26,13 @@
       beforeEnter(el) {
         el.style.maxHeight = "0px";
         el.style.overflow = "hidden";
+        el.style.opacity = 0;
       },
       enter(el, done) {
         // eslint-disable-next-line no-undef
         Velocity(el, {
           maxHeight: el.scrollHeight,
+          opacity: 1,
         }, {
           duration: this.inDuration,
           easing: "ease-out",
@@ -40,15 +42,18 @@
       afterEnter(el) {
         el.style.overflow = "visible";
         el.style.maxHeight = "none";
+        el.style.opacity = 1;
       },
       beforeLeave(el) {
         el.style.overflow = "hidden";
         el.style.maxHeight = `${el.scrollHeight}px`;
+        el.style.opacity = 1;
       },
       leave(el, done) {
         // eslint-disable-next-line no-undef
         Velocity(el, {
           maxHeight: "0",
+          opacity: 0,
         }, {
           duration: this.outDuration,
           easing: "ease-out",

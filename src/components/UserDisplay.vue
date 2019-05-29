@@ -15,6 +15,8 @@
     .text(v-if="withName")
       .name.ellipsis {{ user.name }}
       .details.ellipsis(v-if="user.email") {{ user.email }}
+      .details.ellipsis(v-else-if="user.role") {{ user.role.toLowerCase() | capitalize }}
+        span(v-if="user.userStatus") &nbsp;· {{ user.userStatus.toLowerCase() }}
 
     slot
 

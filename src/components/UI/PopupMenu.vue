@@ -21,6 +21,8 @@
                 v-else-if="action.details"
                 @click.stop) {{ action.text }}
 
+              user-display(v-else-if="action.user" :user="action.user" :withName="true")
+
               button.popup-menu-item.item-clickable(
                 v-else-if="action.func"
                 type="button"
@@ -35,10 +37,11 @@
 
 <script>
   import SlideInOut from "@/components/UI/SlideInOut.vue";
+  import UserDisplay from "@/components/UserDisplay.vue";
 
   export default {
     name: "PopupMenu",
-    components: { SlideInOut },
+    components: { UserDisplay, SlideInOut },
     props: {
       menuId: String,
       actions: Array,
@@ -167,6 +170,19 @@
         text-regular-13()
         color $color-gray-text
         padding-top 0
+
+    & /deep/ .user
+      min-height 50px
+      padding 5px 0
+
+      .avatar
+        margin 0 0 0 10px
+
+      .avatar-container
+        margin-right 10px
+
+      .name
+        text-bold-16()
 
     hr
       margin 5px 0

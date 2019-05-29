@@ -98,10 +98,7 @@
         const start = Math.max(0, this.chatMembers.length - this.membersHiddenCount);
         return this.chatMembers
           .slice(start, this.chatMembers.length)
-          .map(member => ({
-            func: () => {},
-            text: member.name,
-          }));
+          .map(member => ( { user: member } ));
       },
     },
     watch: {
@@ -180,7 +177,7 @@
     .name
       text-title-20()
       margin-right 20px
-      flex 1
+      flex 1 1 300px
       min-width 100px
 
     .users
