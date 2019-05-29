@@ -31,6 +31,9 @@
     align-items center
     cursor pointer
 
+    @media (max-width $media-mobile-width)
+      height 40px
+
     &.unread
       color #fff
       text-bold-16()

@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .chat-container.alwaysFullHeight
+  .chat-container.alwaysFullHeight(:class="{ showSidebar }")
 
     .sidebar
       chat-sidebar
@@ -18,6 +18,16 @@
   export default {
     name: "Chat",
     components: { ChatMainbar, ChatSidebar },
+    data() {
+      return {
+        showSidebar: false,
+      };
+    },
+    mounted() {
+      this.$events.$on("currentChatChange", () => { this.showSidebar = false; });
+      this.$events.$on("hideSidebar", () => { this.showSidebar = false; });
+      this.$events.$on("showSidebar", () => { this.showSidebar = true; });
+    },
   };
 
 </script>
@@ -30,6 +40,14 @@
     display flex
     overflow hidden
 
+    @media (max-width $media-mobile-width)
+      &.showSidebar
+        .sidebar
+          display block
+
+        .mainbar
+          display none
+
   .sidebar,
   .mainbar
     max-height 100%
@@ -37,13 +55,16 @@
 
   .sidebar
     background $color-sidebar-background
-    flex 0 0 $sidebar-width
-    position relative
-    overflow hidden
     color #fff
+    flex 1 1 auto
 
-    @media (max-width $media-sidebar-hide)
-      flex 0 0 40px
+    @media (min-width $media-mobile-width + 1px)
+      flex 0 0 $sidebar-width
+      position relative
+      overflow hidden
+
+    @media (max-width $media-mobile-width)
+      display none
 
   .mainbar
     flex 4

@@ -7,11 +7,16 @@
 
         .chat-title
 
+          btn.button.is-white(v-if="mqMobile" rtip="Change chat" :action="() => { $events.$emit('showSidebar') }" style="margin-right: 5px;")
+            span.icon.text-muted
+              i.fas.fa-bars
+
           btn.button.fav-toggle.is-white(v-if="!isDevChat" :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite")
             span.icon
               i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
 
           .name.ellipsis {{ $store.currentChatName }}
+            .placeholder(v-if="!$store.currentChatName")
 
           .users(ref="users")
             template(v-for="member, i in chatMembers")
@@ -165,6 +170,9 @@
     align-items center
     padding 0 20px
 
+    @media (max-width $media-mobile-width)
+      padding 0 10px
+
     .fav-toggle
       margin-right 5px
 
@@ -179,6 +187,12 @@
       margin-right 10px
       min-width 150px
       flex 1 1 auto
+
+      .placeholder
+        background alpha(#000, .05)
+        height 18px
+        border-radius @height
+        max-width 170px
 
     .users
       display flex

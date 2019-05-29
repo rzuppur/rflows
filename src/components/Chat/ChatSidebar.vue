@@ -4,6 +4,11 @@
 
     user-display(:user="currentUserDisplay" :withName="true")
 
+      template(v-if="mqMobile" v-slot:avatar)
+        btn.button.chat(rtip="Chat" :action="() => { $events.$emit('hideSidebar') }")
+          span.icon
+            i.fas.fa-arrow-right
+
       btn.button.settings(rtip="Settings" :action="() => { $events.$emit('openSettings') }")
         span.icon
           i.fas.fa-cog
@@ -75,7 +80,7 @@
         return {
           avatar: this.$flows.utils.getAvatarFromUser(this.$store.currentUser),
           name: this.$flows.utils.getFullNameFromUser(this.$store.currentUser),
-          email: this.$store.currentUser?.email,
+          email: this.mqMobile ? null : this.$store.currentUser?.email,
         };
       },
       showWorkspaceFilter() {
@@ -194,17 +199,28 @@
   @import "~@/shared.styl"
 
   .sidebar-content
-    position absolute
-    left 0
-    right 0
-    top 0
-    bottom 0
-    margin-right -50px
-    padding-right 50px
     overflow-y scroll
     height 100%
 
+    @media (max-width $media-mobile-width)
+      margin-top 56px
+
+    @media (min-width $media-mobile-width + 1px)
+      position absolute
+      left 0
+      right 0
+      top 0
+      bottom 0
+      margin-right -50px
+      padding-right 50px
+
     .user
+      @media (max-width $media-mobile-width)
+        position fixed
+        top 0
+        left 0
+        right 0
+
       & /deep/ .details
         color $color-gray-text-light
 
@@ -214,18 +230,28 @@
         &:hover
           background alpha(#fff, 0.1)
 
+      .button.chat
+        margin-left 0
+        margin-right 4px
+
     .workspace-filter
       padding 10px 10px 0
 
-      .button,
-      & /deep/ .popup-menu
-        width $sidebar-width - 20px
-        max-width $sidebar-width - 20px
+      .button
+        width 100%
 
       & /deep/ .popup-menu-container
         position relative
         top -50px
-        width $sidebar-width - 20px
+
+      @media (min-width $media-mobile-width + 1px)
+        .button,
+        & /deep/ .popup-menu
+          width $sidebar-width - 20px
+          max-width $sidebar-width - 20px
+
+        & /deep/ .popup-menu-container
+          width $sidebar-width - 20px
 
       .button
         padding-top 0
@@ -256,13 +282,23 @@
   .user
     padding 10px 10px 0
 
-  .connection-error,
-  .user,
-  .search
-    width $sidebar-width
+  @media (min-width $media-mobile-width + 1px)
+    .connection-error,
+    .user,
+    .search
+      width $sidebar-width
 
   .search
     padding 10px 10px 0
+
+    @media (max-width $media-mobile-width)
+      padding-top 0
+
+      input
+        height 48px
+
+      .control.has-icons-right .icon
+        top 6px
 
     .input
       background transparent
@@ -283,9 +319,10 @@
         &::placeholder
           color $color-
 
-  .sidebar-chats
-    width $sidebar-width
-    overflow hidden
+  @media (min-width $media-mobile-width + 1px)
+    .sidebar-chats
+      width $sidebar-width
+      overflow hidden
 
   .chats-section
     padding 20px 10px 5px

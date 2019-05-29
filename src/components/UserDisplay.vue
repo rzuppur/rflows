@@ -7,10 +7,11 @@
     :status="user.userStatus"
   )
 
-    .avatar-container(v-if="user.avatar")
-      img.avatar.avatar-small(:src="user.avatar" :status="user.status")
-      .online-status
-      .unreads(v-if="user.unreadItemsCount") {{ user.role === 'NOTIFICATION_RECEIVER' ? '@' : user.unreadItemsCount }}
+    slot(name="avatar")
+      .avatar-container(v-if="user.avatar")
+        img.avatar.avatar-small(:src="user.avatar" :status="user.status")
+        .online-status
+        .unreads(v-if="user.unreadItemsCount") {{ user.role === 'NOTIFICATION_RECEIVER' ? '@' : user.unreadItemsCount }}
 
     .text(v-if="withName")
       .name.ellipsis {{ user.name }}

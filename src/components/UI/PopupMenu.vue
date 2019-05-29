@@ -103,6 +103,7 @@
     flex-direction column
     min-width 220px
     max-height calc(100vh - var(--top) - 10px)
+    overflow-x hidden
     overflow-y auto
     padding 5px 0
     background #fff

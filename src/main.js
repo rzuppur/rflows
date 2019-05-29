@@ -114,7 +114,7 @@ new Vue({
       alwaysFullHeightTimeout = setTimeout(this.updateFullHeight, RESIZE_DEBOUNCE_TIME);
     });
 
-    this.mq = window.matchMedia("(max-width: 600px)");
+    this.mq = window.matchMedia("(max-width: 700px)");
     this.mqListener = q => this.mqMobileMatches = q.matches;
     this.mq.addListener(this.mqListener);
     this.mqMobileMatches = this.mq.matches;
