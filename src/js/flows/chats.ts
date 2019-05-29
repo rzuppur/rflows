@@ -36,6 +36,14 @@ class Chats {
     ]);
   }
 
+  async getChatUsers(chatId: number): Promise<void> {
+    this.connection.subscribeChatTopic("TopicUser", chatId);
+
+    await Promise.all([
+      this.connection.findByChat("TopicUser", chatId),
+    ]);
+  }
+
   get favChatIds(): number[] {
     // todo: cache
 
@@ -71,8 +79,21 @@ class Chats {
     .map(workspaceAccess => workspaceAccess.workspaceId);
   }
 
+  set favChatIds(chatIds: number[]) {
+    chatIds = utils.uniqueNonZeroNumberArray(chatIds);
+    const prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "favorites");
+    if (!prop) throw new Error("Could not find userProperty for favorites");
+    prop.value = chatIds.map(chatId => ({id: chatId, type: "MEETING"}));
+    try {
+      this.connection.message("/app/UserProperty.save", prop);
+    } catch (error) {
+      console.log(error);
+      this.events.$emit("notify", `Error saving favorite chats`);
+    }
+  }
+
   set recentChatIds(chatIds: number[]) {
-    chatIds = Chats.numberArray(chatIds);
+    chatIds = utils.uniqueNonZeroNumberArray(chatIds);
     const prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
     if (!prop) throw new Error("Could not find userProperty for recents");
     prop.value = chatIds.map(chatId => ({id: chatId, type: "MEETING"}));
@@ -148,7 +169,7 @@ class Chats {
 
     this.store.flows.chats.d.forEach(chat => {
       if (!chat.name) {
-        const otherUsers = this.store.flows.chatUsers.d.filter(chatUser => chatUser.userId !== currentUserId && chatUser.topicId === chat.id);
+        const otherUsers = this.store.flows.chatUsers.d.filter(chatUser => chatUser.userId !== currentUserId && chatUser.chatId === chat.id);
         if (otherUsers.length) {
           const names = otherUsers.map(chatUser => {
             const user = this.store.flows.users.d.find(user => user.id === chatUser.userId);
@@ -164,7 +185,7 @@ class Chats {
         }
       }
 
-      const myChatUser = this.store.flows.chatUsers.d.find(chatUser => chatUser.userId === currentUserId && chatUser.topicId === chat.id);
+      const myChatUser = this.store.flows.chatUsers.d.find(chatUser => chatUser.userId === currentUserId && chatUser.chatId === chat.id);
       if (myChatUser) {
         if (chat.unread !== myChatUser.unreadItemsCount
           || chat.unreadImportant !== myChatUser.unreadItemsToMeCount
@@ -203,7 +224,7 @@ class Chats {
       createDate: chatUser.createDate,
       modifiedDate: chatUser.modifiedDate,
       userId: chatUser.userId,
-      topicId: chatUser.topicId,
+      chatId: chatUser.topicId,
       role: chatUser.role,
       status: chatUser.status,
       atItemsToMeCount: chatUser.atItemsToMeCount,
@@ -237,10 +258,6 @@ class Chats {
       workspaceId: workspaceAccess.orgId,
       userId: workspaceAccess.userId,
     };
-  }
-
-  private static numberArray(array: any[]): number[] {
-    return array.map(x => +x);
   }
 }
 

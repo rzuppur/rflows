@@ -178,7 +178,6 @@ class Socket {
   }
 
   unsubscribe(destination) {
-    this._debug(destination);
     const sub = this.subscriptions[destination];
     if (sub) {
       sub.unsubscribe();

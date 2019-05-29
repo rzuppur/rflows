@@ -45,6 +45,10 @@ class Connection {
     return await this.messageWithResponse(`/app/${topic}.findByUser`, { id: currentUserId });
   }
 
+  public async findByChat(topic: GlobalUserTopic, id: number, filter?: any) {
+    return await this.messageWithResponse(`/app/${topic}.findByTopic`, filter ? {id, filter} : {id});
+  }
+
   public subscribe(destination: string): void {
     this.socket.subscribe(destination);
   }
@@ -59,6 +63,11 @@ class Connection {
     // @ts-ignore
     const currentUserId = this.store.currentUser.id;
     const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/topic/User.${currentUserId}.${topic}.${type}`));
+    return Promise.all(promises);
+  }
+
+  public subscribeChatTopic(topic: GlobalUserTopic, id: number): Promise<SubResult[]> {
+    const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/topic/Topic.${id}.${topic}.${type}`));
     return Promise.all(promises);
   }
 
@@ -160,31 +169,31 @@ class Connection {
         break;
       }
       case "Topic": {
-        this.chats.parseChats(Connection.makeArrayIfNotArray(frameBody));
+        this.chats.parseChats(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicUser": {
-        this.chats.parseChatUsers(Connection.makeArrayIfNotArray(frameBody));
+        this.chats.parseChatUsers(Connection.bodyFilter(frameBody));
         break;
       }
       case "Organization": {
-        this.chats.parseWorkspaces(Connection.makeArrayIfNotArray(frameBody));
+        this.chats.parseWorkspaces(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicLocation": {
-        this.chats.parseChatWorkspaces(Connection.makeArrayIfNotArray(frameBody));
+        this.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {
-        this.chats.parseChatWorkspaceAccesses(Connection.makeArrayIfNotArray(frameBody));
+        this.chats.parseChatWorkspaceAccesses(Connection.bodyFilter(frameBody));
         break;
       }
       case "User": {
-        this.users.parseUsers(Connection.makeArrayIfNotArray(frameBody));
+        this.users.parseUsers(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserProperty": {
-        this.settings.parseSettings(Connection.makeArrayIfNotArray(frameBody));
+        this.settings.parseSettings(Connection.bodyFilter(frameBody));
         break;
       }
       case "Error": {
@@ -254,11 +263,19 @@ class Connection {
     }*/
   }
 
-  private static makeArrayIfNotArray(x: any) {
+  private static makeArrayIfNotArray(x: any): any[] {
     if (x.length === undefined) {
       x = [x];
     }
     return x;
+  }
+
+  private static removeDeleted(x: any[]): any[] {
+    return x.filter(a => !a.deleted);
+  }
+
+  private static bodyFilter(x: any): any[] {
+    return Connection.removeDeleted(Connection.makeArrayIfNotArray(x));
   }
 
   private _socketClose(CloseEvent: any): void {

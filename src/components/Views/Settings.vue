@@ -11,11 +11,8 @@
 
       h4
         span Profile
-      .user.user-with-name
-        img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser($store.currentUser)")
-        .text
-          .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
-          .details.ellipsis {{ $store.currentUser.email }}
+
+      user-display(:user="currentUser" :withName="true")
         btn.button(:action="$flows.connection.logout" rtip="Log out" icon)
           span.icon
             i.fas.fa-sign-out-alt
@@ -45,11 +42,12 @@
 
 <script>
   import Modal from "@/components/UI/Modal.vue";
-  import CheckboxSwitch from "@/components/UI/CheckboxSwitch";
+  import CheckboxSwitch from "@/components/UI/CheckboxSwitch.vue";
+  import UserDisplay from "@/components/UserDisplay.vue";
 
   export default {
     name: "Settings",
-    components: { CheckboxSwitch, Modal },
+    components: { UserDisplay, CheckboxSwitch, Modal },
     data() {
       return {
         autoMarkAsRead: null,
@@ -74,9 +72,18 @@
               return "Notifications enabled";
             case "denied":
               return "Notifications blocked, you can change this in site settings";
+            default:
+              return "Error";
           }
         }
         return "Notifications disabled";
+      },
+      currentUser() {
+        return {
+          avatar: this.$flows.utils.getAvatarFromUser(this.$store.currentUser),
+          name: this.$flows.utils.getFullNameFromUser(this.$store.currentUser),
+          email: this.$store.currentUser?.email,
+        };
       },
     },
     methods: {
@@ -92,7 +99,7 @@
 
         if (value && prop === "desktopNotifications") {
           if (Notification.permission === "default") {
-            Notification.requestPermission().then(result => {
+            Notification.requestPermission().then((result) => {
               if (result === "default") this.$events.$emit("notify", "Notifications are disabled");
               if (result === "denied") this.$events.$emit("notify", "Notifications are blocked, you can change this in site settings");
               if (result === "granted") this.$events.$emit("notify", "Notifications enabled");
@@ -104,7 +111,7 @@
       },
     },
     watch: {
-      "$store.flows.userProperties.v": function() {
+      "$store.flows.userProperties.v": function () {
         this.updateProps();
       },
     },

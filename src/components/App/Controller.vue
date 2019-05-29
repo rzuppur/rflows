@@ -33,12 +33,19 @@
           if (val === oldVal) return;
           if (this.$events) this.$events.$emit("currentChatChange", oldVal, val);
           if (oldVal !== null && val) {
-            let chatIds = this.$flows.chats.recentChatIds.filter(chatId => chatId !== val);
+            const chatIds = this.$flows.chats.recentChatIds.filter(chatId => chatId !== val);
             chatIds.unshift(val);
             this.$flows.chats.recentChatIds = chatIds;
           }
-        }
-      }
+          if (val) this.$flows.chats.getChatUsers(val);
+          this.updateCurrentChatName();
+        },
+      },
+      "$store.flows.chats.v": {
+        handler() {
+          this.updateCurrentChatName();
+        },
+      },
     },
     created() {
       this.$events.$on("loginDone", this.loginDone);
@@ -65,6 +72,16 @@
             this.$store.currentUser = null;
           }
         }
+      },
+      updateCurrentChatName() {
+        if (this.$store.currentChatId) {
+          const currentChat = this.$store.flows.chats.d.find(chat => chat.id === this.$store.currentChatId);
+          if (currentChat && currentChat.name) {
+            this.$store.currentChatName = currentChat.name;
+            return;
+          }
+        }
+        this.$store.currentChatName = "";
       },
     },
     render() {

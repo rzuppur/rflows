@@ -39,7 +39,11 @@ const utils = {
       if (user.email) return user.email;
     }
     return "?";
-  }
+  },
+
+  uniqueNonZeroNumberArray(array: any[]): number[] {
+    return Array.from(new Set(array.map(x => +x).filter(Boolean)));
+  },
 };
 
 export default utils;

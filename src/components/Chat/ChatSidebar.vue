@@ -2,13 +2,7 @@
 
   .sidebar-content
 
-    .user.user-with-name(v-if="$store.currentUser && !$store.connectionError")
-
-      img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser($store.currentUser)")
-
-      .text
-        .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
-        .details.ellipsis {{ $store.currentUser.email }}
+    user-display(:user="currentUserDisplay" :withName="true")
 
       btn.button.settings(rtip="Settings" :action="() => { $events.$emit('openSettings') }")
         span.icon
@@ -64,10 +58,11 @@
   import { BLANK_DATA_SVG_IMAGE, DEVCHAT_ID } from "@/js/consts";
   import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
   import PopupMenu from "@/components/UI/PopupMenu.vue";
+  import UserDisplay from "@/components/UserDisplay.vue";
 
   export default {
     name: "ChatSidebar",
-    components: { ChatSidebarChatDisplay, PopupMenu },
+    components: { UserDisplay, ChatSidebarChatDisplay, PopupMenu },
     data() {
       return {
         showAllChats: false,
@@ -76,6 +71,13 @@
       };
     },
     computed: {
+      currentUserDisplay() {
+        return {
+          avatar: this.$flows.utils.getAvatarFromUser(this.$store.currentUser),
+          name: this.$flows.utils.getFullNameFromUser(this.$store.currentUser),
+          email: this.$store.currentUser?.email,
+        };
+      },
       showWorkspaceFilter() {
         this.$store.flows.userProperties.v;
 
@@ -203,9 +205,8 @@
     height 100%
 
     .user
-      .details
+      & /deep/ .details
         color $color-gray-text-light
-        text-regular-13()
 
       .button
         color alpha(#fff, 0.5)
@@ -254,12 +255,8 @@
   .user
     padding 10px 10px 0
 
-  .user-links
-    padding 20px 10px 10px
-
   .connection-error,
   .user,
-  .user-links,
   .search
     width $sidebar-width
 

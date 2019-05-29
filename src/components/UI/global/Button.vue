@@ -14,6 +14,7 @@
     :aria-label="props.label"
     v-tooltip="props.tip ? `${props.tip}` : null"
     v-tooltip.right="props.rtip ? `${props.rtip}` : null"
+    :style="data.staticStyle"
   )
     slot
 
