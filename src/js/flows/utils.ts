@@ -29,8 +29,9 @@ const utils = {
     height: number = 42,
     fontSize: number = 25,
     background: string = "b0b8c0",
+    color: string = "ffffff",
   ): string {
-    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='${height}' width='${width}' style='background: %23${background}'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='white' font-size='${fontSize}' font-family='sans-serif'%3E${char}%3C/text%3E%3C/svg%3E`;
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='${height}' width='${width}' style='background: %23${background}'%3E%3Ctext text-anchor='middle' x='50%25' y='50%25' dy='0.35em' fill='%23${color}' font-size='${fontSize}' font-weight='500' font-family='Inter,"Inter UI",sans-serif'%3E${char}%3C/text%3E%3C/svg%3E`;
   },
 
   getFullNameFromUser(user: User) {

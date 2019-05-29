@@ -13,8 +13,13 @@
 
           .name.ellipsis {{ $store.currentChatName }}
 
-          .users(v-if="chatMembers")
-            user-display(v-for="member in chatMembers" :user="member")
+          .users(ref="users")
+            template(v-for="member, i in chatMembers")
+              popup-menu(v-if="i === chatMembers.length - membersHiddenCount" menu-id="members-overflow-menu" :actions="chatMembersOverflow")
+                template(v-slot:trigger="open")
+                  button.button-reset.all-users-button(@pointerdown.prevent @click.stop="open.menuOpenClickStop")
+                    img.avatar.avatar-small(:src="$flows.utils.placeholderImageChar(`+${membersHiddenCount}`, 30, 40, 16, 'ffffff', '666666')")
+              user-display(v-else :user="member" :class="{ invisible: i > chatMembers.length - membersHiddenCount }")
 
 
     table(v-if="debug")
@@ -44,13 +49,15 @@
 
   import { DEVCHAT_ID } from "@/js/consts";
   import UserDisplay from "@/components/UserDisplay.vue";
+  import PopupMenu from "@/components/UI/PopupMenu.vue";
 
   export default {
     name: "ChatMainbar",
-    components: { UserDisplay },
+    components: { PopupMenu, UserDisplay },
     data() {
       return {
         debug: false,
+        membersHiddenCount: 0,
       };
     },
     computed: {
@@ -87,6 +94,21 @@
           };
         });
       },
+      chatMembersOverflow() {
+        return this.chatMembers.slice(this.chatMembers.length - (this.membersHiddenCount + 1), this.chatMembers.length)
+          .map(member => ({
+            func: () => {},
+            text: member.name,
+          }));
+      },
+    },
+    mounted() {
+      const usersObs = new ResizeObserver((entries) => {
+        const users = entries[0].target;
+        const overflow = users.scrollWidth - (users.clientWidth + 4);
+        this.membersHiddenCount = (overflow > 0) ? Math.ceil((overflow + 35) / 40) : 0;
+      });
+      usersObs.observe(this.$refs.users);
     },
     methods: {
       toggleFavourite() {
@@ -151,5 +173,23 @@
 
     .users
       display flex
+      flex-direction row-reverse
+      overflow hidden
+      padding-top 3px
+      margin-top -3px
+      padding-right 5px
+      margin-right -5px
+      padding-bottom 3px
+      margin-bottom -3px
+
+      .user.invisible
+        visibility hidden
+
+      .all-users-button
+        min-width 40px
+        margin-left 10px
+
+        .avatar
+          margin 0 0 0 10px
 
 </style>

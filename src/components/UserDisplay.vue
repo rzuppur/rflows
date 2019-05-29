@@ -21,12 +21,12 @@
 </template>
 
 <script>
-  import UserDisplay from "@/js/model/UserDisplay";
-
   export default {
     name: "UserDisplay",
     props: {
-      user: UserDisplay,
+      user: {
+        type: Object,
+      },
       withName: {
         type: Boolean,
         default: false,
@@ -58,7 +58,7 @@
 
     .avatar-container
       position relative
-      top 1px
+      height 40px
 
     .online-status
       width 10px
@@ -92,7 +92,7 @@
 
     .unreads
       position absolute
-      bottom 0
+      bottom -2px
       right -4px
       padding 0 4px
       text-bold-13()
