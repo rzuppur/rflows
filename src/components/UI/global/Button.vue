@@ -12,8 +12,7 @@
     v-on="props.action ? { click: props.action } : null"
     :disabled="props.disabled"
     :aria-label="props.label"
-    v-tooltip="props.tip ? `${props.tip}` : null"
-    v-tooltip.right="props.rtip ? `${props.rtip}` : null"
+    v-tooltip="{ content: props.tip ? `${props.tip}` : null, placement: props.tloc ? props.tloc : 'auto' }"
     :style="data.staticStyle"
   )
     slot

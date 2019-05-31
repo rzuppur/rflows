@@ -5,11 +5,11 @@
     user-display(:user="currentUserDisplay" :withName="true")
 
       template(v-if="mqMobile" v-slot:avatar)
-        btn.button.chat(rtip="Chat" :action="() => { $events.$emit('hideSidebar') }")
+        btn.button.chat(tip="Chat" tloc="right" :action="() => { $events.$emit('hideSidebar') }")
           span.icon
             i.fas.fa-arrow-right
 
-      btn.button.settings(rtip="Settings" :action="() => { $events.$emit('openSettings') }")
+      btn.button.settings(tip="Settings" tloc="right" :action="() => { $events.$emit('openSettings') }")
         span.icon
           i.fas.fa-cog
 

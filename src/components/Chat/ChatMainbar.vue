@@ -7,7 +7,7 @@
 
         .chat-title
 
-          btn.button.is-white(v-if="mqMobile" rtip="Change chat" :action="() => { $events.$emit('showSidebar') }" style="margin-right: 5px;")
+          btn.button.is-white(v-if="mqMobile" tip="Change chat" tloc="right" :action="() => { $events.$emit('showSidebar') }" style="margin-right: 5px;")
             span.icon.text-muted
               i.fas.fa-bars
 
@@ -46,12 +46,10 @@
 
               .control(v-show="!uploadExpanded")
 
-                button.expand-button(
+                btn.expand-button(
                   :class="{ expanded: showEditorToolbar }"
-                  @pointerdown.prevent
-                  @pointerup="showEditorToolbar = !showEditorToolbar"
-                  @keyup.enter="showEditorToolbar = !showEditorToolbar"
-                  v-tooltip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
+                  :action="() => { showEditorToolbar = !showEditorToolbar; }"
+                  :tip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
               file-upload(
                 v-show="!mqMobile"
@@ -63,13 +61,13 @@
                 @fileUploaded="replyCancel()")
 
               .control(v-if="chat.replyToId" v-show="!uploadExpanded")
-                button.button.is-outlined(@pointerdown.prevent @pointerup="replyCancel()" @keyup.enter="replyCancel()")
+                btn.button.is-outlined(:action="replyCancel")
                   span(v-if="!mqMobile") Cancel
                   span.icon(v-if="mqMobile")
                     i.fas.fa-times
 
               .control(v-show="!uploadExpanded")
-                button.button(:class="{ 'is-primary': chat.replyToId }" @pointerdown.prevent @pointerup="sendChatMessage()" @keyup.enter="sendChatMessage()")
+                btn.button(:class="{ 'is-primary': chat.replyToId }" :action="sendChatMessage")
                   span(v-if="!mqMobile") Send
                   span.icon(v-if="mqMobile")
                     i.fas.fa-paper-plane
@@ -181,6 +179,12 @@
           return;
         }
         this.$flows.chats.favChatIds = this.$flows.chats.favChatIds.concat([this.chatId]);
+      },
+      sendChatMessage() {
+        console.log("todo: sendChatMessage");
+      },
+      checkTypingStatus() {
+        console.log("todo: checkTypingStatus");
       },
     },
   };

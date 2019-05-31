@@ -13,7 +13,7 @@
         span Profile
 
       user-display(:user="currentUser" :withName="true")
-        btn.button(:action="$flows.connection.logout" rtip="Log out" icon)
+        btn.button(:action="$flows.connection.logout" tip="Log out" tloc="right" icon)
           span.icon
             i.fas.fa-sign-out-alt
 
