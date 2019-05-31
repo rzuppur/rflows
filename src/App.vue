@@ -45,7 +45,7 @@
                     span.icon.is-small
                       i.fas(:class="`fa-angle-${ workspaceMenuOpen ? 'up' : 'down'}`")
                   div(v-if="workspaceMenuOpen")
-                    slide-in-out(:duration="100")
+                    slide-in-out(:inDuration="100" :outDuration="0")
                       .popup-menu(v-if="workspaceMenuOpen")
                         .popup-menu-item(
                           @click="workspaceFilter = null"
