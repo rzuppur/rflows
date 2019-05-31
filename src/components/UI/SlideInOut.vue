@@ -7,15 +7,13 @@
     v-on:after-enter="afterEnter"
     v-on:before-leave="beforeLeave"
     v-on:leave="leave"
+    v-bind:css="false"
   )
     slot
 
 </template>
 
 <script>
-  // eslint-disable-next-line import/extensions
-  import "velocity-animate/velocity.ui.min.js";
-
   export default {
     name: "SlideInOut",
     props: {
@@ -27,44 +25,30 @@
         el.style.maxHeight = "0px";
         el.style.overflow = "hidden";
         el.style.opacity = 0;
+        el.style.transition = `max-height ${this.inDuration}ms cubic-bezier(0.215, 0.61, 0.355, 1), opacity ${this.inDuration}ms ease-out`;
       },
       enter(el, done) {
-        // eslint-disable-next-line no-undef
-        Velocity(el, {
-          maxHeight: el.scrollHeight,
-          opacity: 1,
-        }, {
-          duration: this.inDuration,
-          easing: "ease-out",
-          complete: done,
-        });
+        el.style.maxHeight = `${el.scrollHeight}px`;
+        el.style.opacity = 1;
+        setTimeout(done, +this.inDuration);
       },
       afterEnter(el) {
         el.style.overflow = null;
         el.style.maxHeight = null;
         el.style.opacity = null;
+        el.style.transition = null;
       },
       beforeLeave(el) {
         el.style.overflow = "hidden";
         el.style.maxHeight = `${el.scrollHeight}px`;
         el.style.opacity = 1;
+        el.style.transition = `max-height ${this.outDuration}ms cubic-bezier(0.215, 0.61, 0.355, 1), opacity ${this.outDuration}ms ease-in`;
       },
       leave(el, done) {
-        // eslint-disable-next-line no-undef
-        Velocity(el, {
-          maxHeight: "0",
-          opacity: 0,
-        }, {
-          duration: this.outDuration,
-          easing: "ease-out",
-          complete: done,
-        });
+        setTimeout(() => { el.style.maxHeight = "0px"; }, 0);
+        el.style.opacity = 0;
+        setTimeout(done, +this.outDuration);
       },
     },
   };
 </script>
-
-<style lang="stylus" scoped>
-  @import "~@/shared.styl"
-
-</style>

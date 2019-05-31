@@ -9,7 +9,7 @@
 
     .popup-menu-container(ref="container")
       portal(to="popupMenu")
-        slide-in-out(:inDuration="60" :outDuration="0")
+        slide-in-out(:inDuration="70" :outDuration="0")
           .popup-menu(v-if="menuOpen" :style="{ 'min-width': minWidth, top, left, '--top': top, }")
             template(v-for="action in actions")
 
