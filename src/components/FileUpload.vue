@@ -45,7 +45,10 @@
 <script>
   export default {
     name: "FileUpload",
-    props: ["chatId", "replyToId"],
+    props: {
+      chatId: Number,
+      replyToId: Number,
+    },
     data() {
       return {
         fileName: "",
@@ -80,7 +83,7 @@
       this.dragCounter = 0;
     },
     mounted() {
-      this.loginToken = this.flows.getLoginToken();
+      this.loginToken = this.$flows.localstorage.getSessionToken();
     },
     destroyed() {
       window.removeEventListener("paste", this._pasteFromClipboard);
@@ -217,6 +220,7 @@
       },
     },
   };
+
 </script>
 
 <style lang="stylus" scoped>
@@ -229,6 +233,5 @@
     display block
     margin 0 auto 15px
     box-shadow 0 0 0 2px rgba(0, 0, 0, .1)
-
 
 </style>

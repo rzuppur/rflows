@@ -18,14 +18,61 @@
           .name.ellipsis {{ $store.currentChatName }}
             .placeholder(v-if="!$store.currentChatName")
 
-          .users(ref="users")
-            template(v-for="member, i in chatMembers")
-              popup-menu(v-if="i === chatMembers.length - membersHiddenCount" menu-id="members-overflow-menu" :actions="chatMembersOverflow")
-                template(v-slot:trigger="open")
-                  button.button-reset.all-users-button(@pointerdown.prevent @click.stop="open.menuOpenClickStop")
-                    img.avatar.avatar-small(:src="$flows.utils.placeholderImageChar(`+${membersHiddenCount}`, 30, 40, 16, 'ffffff', '666666')")
-              user-display(v-else :user="member" :class="{ invisible: i > chatMembers.length - membersHiddenCount }")
+          UserList(:users="chatMembers")
 
+        chat-mainbar-message-list
+
+        .chat-bottom
+
+          .text-small.top-info-text(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
+
+          .flex.chat-inputs
+
+            .field.is-grouped.flex1
+
+              .control.is-expanded(v-show="!uploadExpanded")
+
+                editor(
+                  ref="editor"
+                  :showButtons="showEditorToolbar ? 'ALWAYS' : 'HIDE'"
+                  :onlyText="false"
+                  :placeholder="messageInputPlaceholder"
+                  :initEmpty="true"
+                  @submit="sendChatMessage()"
+                  @update="checkTypingStatus()"
+                  @focus="editorFocused = true"
+                  @blur="editorFocused = false"
+                  @keydown.38.native.exact.capture="editLastMessage")
+
+              .control(v-show="!uploadExpanded")
+
+                button.expand-button(
+                  :class="{ expanded: showEditorToolbar }"
+                  @pointerdown.prevent
+                  @pointerup="showEditorToolbar = !showEditorToolbar"
+                  @keyup.enter="showEditorToolbar = !showEditorToolbar"
+                  v-tooltip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
+
+              file-upload(
+                v-show="!mqMobile"
+                ref="fileUpload"
+                :class="{ flex0: !uploadExpanded, flex1: uploadExpanded}"
+                :chatId="chatId"
+                :replyToId="chat.replyToId"
+                @expandChange="uploadExpanded = $event"
+                @fileUploaded="replyCancel()")
+
+              .control(v-if="chat.replyToId" v-show="!uploadExpanded")
+                button.button.is-outlined(@pointerdown.prevent @pointerup="replyCancel()" @keyup.enter="replyCancel()")
+                  span(v-if="!mqMobile") Cancel
+                  span.icon(v-if="mqMobile")
+                    i.fas.fa-times
+
+              .control(v-show="!uploadExpanded")
+                button.button(:class="{ 'is-primary': chat.replyToId }" @pointerdown.prevent @pointerup="sendChatMessage()" @keyup.enter="sendChatMessage()")
+                  span(v-if="!mqMobile") Send
+                  span.icon(v-if="mqMobile")
+                    i.fas.fa-paper-plane
 
     table(v-if="debug")
       tr
@@ -53,16 +100,26 @@
 <script>
 
   import { DEVCHAT_ID } from "@/js/consts";
-  import UserDisplay from "@/components/UserDisplay.vue";
-  import PopupMenu from "@/components/UI/PopupMenu.vue";
+  import ChatMainbarMessageList from "@/components/Chat/ChatMainbarMessageList.vue";
+  import Editor from "@/components/UI/Editor.vue";
+  import FileUpload from "@/components/FileUpload.vue";
+  import UserList from "@/components/Chat/UserList.vue";
 
   export default {
     name: "ChatMainbar",
-    components: { PopupMenu, UserDisplay },
+    components: { ChatMainbarMessageList, Editor, FileUpload, UserList },
     data() {
       return {
         debug: false,
-        membersHiddenCount: 0,
+
+        chat: {
+          replyToId: null,
+          // todo: maybe save scroll position here for changing chats?
+        },
+
+        showEditorToolbar: false,
+        editorFocused: false,
+        uploadExpanded: false,
       };
     },
     computed: {
@@ -99,30 +156,23 @@
           };
         });
       },
-      chatMembersOverflow() {
-        const start = Math.max(0, this.chatMembers.length - this.membersHiddenCount);
-        return this.chatMembers
-          .slice(start, this.chatMembers.length)
-          .map(member => ( { user: member } ));
-      },
-    },
-    watch: {
-      chatMembers: {
-        handler() {
-          if (this.$refs.users) {
-            const overflow = this.$refs.users.scrollWidth - (this.$refs.users.clientWidth + 4);
-            this.membersHiddenCount = (overflow > 0) ? Math.ceil((overflow + 35) / 40) : 0;
+      messageInputPlaceholder() {
+        // todo: watch chat messages
+        this.$store.flows.users.v;
+
+        if (this.chat.replyToId) {
+          // const message = this.$store.chatMessages().find(ti => ti.id === this.replyToId);
+          const message = null; // todo: find chat message
+          if (message.creatorUserId) {
+            const user = this.$store.flows.users.v.find(user_ => user_.id === message.creatorUserId);
+            if (user) return `Reply to ${this.$flows.utils.getFullNameFromUser(user)}`;
           }
-        },
+          if (this.$store.currentChatName.length) return `Reply to ${this.$store.currentChatName}`;
+          return "Reply";
+        }
+        if (this.$store.currentChatName.length) return `Message ${this.$store.currentChatName}`;
+        return "";
       },
-    },
-    mounted() {
-      const usersObs = new ResizeObserver((entries) => {
-        const users = entries[0].target;
-        const overflow = users.scrollWidth - (users.clientWidth + 4);
-        this.membersHiddenCount = (overflow > 0) ? Math.ceil((overflow + 35) / 40) : 0;
-      });
-      usersObs.observe(this.$refs.users);
     },
     methods: {
       toggleFavourite() {
@@ -194,30 +244,48 @@
         border-radius @height
         max-width 170px
 
-    .users
-      display flex
-      flex-direction row-reverse
-      overflow hidden
-      padding-top 3px
-      margin-top -3px
-      padding-right 5px
-      margin-right -5px
-      padding-bottom 3px
-      margin-bottom -3px
+  .chat-bottom
+    position relative
+    z-index 20
+    background #fff
+    padding 10px 20px 8px
+    box-shadow 0 -1px 3px rgba(0, 0, 0, 0.1)
 
-      @media (max-width $media-mobile-width)
-       display none
+    .top-info-text
+      position absolute
+      top -15px
+      padding 2px 6px 5px
+      border-top-left-radius $border-radius
+      border-top-right-radius $border-radius
+      background #fff
+      color $color-gray-text
 
-      & /deep/ .menu-container
-        height 0
+    .chat-inputs
+      margin-bottom 6px
 
-      .user.invisible
-        visibility hidden
+      .flex0,
+      .control
+        align-self flex-end
 
-      .all-users-button
-        min-width 40px
+      .field
+        min-width 0
+        margin-bottom 0
 
-        .avatar
-          margin 0 0 0 10px
+        .expand-button
+          margin-left 0
+          margin-right 0
+
+    .control.is-expanded
+      min-width 0
+
+    .editor
+
+      /deep/ .menubar .buttons
+        overflow-y auto
+        flex-wrap nowrap
+
+      /deep/ .ProseMirror // @stylint ignore
+        max-height 250px
+        overflow-y auto
 
 </style>
