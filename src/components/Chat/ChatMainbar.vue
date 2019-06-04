@@ -2,7 +2,7 @@
 
   .chat
 
-    template(v-if="!debug")
+    template(v-if="debug === 'off'")
       .mainbar
 
         .chat-title
@@ -72,7 +72,8 @@
                   span.icon(v-if="mqMobile")
                     i.fas.fa-paper-plane
 
-    table(v-if="false && debug")
+    table(v-else-if="debug === 'store'")
+      h3 store
       tr
         td(v-for="value, key in $store.flows" v-if="!['messages', '_messages'].includes(key)")
           b.text-small {{ key }}<br>
@@ -91,15 +92,18 @@
             div(v-else)
               .data {{ value.d }}
 
-    table(v-if="debug")
+    table(v-else-if="debug === 'messages'")
       h3 messages
       tr
-        td(v-for="key in Object.getOwnPropertyNames($store.flows.messages)")
+        td(v-for="key in $store.flows.messages.keys")
           b.text-small {{ key }}<br>
           code v: {{ $store.flows.messages[key].v }}
-          div(style="height: 90vh; overflow: auto; max-width: 250px")
-            .data {{ $store.flows.messages[key].d }}
-    btn.button(style="position: fixed; right: 0; bottom: 0; z-index: 1000000;" :action="() => debug = !debug") debug
+          div(style="height: 85vh; overflow: auto; max-width: 250px")
+            .data
+              .text-muted(v-if="$store.flows.messages[key].d.length > 5") Showing first 5, total {{ $store.flows.messages[key].d.length }}
+              | {{ $store.flows.messages[key].d.slice(0,5) }}
+
+    btn.button(style="position: fixed; right: 0; bottom: 0; z-index: 1000000;" :action="debugToggle") debug: {{ debug }}
 
 
 </template>
@@ -117,7 +121,7 @@
     components: { ChatMainbarMessageList, Editor, FileUpload, UserList },
     data() {
       return {
-        debug: false,
+        debug: "off",
 
         chat: {
           replyToId: null,
@@ -197,6 +201,21 @@
       },
       checkTypingStatus() {
         console.log("todo: checkTypingStatus");
+      },
+      debugToggle() {
+        switch (this.debug) {
+        case "store":
+          this.debug = "messages";
+          return;
+        case "messages":
+          this.debug = "off";
+          return;
+        case "off":
+          this.debug = "store";
+          return;
+        default:
+          this.debug = "off";
+        }
       },
     },
   };

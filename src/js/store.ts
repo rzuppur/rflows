@@ -62,10 +62,10 @@ interface StoreFlows {
   chatWorkspaces: { v: number, d: ChatWorkspace[] };
   workspaceAccesses: { v: number, d: WorkspaceAccess[] };
   messages: {
-    [index: number]: { v: number, d: Message[] },
+    [index: string]: { v: number, d: Message[] },
   };
   _messages: {
-    [index: number]: { v: number, d: Message[] },
+    [index: string]: { v: number, d: Message[] },
   };
 }
 

@@ -2,84 +2,95 @@
 
   .chat-message
 
-    .avatar-container
+    template(v-if="!message")
 
-      .sticky-avatar
-        img.avatar.avatar-small(:src="flows.getAvatar(message.creatorUserId)")
+      .avatar-container
+        .sticky-avatar
+          .avatar.avatar-small.placeholder
 
-      .date(v-tooltip="message.modifiedDate !== message.createDate ? 'Edited ' + utils.dateTimeAddOtherYear(message.modifiedDate) : utils.weekdayDate(message.createDate)")
-        | {{ utils.time(message.createDate) + (message.modifiedDate !== message.createDate ? '*' : '') }}
+      .content-container
+        .name.placeholder
+        p.placeholder
 
-      .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
-        i.fas.fa-thumbtack
+    template(v-else)
 
-    .content-container
-      b.text-error.text-small(v-if="message.error") Message was not sent #{""}
-      //- TODO: resend
+      .avatar-container
 
-      .name {{ flows.getFullName(message.creatorUserId) }}
-        span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
+        .sticky-avatar
+          img.avatar.avatar-small(:src="avatarUrl")
+
+        .date(v-tooltip="message.modifiedDate !== message.createDate ? 'Edited ' + utils.dateTimeAddOtherYear(message.modifiedDate) : utils.weekdayDate(message.createDate)")
+          | {{ utils.time(message.createDate) + (message.modifiedDate !== message.createDate ? '*' : '') }}
+
+        .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
           i.fas.fa-thumbtack
 
-      .date
+      .content-container
+        b.text-error.text-small(v-if="message.error") Message was not sent #{""}
 
-        span(v-if="compact") {{ utils.dateTimeAddOtherYear(message.createDate) }}
+        .name {{ flows.getFullName(message.creatorUserId) }}
+          span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
+            i.fas.fa-thumbtack
 
-        template(v-else)
-          span(v-tooltip="utils.weekdayDate(message.createDate)") {{ utils.time(message.createDate) }}
-          span(v-if="message.modifiedDate !== message.createDate") , edited {{ utils.dateTime(message.modifiedDate) }}
+        .date
 
-      //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
-
-      template(v-if="message.referenceFromTopicItemId")
-        message-preview.reply-original(v-if="showReplyMessage" :messageId="message.referenceFromTopicItemId")
-        p.text-muted.text-small(v-else) Reply to #{""}
-          span(v-if="flows.getChatMessage(message.referenceFromTopicItemId)") {{ flows.getFullName(flows.getChatMessage(message.referenceFromTopicItemId).creatorUserId) }}
-          span(v-else) ?
-
-      slot(name="content")
-
-        p.event-content(v-if="message.type === 'EVENT'") {{ message.text }}
-
-        template(v-else-if="message.type === 'CHAT'")
-          .text-clamped(v-if="compact" v-html="flows.chatTextParse(message.text)")
-          p.text-content(v-else v-html="flows.chatTextParse(message.text)")
-
-        template(v-else-if="message.type === 'NOTE'")
-          .text-clamped(v-if="compact") {{ flows.getMessageTextRepresentation(message.text) }}
-          .note-content(v-else v-html="flows.noteTextParse(message.text)")
-
-        .file-content(v-else-if="message.type === 'FILE'")
-
-          file-display(:message="message")
-
-        template(v-else-if="message.type === 'EMAIL'")
-
-          p.event-content(v-if="message.type === 'EMAIL' && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
-
-          template(v-else-if="message.type === 'EMAIL' && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
-            p.event-content #[i.fas.fa-plus] New commits in branch {{ utils.commitEmailBranch(message.text) }}
-            .commit(v-for="commit in utils.commitEmailParse(message.text)")
-              a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
-                .commit-title #[i.fab.fa-github] #[b  {{ commit.name }}]
+          span(v-if="compact") {{ utils.dateTimeAddOtherYear(message.createDate) }}
 
           template(v-else)
-            .email-meta
-              | From: {{ message.from.address }}<br>
-              | To: {{ message.to.map(to => to.address).join(", ") }}<br>
-              | #[b {{ message.subject }}]
+            span(v-tooltip="utils.weekdayDate(message.createDate)") {{ utils.time(message.createDate) }}
+            span(v-if="message.modifiedDate !== message.createDate") , edited {{ utils.dateTime(message.modifiedDate) }}
 
-            p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+        //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
-            button.button(v-else type="button" @click="$events.$emit('openEmail', message.id)") View email
+        template(v-if="message.referenceFromTopicItemId")
+          message-preview.reply-original(v-if="showReplyMessage" :messageId="message.referenceFromTopicItemId")
+          p.text-muted.text-small(v-else) Reply to #{""}
+            span(v-if="flows.getChatMessage(message.referenceFromTopicItemId)") {{ flows.getFullName(flows.getChatMessage(message.referenceFromTopicItemId).creatorUserId) }}
+            span(v-else) ?
 
-        p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
+        slot(name="content")
 
-    .buttons-container
+          p.event-content(v-if="message.type === 'EVENT'") {{ message.text }}
 
-      .field.has-addons
+          template(v-else-if="message.type === 'CHAT'")
+            .text-clamped(v-if="compact" v-html="flows.chatTextParse(message.text)")
+            p.text-content(v-else v-html="flows.chatTextParse(message.text)")
 
-        slot(name="buttons")
+          template(v-else-if="message.type === 'NOTE'")
+            .text-clamped(v-if="compact") {{ flows.getMessageTextRepresentation(message.text) }}
+            .note-content(v-else v-html="flows.noteTextParse(message.text)")
+
+          .file-content(v-else-if="message.type === 'FILE'")
+
+            file-display(:message="message")
+
+          template(v-else-if="message.type === 'EMAIL'")
+
+            p.event-content(v-if="message.type === 'EMAIL' && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
+
+            template(v-else-if="message.type === 'EMAIL' && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
+              p.event-content #[i.fas.fa-plus] New commits in branch {{ utils.commitEmailBranch(message.text) }}
+              .commit(v-for="commit in utils.commitEmailParse(message.text)")
+                a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
+                  .commit-title #[i.fab.fa-github] #[b  {{ commit.name }}]
+
+            template(v-else)
+              .email-meta
+                | From: {{ message.from.address }}<br>
+                | To: {{ message.to.map(to => to.address).join(", ") }}<br>
+                | #[b {{ message.subject }}]
+
+              p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+
+              button.button(v-else type="button" @click="$events.$emit('openEmail', message.id)") View email
+
+          p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
+
+      .buttons-container
+
+        .field.has-addons
+
+          slot(name="buttons")
 
 </template>
 
@@ -93,7 +104,6 @@
     props: {
       message: {
         type: Object,
-        required: true,
       },
       compact: {
         type: Boolean,
@@ -102,6 +112,31 @@
       showReplyMessage: {
         type: Boolean,
         default: true,
+      },
+    },
+    computed: {
+      avatarUrl() {
+        this.$store.flows.chatUsers.v;
+        this.$store.flows.users.v;
+
+        if (!this.message) return this.$flows.utils.placeholderImageChar("");
+
+        return this.$flows.utils.getAvatarFromUser(); /*this.$store.flows.chatUsers.d.find(chatUser => chatUser.chatId === this.chatId).map((chatUser) => {
+          const user = this.$store.flows.users.d.find(user_ => user_.id === chatUser.userId);
+          if (!user) {
+            return {
+              ...chatUser,
+              name: "",
+              avatar: ,
+              userStatus: "?",
+            };
+          }
+          return {
+            ...chatUser,
+            name: this.$flows.utils.getFullNameFromUser(user),
+            avatar: this.$flows.utils.getAvatarFromUser(user),
+            userStatus: user.status,
+          };*/
       },
     },
   };
@@ -291,6 +326,23 @@
 
       .commit-title
         padding 5px 10px
+
+    /*
+     SKELETON
+     */
+
+    .content-container .placeholder
+      display block
+      background alpha(#000, .02)
+      height 18px
+      margin-right 40px
+      max-width 700px
+      margin-bottom 10px
+
+      &.name
+        height 12px
+        max-width 120px
+        margin 5px 0 9px
 
 
 </style>

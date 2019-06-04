@@ -35,13 +35,13 @@ class Chats {
       set(obj, prop: number, val: { v: number, d: Message[] }) {
         console.log("SET", prop, ":", val);
       },
-      get(target, prop:number) {
-        const id = +prop;
-        if (id < 1 || id != ~~id) {
-          console.log("Invalid messages access:", prop);
-          return undefined;
+      get(target, prop:string) {
+        console.log("GET", prop);
+        if (prop === "keys") {
+          return Object.keys(_messages);
         }
-        if (!(prop in _messages)) {
+        if (!Object.keys(_messages).includes(prop)) {
+          console.log("creating", prop);
           Vue.set(_messages, prop, { v: 0 });
           _messages[prop].d = [];
         }

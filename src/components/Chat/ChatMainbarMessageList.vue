@@ -8,6 +8,8 @@
 
     .messages
 
+      message-display(v-for="i in 10")
+
 </template>
 
 <script>
@@ -55,7 +57,7 @@
     },
     methods: {
       scrollTrack() {
-        console.log("todo: scrollTrack");
+        // console.log("todo: scrollTrack");
       },
     },
   };
@@ -109,5 +111,7 @@
   .messages
     padding 20px 0
     position relative
+    background #fff
+    min-height 100%
 
 </style>
