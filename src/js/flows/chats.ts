@@ -1,6 +1,6 @@
 // @ts-ignore
 import autoBind from "auto-bind";
-import { Vue } from "vue/types/vue";
+import Vue from "vue";
 
 import STORE from "@/js/store";
 import utils from "@/js/flows/utils";
@@ -10,6 +10,8 @@ import ChatUser from "@/js/model/ChatUser";
 import Workspace from "@/js/model/Workspace";
 import ChatWorkspace from "@/js/model/ChatWorkspace";
 import WorkspaceAccess from "@/js/model/WorkspaceAccess";
+import Message from "@/js/model/Message";
+import { SocketResult } from "@/js/socket";
 
 class Chats {
   store: STORE;
@@ -20,7 +22,35 @@ class Chats {
     this.store = store;
     this.events = events;
 
+    this.setupMessageGettersSetters();
     autoBind(this);
+  }
+
+  private setupMessageGettersSetters() {
+    this.store.flows._messages = JSON.parse(JSON.stringify(this.store.flows.messages || {}));
+    const _messages = this.store.flows._messages;
+
+    this.store.flows.messages = new Proxy({}, {
+      // @ts-ignore
+      set(obj, prop: number, val: { v: number, d: Message[] }) {
+        console.log("SET", prop, ":", val);
+      },
+      get(target, prop:number) {
+        const id = +prop;
+        if (id < 1 || id != ~~id) {
+          console.log("Invalid messages access:", prop);
+          return undefined;
+        }
+        if (!(prop in _messages)) {
+          Vue.set(_messages, prop, { v: 0 });
+          _messages[prop].d = [];
+        }
+        return _messages[prop];
+      },
+      ownKeys() {
+        return Object.keys(_messages);
+      },
+    });
   }
 
   async getChats(): Promise<void> {
@@ -42,6 +72,22 @@ class Chats {
     await Promise.all([
       this.connection.findByChat("TopicUser", chatId),
     ]);
+  }
+
+  async getChatReadAndFlagged(chatId: number): Promise<SocketResult[]> {
+    this.connection.subscribeChatTopic("TopicItemUserProperty", chatId);
+    this.connection.subscribeChatTopic("TopicItemRead", chatId);
+
+    return await Promise.all([
+      this.connection.findByChat("TopicItemUserProperty", chatId),
+      this.connection.findByChat("TopicItemRead", chatId),
+    ]);
+  }
+
+  async getChatMessages(chatId: number, filter: chatFilter | null): Promise<SocketResult> {
+    this.connection.subscribeChatTopic("TopicItem", chatId);
+
+    return (await this.connection.findByChat("TopicItem", chatId, filter)).body.map(Chats.mapMessages);
   }
 
   get favChatIds(): number[] {
@@ -158,6 +204,18 @@ class Chats {
     this.connection.storeUpdate("workspaceAccesses");
   }
 
+  parseChatMessages(messages: any[]) {
+    const mapped = messages.map(Chats.mapMessages);
+
+    const chatId: number = mapped.map(chat => chat.chatId).reduce((a, b) => (a === b) ? a : NaN );
+    if (!chatId) throw new Error("Different or no chatIds in messages");
+
+    const ids = mapped.map(message => message.id);
+    this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => ids.indexOf(message.id) === -1);
+    this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.concat(mapped);
+    this.store.flows.messages[chatId].v += 1;
+  }
+
   updateChatData(): void {
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {
@@ -259,8 +317,29 @@ class Chats {
       userId: workspaceAccess.userId,
     };
   }
+
+  private static mapMessages(message: any): Message {
+    return {
+      id: message.id,
+      createDate: message.createDate,
+      modifiedDate: message.modifiedDate,
+      userId: message.creatorUserId,
+      chatId: message.topicId,
+      type: message.type,
+      text: message.text,
+      replyTo: message.referenceFromTopicItemId,
+      url: message.url,
+      subject: message.subject,
+      from: message.from,
+      to: message.to,
+      contentType: message.contentType,
+      customData: message.customData,
+    };
+  }
 }
 
 export default Chats;
 
 type propChat = { type: string, id: number; };
+
+type chatFilter = { amount: number, from?: { id: number } };

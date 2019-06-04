@@ -20,7 +20,7 @@
 
           UserList(:users="chatMembers")
 
-        chat-mainbar-message-list
+        chat-mainbar-message-list(:replyToId="chat.replyToId" :chatId="chatId")
 
         .chat-bottom
 
@@ -72,9 +72,9 @@
                   span.icon(v-if="mqMobile")
                     i.fas.fa-paper-plane
 
-    table(v-if="debug")
+    table(v-if="false && debug")
       tr
-        td(v-for="value, key in $store.flows")
+        td(v-for="value, key in $store.flows" v-if="!['messages', '_messages'].includes(key)")
           b.text-small {{ key }}<br>
           code v: {{ value.v }}
           div(style="height: 90vh; overflow: auto; max-width: 150px")
@@ -90,6 +90,15 @@
                 .data status: {{ user.status }}
             div(v-else)
               .data {{ value.d }}
+
+    table(v-if="debug")
+      h3 messages
+      tr
+        td(v-for="key in Object.getOwnPropertyNames($store.flows.messages)")
+          b.text-small {{ key }}<br>
+          code v: {{ $store.flows.messages[key].v }}
+          div(style="height: 90vh; overflow: auto; max-width: 250px")
+            .data {{ $store.flows.messages[key].d }}
     btn.button(style="position: fixed; right: 0; bottom: 0; z-index: 1000000;" :action="() => debug = !debug") debug
 
 
@@ -161,7 +170,7 @@
         if (this.chat.replyToId) {
           // const message = this.$store.chatMessages().find(ti => ti.id === this.replyToId);
           const message = null; // todo: find chat message
-          if (message.creatorUserId) {
+          if (message?.creatorUserId) {
             const user = this.$store.flows.users.v.find(user_ => user_.id === message.creatorUserId);
             if (user) return `Reply to ${this.$flows.utils.getFullNameFromUser(user)}`;
           }
@@ -234,8 +243,6 @@
       margin-right 12px
 
     .fav-toggle
-      margin-right 5px
-
       .far
         color $color-gray-text-light
 

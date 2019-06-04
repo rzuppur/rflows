@@ -160,6 +160,10 @@ class Connection {
     const frameBody = JSON.parse(frame.body);
     const frameDestination = frame.headers.destination.split(".");
 
+    let action = frame.headers.destination.match(/\.(modified|deleted)$/);
+    if (action) action = action[1];
+    //console.log(type, action);
+
     this.store.connectionError = false;
     switch (type) {
       case "LoginResponse": {
@@ -182,6 +186,10 @@ class Connection {
       }
       case "TopicLocation": {
         this.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
+        break;
+      }
+      case "TopicItem": {
+        this.chats.parseChatMessages(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {
