@@ -37,7 +37,9 @@
             chatIds.unshift(val);
             this.$flows.chats.recentChatIds = chatIds;
           }
-          if (val) this.$flows.chats.getChatUsers(val);
+          if (val) {
+            this.$flows.chats.getChatUsers(val);
+          }
           this.updateCurrentChatName();
         },
       },

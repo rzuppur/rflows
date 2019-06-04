@@ -7,7 +7,7 @@
 
         .chat-title
 
-          btn.button.is-white(v-if="mqMobile" tip="Change chat" tloc="right" :action="() => { $events.$emit('showSidebar') }" style="margin-right: 5px;")
+          btn.button.is-white(v-if="mqMobile" tip="Change chat" tloc="right" :action="() => { $events.$emit('showSidebar') }")
             span.icon.text-muted
               i.fas.fa-bars
 
@@ -183,6 +183,9 @@
       sendChatMessage() {
         console.log("todo: sendChatMessage");
       },
+      replyCancel() {
+        console.log("todo: replyCancel");
+      },
       checkTypingStatus() {
         console.log("todo: checkTypingStatus");
       },
@@ -222,10 +225,13 @@
     overflow hidden
     display flex
     align-items center
-    padding 0 20px
+    padding 0 20px 0 17px
 
     @media (max-width $media-mobile-width)
-      padding 0 10px
+      padding 0 10px 0 17px
+
+    .button
+      margin-right 12px
 
     .fav-toggle
       margin-right 5px

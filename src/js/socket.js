@@ -92,8 +92,7 @@ class Socket {
           reject({ error: true, frame });
         }
       }, (CloseEvent) => {
-        _debug("Connection closed, rejecting");
-        reject({ error: true, CloseEvent });
+        _debug("Connection closed");
         this.closeCleanup(CloseEvent);
       });
     });

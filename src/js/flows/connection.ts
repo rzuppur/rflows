@@ -45,7 +45,7 @@ class Connection {
     return await this.messageWithResponse(`/app/${topic}.findByUser`, { id: currentUserId });
   }
 
-  public async findByChat(topic: GlobalUserTopic, id: number, filter?: any) {
+  public async findByChat(topic: ChatTopic, id: number, filter?: any) {
     return await this.messageWithResponse(`/app/${topic}.findByTopic`, filter ? {id, filter} : {id});
   }
 
@@ -66,7 +66,7 @@ class Connection {
     return Promise.all(promises);
   }
 
-  public subscribeChatTopic(topic: GlobalUserTopic, id: number): Promise<SubResult[]> {
+  public subscribeChatTopic(topic: ChatTopic, id: number): Promise<SubResult[]> {
     const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/topic/Topic.${id}.${topic}.${type}`));
     return Promise.all(promises);
   }
@@ -307,5 +307,6 @@ class Connection {
 }
 
 type GlobalUserTopic = ("TopicUser" | "UserProperty" | "Topic" | "Organization" | "TopicLocation" | "User" | "OrganizationContact" | "UserAccess");
+type ChatTopic = ("TopicItem" | "TopicUser" | "TopicItemUserProperty" | "TopicItemRead");
 
 export default Connection;
