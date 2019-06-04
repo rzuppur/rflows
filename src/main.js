@@ -22,8 +22,10 @@ Vue.component("btn", Button);
 
 /*
  * STORE
- * Data (flows[key].d) does not get a watcher
- * Components should be watching Version (flows[key].v)
+ *
+ * $store.flows[key].d (data) is not watched for updates by Vue
+ * Components should be watching $store.flows[key].v (data version)
+ *
  */
 const storeModel = { init: STORE };
 storeModel.init();
@@ -56,13 +58,13 @@ Vue.mixin({
   },
   beforeCreate() {
     this.$store = store;
-  },
-  created() {
-    this.flows = this.$root.flows;
     this.$flows = this.$root.$flows;
     this.$events = events;
     this.utils = utils;
     this.DEBUG = DEBUG;
+  },
+  created() {
+    this.flows = this.$root.flows;
   },
   methods: {
     _debug(text, ...extra) {
