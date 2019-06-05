@@ -30,13 +30,14 @@ Vue.component("btn", Button);
 const storeModel = { init: STORE };
 storeModel.init();
 delete storeModel.init;
+delete storeModel.flows.messages;
 Object.keys(storeModel.flows).forEach(key => delete storeModel.flows[key].d);
 const store = new Vue({
   data() {
     return storeModel;
   },
 });
-Object.keys(storeModel.flows).forEach(key => store.flows[key].d = []);
+Object.keys(storeModel.flows).forEach((key) => { store.flows[key].d = []; });
 
 /*
  * EVENT BUS

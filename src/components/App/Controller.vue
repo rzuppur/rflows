@@ -39,6 +39,10 @@
           }
           if (val) {
             this.$flows.chats.getChatUsers(val);
+            this.$flows.chats.setChatOpen(val, true);
+          }
+          if (oldVal) {
+            this.$flows.chats.setChatOpen(oldVal, false);
           }
           this.updateCurrentChatName();
         },

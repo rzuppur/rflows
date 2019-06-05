@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .chat-message
+  .chat-message(:style="message ? '' : 'pointer-events: none;'")
 
     template(v-if="!message")
 

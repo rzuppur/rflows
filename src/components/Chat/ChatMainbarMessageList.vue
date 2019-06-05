@@ -48,7 +48,7 @@
 
           this.$flows.chats.getChatReadAndFlagged(chatId);
           const messagesLoaded = await this.$flows.chats.getChatMessages(chatId, null);
-          console.log(messagesLoaded);
+          //console.log(messagesLoaded);
 
           // TODO: load X items, if got < X then no old messages, else load new when scrolled up
           // store oldest chatmessage got without sticky, use id for next page

@@ -12,6 +12,7 @@ import ChatWorkspace from "@/js/model/ChatWorkspace";
 import WorkspaceAccess from "@/js/model/WorkspaceAccess";
 import Message from "@/js/model/Message";
 import { SocketResult } from "@/js/socket";
+import MessagesRead from "@/js/model/MessagesRead";
 
 class Chats {
   store: STORE;
@@ -36,7 +37,6 @@ class Chats {
         console.log("SET", prop, ":", val);
       },
       get(target, prop:string) {
-        console.log("GET", prop);
         if (prop === "keys") {
           return Object.keys(_messages);
         }
@@ -67,7 +67,7 @@ class Chats {
   }
 
   async getChatUsers(chatId: number): Promise<void> {
-    this.connection.subscribeChatTopic("TopicUser", chatId);
+    // this.connection.subscribeChatTopic("TopicUser", chatId);
 
     await Promise.all([
       this.connection.findByChat("TopicUser", chatId),
@@ -88,6 +88,10 @@ class Chats {
     this.connection.subscribeChatTopic("TopicItem", chatId);
 
     return (await this.connection.findByChat("TopicItem", chatId, filter)).body.map(Chats.mapMessages);
+  }
+
+  setChatOpen(chatId: number, open: boolean): void {
+    this.connection.message("/app/Topic.setMyStatus", { topicId: chatId, status: open ? "OPEN" : "NONE" });
   }
 
   get favChatIds(): number[] {
@@ -216,6 +220,15 @@ class Chats {
     this.store.flows.messages[chatId].v += 1;
   }
 
+  parseChatMessagesRead(messagesRead: any[]) {
+    const mapped = messagesRead.map(Chats.mapMessagesRead);
+
+    const ids = mapped.map(messagesRead => messagesRead.id);
+    this.store.flows.messagesRead.d = this.store.flows.messagesRead.d.filter(messagesRead => ids.indexOf(messagesRead.id) === -1);
+    this.store.flows.messagesRead.d = this.store.flows.messagesRead.d.concat(mapped);
+    this.connection.storeUpdate("messagesRead");
+  }
+
   updateChatData(): void {
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {
@@ -334,6 +347,16 @@ class Chats {
       to: message.to,
       contentType: message.contentType,
       customData: message.customData,
+    };
+  }
+
+  private static mapMessagesRead(messagesRead: any): MessagesRead {
+    return {
+      id: messagesRead.id,
+      userId: messagesRead.userId,
+      chatId: messagesRead.topicId,
+      messageFrom: messagesRead.itemFrom,
+      messageTo: messagesRead.itemTo,
     };
   }
 }

@@ -127,6 +127,15 @@ class Connection {
       this.store.currentUser = null;
       this.store.currentChatId = null;
       Object.keys(this.store.flows).forEach(key => {
+        if (key === "_messages") return;
+        if (key === "messages") {
+          // @ts-ignore
+          this.store.flows.messages.keys.forEach(chatId => {
+            this.store.flows.messages[chatId].d = [];
+            this.store.flows.messages[chatId].v += 1;
+          });
+          return;
+        }
         // @ts-ignore
         this.store.flows[key].d = [];
         // @ts-ignore
@@ -190,6 +199,10 @@ class Connection {
       }
       case "TopicItem": {
         this.chats.parseChatMessages(Connection.bodyFilter(frameBody));
+        break;
+      }
+      case "TopicItemRead": {
+        this.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {

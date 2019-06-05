@@ -6,6 +6,7 @@ import Workspace from "@/js/model/Workspace";
 import ChatWorkspace from "@/js/model/ChatWorkspace";
 import WorkspaceAccess from "@/js/model/WorkspaceAccess";
 import Message from "@/js/model/Message";
+import MessagesRead from "@/js/model/MessagesRead";
 
 class STORE {
   currentChatId: null | number = null;
@@ -49,6 +50,11 @@ class STORE {
       v: 0,
       d: [],
     },
+    messagesRead: {
+      v: 0,
+      d: [],
+    },
+    messages: {},
     _messages: {},
   };
 }
@@ -61,6 +67,7 @@ interface StoreFlows {
   workspaces: { v: number, d: Workspace[] };
   chatWorkspaces: { v: number, d: ChatWorkspace[] };
   workspaceAccesses: { v: number, d: WorkspaceAccess[] };
+  messagesRead: { v: number, d: MessagesRead[] };
   messages: {
     [index: string]: { v: number, d: Message[] },
   };
