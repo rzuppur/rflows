@@ -93,7 +93,7 @@
           if (messagesLoaded.length) {
             this.$set(this.lastLoadedMessageId, chatId, messagesLoaded[0].id);
           }
-          this.$set(this.canLoadMore, chatId, (messagesLoaded.length >= MESSAGE_PAGE_SIZE));;
+          this.$set(this.canLoadMore, chatId, (messagesLoaded.length >= MESSAGE_PAGE_SIZE));
         } finally {
           this.$set(this.messagesLoading, chatId, false);
         }
