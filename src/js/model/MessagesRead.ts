@@ -8,3 +8,13 @@ interface MessagesRead extends Id {
 }
 
 export default MessagesRead;
+
+export function mapMessagesRead(messagesRead: any): MessagesRead {
+  return {
+    id: messagesRead.id,
+    userId: messagesRead.userId,
+    chatId: messagesRead.topicId,
+    messageFrom: messagesRead.itemFrom,
+    messageTo: messagesRead.itemTo,
+  };
+}

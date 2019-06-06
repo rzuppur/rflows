@@ -1,6 +1,6 @@
 import { Vue } from "vue/types/vue.d";
 
-import STORE from "@/js/store";
+import STORE, { StoreKeyVersionNumber } from "@/js/store";
 import utils from "@/js/flows/utils";
 import localstorage from "@/js/flows/localstorage";
 import Connection from "@/js/flows/connection";
@@ -23,22 +23,22 @@ class Flows2 {
     this.store = store;
     this.events = events;
 
-    this.connection = new Connection(store, events);
-    this.chats = new Chats(store, events);
-    this.users = new Users(store, events);
-    this.settings = new Settings(store, events);
+    this.connection = new Connection(this);
+    this.chats = new Chats(this);
+    this.users = new Users(this);
+    this.settings = new Settings(this);
+  }
 
-    this.chats.connection = this.connection;
-    this.users.connection = this.connection;
-    this.settings.connection = this.connection;
+  public storeUpdate(key: StoreKeyVersionNumber): void {
+    this.store.flows[key].v += 1;
+  }
 
-    this.connection.chats = this.chats;
-    this.users.chats = this.chats;
-    this.settings.chats = this.chats;
-
-    this.connection.users = this.users;
-
-    this.connection.settings = this.settings;
+  public updateStoreArray(key: StoreKeyVersionNumber, newItems: any[]) {
+    const ids = newItems.map(item => item.id);
+    this.store.flows[key].d = this.store.flows[key].d.filter(item => ids.indexOf(item.id) === -1);
+    // @ts-ignore
+    this.store.flows[key].d = this.store.flows[key].d.concat(newItems);
+    this.storeUpdate(key);
   }
 }
 

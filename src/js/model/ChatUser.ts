@@ -12,3 +12,19 @@ interface ChatUser extends IdDate {
 }
 
 export default ChatUser;
+
+export function mapChatUser(chatUser: any): ChatUser {
+  return {
+    id: chatUser.id,
+    createDate: chatUser.createDate,
+    modifiedDate: chatUser.modifiedDate,
+    userId: chatUser.userId,
+    chatId: chatUser.topicId,
+    role: chatUser.role,
+    status: chatUser.status,
+    atItemsToMeCount: chatUser.atItemsToMeCount,
+    flaggedItemsCount: chatUser.flaggedItemsCount,
+    unreadItemsCount: chatUser.unreadItemsCount,
+    unreadItemsToMeCount: chatUser.unreadItemsToMeCount,
+  };
+}

@@ -80,14 +80,12 @@
         }
       },
       updateCurrentChatName() {
-        if (this.$store.currentChatId) {
-          const currentChat = this.$store.flows.chats.d.find(chat => chat.id === this.$store.currentChatId);
-          if (currentChat && currentChat.name) {
-            this.$store.currentChatName = currentChat.name;
-            return;
-          }
+        if (!this.$store.currentChatId) {
+          this.$store.currentChatName = "";
+          return;
         }
-        this.$store.currentChatName = "";
+        const currentChat = this.$store.flows.chats.d.find(chat => chat.id === this.$store.currentChatId);
+        this.$store.currentChatName = currentChat?.name || "";
       },
     },
     render() {

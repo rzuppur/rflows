@@ -2,20 +2,21 @@
 import autoBind from "auto-bind";
 import { Vue } from "vue/types/vue";
 
+import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import UserProperty from "@/js/model/UserProperty";
 import Connection from "@/js/flows/connection";
 import Chats from "@/js/flows/chats";
 
 class Settings {
+  flows: Flows2;
   store: STORE;
   events: Vue;
-  connection: Connection;
-  chats: Chats;
 
-  constructor(store: STORE, events: Vue) {
-    this.store = store;
-    this.events = events;
+  constructor(flows: Flows2) {
+    this.flows = flows;
+    this.store = flows.store;
+    this.events = flows.events;
 
     autoBind(this);
   }
@@ -41,7 +42,7 @@ class Settings {
       };
     prop.value = value;
     try {
-      this.connection.message("/app/UserProperty.save", prop);
+      this.flows.connection.message("/app/UserProperty.save", prop);
     } catch (error) {
       console.log(error);
       this.events.$emit("notify", `Error saving ${property}`);
@@ -49,27 +50,22 @@ class Settings {
   }
 
   async getSettings(): Promise<void> {
-    this.connection.subscribeUserTopic("UserProperty");
+    this.flows.connection.subscribeUserTopic("UserProperty");
     await Promise.all([
-      this.connection.findByUser("UserProperty"),
+      this.flows.connection.findByUser("UserProperty"),
     ]);
   }
 
   parseSettings(settings: any[]) {
-    const mapped = settings.map(Settings.mapProperty);
-
-    const ids = mapped.map(property => property.id);
-    this.store.flows.userProperties.d = this.store.flows.userProperties.d.filter(property => ids.indexOf(property.id) === -1);
-    this.store.flows.userProperties.d = this.store.flows.userProperties.d.concat(mapped);
-    this.connection.storeUpdate("userProperties");
+    this.flows.updateStoreArray("userProperties", settings.map(Settings.mapProperty));
 
     if (this.getBooleanUserProp("desktopNotifications") && Notification.permission === "default") {
       Notification.requestPermission();
     }
 
     if (this.store.currentChatId === null) {
-      if (this.chats.recentChatIds.length) {
-        this.store.currentChatId = this.chats.recentChatIds[0];
+      if (this.flows.chats.recentChatIds.length) {
+        this.store.currentChatId = this.flows.chats.recentChatIds[0];
       }
     }
   }

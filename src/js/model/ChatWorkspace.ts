@@ -6,3 +6,11 @@ interface ChatWorkspace extends Id {
 }
 
 export default ChatWorkspace;
+
+export function mapChatWorkspace(chatWorkspace: any): ChatWorkspace {
+  return {
+    id: chatWorkspace.id,
+    workspaceId: chatWorkspace.orgId,
+    chatId: chatWorkspace.topicId,
+  };
+}

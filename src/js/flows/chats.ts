@@ -2,26 +2,27 @@
 import autoBind from "auto-bind";
 import Vue from "vue";
 
+import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import utils from "@/js/flows/utils";
-import Connection from "@/js/flows/connection";
-import Chat from "@/js/model/Chat";
-import ChatUser from "@/js/model/ChatUser";
-import Workspace from "@/js/model/Workspace";
-import ChatWorkspace from "@/js/model/ChatWorkspace";
-import WorkspaceAccess from "@/js/model/WorkspaceAccess";
-import Message from "@/js/model/Message";
+import { mapChat } from "@/js/model/Chat";
+import { mapChatUser } from "@/js/model/ChatUser";
+import { mapWorkspace } from "@/js/model/Workspace";
+import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
+import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
+import Message, { mapMessage } from "@/js/model/Message";
+import { mapMessagesRead } from "@/js/model/MessagesRead";
 import { SocketResult } from "@/js/socket";
-import MessagesRead from "@/js/model/MessagesRead";
 
 class Chats {
+  flows: Flows2;
   store: STORE;
   events: Vue;
-  connection: Connection;
 
-  constructor(store: STORE, events: Vue) {
-    this.store = store;
-    this.events = events;
+  constructor(flows: Flows2) {
+    this.flows = flows;
+    this.store = flows.store;
+    this.events = flows.events;
 
     this.setupMessageGettersSetters();
     autoBind(this);
@@ -54,44 +55,44 @@ class Chats {
   }
 
   async getChats(): Promise<void> {
-    this.connection.subscribeUserTopic("Topic");
-    this.connection.subscribeUserTopic("TopicUser");
-    this.connection.subscribeUserTopic("Organization");
-    this.connection.subscribeUserTopic("TopicLocation");
+    this.flows.connection.subscribeUserTopic("Topic");
+    this.flows.connection.subscribeUserTopic("TopicUser");
+    this.flows.connection.subscribeUserTopic("Organization");
+    this.flows.connection.subscribeUserTopic("TopicLocation");
     await Promise.all([
-      this.connection.findByUser("Topic"),
-      this.connection.findByUser("TopicUser"),
-      this.connection.findByUser("Organization"),
-      this.connection.findByUser("TopicLocation"),
+      this.flows.connection.findByUser("Topic"),
+      this.flows.connection.findByUser("TopicUser"),
+      this.flows.connection.findByUser("Organization"),
+      this.flows.connection.findByUser("TopicLocation"),
     ]);
   }
 
   async getChatUsers(chatId: number): Promise<void> {
-    // this.connection.subscribeChatTopic("TopicUser", chatId);
+    // this.flows.connection.subscribeChatTopic("TopicUser", chatId);
 
     await Promise.all([
-      this.connection.findByChat("TopicUser", chatId),
+      this.flows.connection.findByChat("TopicUser", chatId),
     ]);
   }
 
   async getChatReadAndFlagged(chatId: number): Promise<SocketResult[]> {
-    this.connection.subscribeChatTopic("TopicItemUserProperty", chatId);
-    this.connection.subscribeChatTopic("TopicItemRead", chatId);
+    this.flows.connection.subscribeChatTopic("TopicItemUserProperty", chatId);
+    this.flows.connection.subscribeChatTopic("TopicItemRead", chatId);
 
     return await Promise.all([
-      this.connection.findByChat("TopicItemUserProperty", chatId),
-      this.connection.findByChat("TopicItemRead", chatId),
+      this.flows.connection.findByChat("TopicItemUserProperty", chatId),
+      this.flows.connection.findByChat("TopicItemRead", chatId),
     ]);
   }
 
-  async getChatMessages(chatId: number, filter: chatFilter | null): Promise<SocketResult> {
-    this.connection.subscribeChatTopic("TopicItem", chatId);
+  async getChatMessages(chatId: number, filter: chatFilter | null): Promise<Message[]> {
+    this.flows.connection.subscribeChatTopic("TopicItem", chatId);
 
-    return (await this.connection.findByChat("TopicItem", chatId, filter)).body.map(Chats.mapMessages);
+    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage);
   }
 
   setChatOpen(chatId: number, open: boolean): void {
-    this.connection.message("/app/Topic.setMyStatus", { topicId: chatId, status: open ? "OPEN" : "NONE" });
+    this.flows.connection.message("/app/Topic.setMyStatus", { topicId: chatId, status: open ? "OPEN" : "NONE" });
   }
 
   get favChatIds(): number[] {
@@ -135,7 +136,7 @@ class Chats {
     if (!prop) throw new Error("Could not find userProperty for favorites");
     prop.value = chatIds.map(chatId => ({id: chatId, type: "MEETING"}));
     try {
-      this.connection.message("/app/UserProperty.save", prop);
+      this.flows.connection.message("/app/UserProperty.save", prop);
     } catch (error) {
       console.log(error);
       this.events.$emit("notify", `Error saving favorite chats`);
@@ -148,7 +149,7 @@ class Chats {
     if (!prop) throw new Error("Could not find userProperty for recents");
     prop.value = chatIds.map(chatId => ({id: chatId, type: "MEETING"}));
     try {
-      this.connection.message("/app/UserProperty.save", prop);
+      this.flows.connection.message("/app/UserProperty.save", prop);
     } catch (error) {
       console.log(error);
       this.events.$emit("notify", `Error saving recent chats`);
@@ -156,60 +157,29 @@ class Chats {
   }
 
   parseChats(chats: any[]) {
-    const mapped = chats
-    .filter(chat => !chat.integration && chat.type === "MEETING")
-    .map(Chats.mapChat);
-
-    const ids = mapped.map(chat => chat.id);
-    this.store.flows.chats.d = this.store.flows.chats.d.filter(chat => ids.indexOf(chat.id) === -1);
-    this.store.flows.chats.d = this.store.flows.chats.d.concat(mapped);
-    this.connection.storeUpdate("chats");
-
+    this.flows.updateStoreArray("chats", chats.filter(chat => !chat.integration && chat.type === "MEETING").map(mapChat));
     this.updateChatData();
   }
 
   parseChatUsers(chatUsers: any[]) {
-    const mapped = chatUsers.map(Chats.mapChatUser);
-
-    const ids = mapped.map(chatUser => chatUser.id);
-    this.store.flows.chatUsers.d = this.store.flows.chatUsers.d.filter(chatUser => ids.indexOf(chatUser.id) === -1);
-    this.store.flows.chatUsers.d = this.store.flows.chatUsers.d.concat(mapped);
-    this.connection.storeUpdate("chatUsers");
-
+    this.flows.updateStoreArray("chatUsers", chatUsers.map(mapChatUser));
     this.updateChatData();
   }
 
   parseWorkspaces(workspaces: any[]) {
-    const mapped = workspaces
-    .filter(workspace => !workspace.integration)
-    .map(Chats.mapWorkspace);
-
-    const ids = mapped.map(workspace => workspace.id);
-    this.store.flows.workspaces.d = this.store.flows.workspaces.d.filter(workspace => ids.indexOf(workspace.id) === -1);
-    this.store.flows.workspaces.d = this.store.flows.workspaces.d.concat(mapped);
-    this.connection.storeUpdate("workspaces");
+    this.flows.updateStoreArray("workspaces", workspaces.filter(workspace => !workspace.integration).map(mapWorkspace));
   }
 
   parseChatWorkspaces(chatWorkspaces: any[]) {
-    const mapped = chatWorkspaces.map(Chats.mapChatWorkspace);
-
-    const ids = mapped.map(chatWorkspace => chatWorkspace.id);
-    this.store.flows.chatWorkspaces.d = this.store.flows.chatWorkspaces.d.filter(chatWorkspace => ids.indexOf(chatWorkspace.id) === -1);
-    this.store.flows.chatWorkspaces.d = this.store.flows.chatWorkspaces.d.concat(mapped);
-    this.connection.storeUpdate("chatWorkspaces");
+    this.flows.updateStoreArray("chatWorkspaces", chatWorkspaces.map(mapChatWorkspace));
   }
 
   parseChatWorkspaceAccesses(workspaceAccesses: any[]) {
-    const mapped = workspaceAccesses.map(Chats.mapWorkspaceAccess);
-
-    const ids = mapped.map(workspaceAccess => workspaceAccess.id);
-    this.store.flows.workspaceAccesses.d = this.store.flows.workspaceAccesses.d.filter(workspaceAccess => ids.indexOf(workspaceAccess.id) === -1);
-    this.store.flows.workspaceAccesses.d = this.store.flows.workspaceAccesses.d.concat(mapped);
-    this.connection.storeUpdate("workspaceAccesses");
+    this.flows.updateStoreArray("workspaceAccesses", workspaceAccesses.map(mapWorkspaceAccess));
   }
 
   parseChatMessages(messages: any[]) {
-    const mapped = messages.map(Chats.mapMessages);
+    const mapped = messages.map(mapMessage);
 
     const chatId: number = mapped.map(chat => chat.chatId).reduce((a, b) => (a === b) ? a : NaN );
     if (!chatId) throw new Error("Different or no chatIds in messages");
@@ -221,12 +191,7 @@ class Chats {
   }
 
   parseChatMessagesRead(messagesRead: any[]) {
-    const mapped = messagesRead.map(Chats.mapMessagesRead);
-
-    const ids = mapped.map(messagesRead => messagesRead.id);
-    this.store.flows.messagesRead.d = this.store.flows.messagesRead.d.filter(messagesRead => ids.indexOf(messagesRead.id) === -1);
-    this.store.flows.messagesRead.d = this.store.flows.messagesRead.d.concat(mapped);
-    this.connection.storeUpdate("messagesRead");
+    this.flows.updateStoreArray("messagesRead", messagesRead.map(mapMessagesRead));
   }
 
   updateChatData(): void {
@@ -274,90 +239,8 @@ class Chats {
 
     if (changed) {
       this.store.flows.chats.d.sort((a, b) => ( a.name ? a.name : "" ).localeCompare(b.name ? b.name : ""));
-      this.connection.storeUpdate("chats");
+      this.flows.storeUpdate("chats");
     }
-  }
-
-  private static mapChat(chat: any): Chat {
-    return {
-      id: chat.id,
-      guid: chat.guid,
-      description: chat.description,
-      name: chat.name,
-      ownerId: chat.ownerId,
-      visibility: chat.visibility,
-    };
-  }
-
-  private static mapChatUser(chatUser: any): ChatUser {
-    return {
-      id: chatUser.id,
-      createDate: chatUser.createDate,
-      modifiedDate: chatUser.modifiedDate,
-      userId: chatUser.userId,
-      chatId: chatUser.topicId,
-      role: chatUser.role,
-      status: chatUser.status,
-      atItemsToMeCount: chatUser.atItemsToMeCount,
-      flaggedItemsCount: chatUser.flaggedItemsCount,
-      unreadItemsCount: chatUser.unreadItemsCount,
-      unreadItemsToMeCount: chatUser.unreadItemsToMeCount,
-    };
-  }
-
-  private static mapWorkspace(workspace: any): Workspace {
-    return {
-      id: workspace.id,
-      name: workspace.name,
-      logoUrl: workspace.logoUrl,
-      type: workspace.type,
-    };
-  }
-
-  private static mapChatWorkspace(chatWorkspace: any): ChatWorkspace {
-    return {
-      id: chatWorkspace.id,
-      workspaceId: chatWorkspace.orgId,
-      chatId: chatWorkspace.topicId,
-    };
-  }
-
-  private static mapWorkspaceAccess(workspaceAccess: any): WorkspaceAccess {
-    return {
-      id: workspaceAccess.id,
-      role: workspaceAccess.role,
-      workspaceId: workspaceAccess.orgId,
-      userId: workspaceAccess.userId,
-    };
-  }
-
-  private static mapMessages(message: any): Message {
-    return {
-      id: message.id,
-      createDate: message.createDate,
-      modifiedDate: message.modifiedDate,
-      userId: message.creatorUserId,
-      chatId: message.topicId,
-      type: message.type,
-      text: message.text,
-      replyTo: message.referenceFromTopicItemId,
-      url: message.url,
-      subject: message.subject,
-      from: message.from,
-      to: message.to,
-      contentType: message.contentType,
-      customData: message.customData,
-    };
-  }
-
-  private static mapMessagesRead(messagesRead: any): MessagesRead {
-    return {
-      id: messagesRead.id,
-      userId: messagesRead.userId,
-      chatId: messagesRead.topicId,
-      messageFrom: messagesRead.itemFrom,
-      messageTo: messagesRead.itemTo,
-    };
   }
 }
 

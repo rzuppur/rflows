@@ -7,3 +7,12 @@ interface Workspace extends Id {
 }
 
 export default Workspace;
+
+export function mapWorkspace(workspace: any): Workspace {
+  return {
+    id: workspace.id,
+    name: workspace.name,
+    logoUrl: workspace.logoUrl,
+    type: workspace.type,
+  };
+}

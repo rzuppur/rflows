@@ -13,3 +13,14 @@ interface Chat extends Id {
 }
 
 export default Chat;
+
+export function mapChat(chat: any): Chat {
+  return {
+    id: chat.id,
+    guid: chat.guid,
+    description: chat.description,
+    name: chat.name,
+    ownerId: chat.ownerId,
+    visibility: chat.visibility,
+  };
+}

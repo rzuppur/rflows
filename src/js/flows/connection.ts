@@ -2,27 +2,24 @@
 import autoBind from "auto-bind";
 import { Vue } from "vue/types/vue";
 
+import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
-import Chats from "@/js/flows/chats";
-import Users from "@/js/flows/users";
-import Settings from "@/js/flows/settings";
 import LoginData from "@/js/model/LoginData";
 import localstorage from "@/js/flows/localstorage";
 import Socket, { OpenResult, SocketResult, SubResult } from "@/js/socket";
 
 
 class Connection {
+  flows: Flows2;
   store: STORE;
   events: Vue;
   socket: Socket;
-  chats: Chats;
-  users: Users;
-  settings: Settings;
   reconnect: boolean = false;
 
-  constructor(store: STORE, events: Vue) {
-    this.store = store;
-    this.events = events;
+  constructor(flows: Flows2) {
+    this.flows = flows;
+    this.store = flows.store;
+    this.events = flows.events;
 
     autoBind(this);
   }
@@ -69,15 +66,6 @@ class Connection {
   public subscribeChatTopic(topic: ChatTopic, id: number): Promise<SubResult[]> {
     const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/topic/Topic.${id}.${topic}.${type}`));
     return Promise.all(promises);
-  }
-
-  public storeUpdate(key: string): void {
-    if (key in this.store.flows) {
-      // @ts-ignore
-      this.store.flows[key].v += 1;
-    } else {
-      console.log("! Unknown key", key);
-    }
   }
 
   get canMessage(): boolean {
@@ -170,7 +158,7 @@ class Connection {
     const frameDestination = frame.headers.destination.split(".");
 
     let action = frame.headers.destination.match(/\.(modified|deleted)$/);
-    if (action) action = action[1];
+    if (action && action.length > 1) action = action[1];
     //console.log(type, action);
 
     this.store.connectionError = false;
@@ -182,39 +170,39 @@ class Connection {
         break;
       }
       case "Topic": {
-        this.chats.parseChats(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseChats(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicUser": {
-        this.chats.parseChatUsers(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseChatUsers(Connection.bodyFilter(frameBody));
         break;
       }
       case "Organization": {
-        this.chats.parseWorkspaces(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseWorkspaces(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicLocation": {
-        this.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItem": {
-        this.chats.parseChatMessages(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseChatMessages(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItemRead": {
-        this.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {
-        this.chats.parseChatWorkspaceAccesses(Connection.bodyFilter(frameBody));
+        this.flows.chats.parseChatWorkspaceAccesses(Connection.bodyFilter(frameBody));
         break;
       }
       case "User": {
-        this.users.parseUsers(Connection.bodyFilter(frameBody));
+        this.flows.users.parseUsers(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserProperty": {
-        this.settings.parseSettings(Connection.bodyFilter(frameBody));
+        this.flows.settings.parseSettings(Connection.bodyFilter(frameBody));
         break;
       }
       case "Error": {

@@ -24,3 +24,22 @@ export default Message;
 type EmailFrom = { address: string };
 
 type EmailTo = { address: string };
+
+export function mapMessage(message: any): Message {
+  return {
+    id: message.id,
+    createDate: message.createDate,
+    modifiedDate: message.modifiedDate,
+    userId: message.creatorUserId,
+    chatId: message.topicId,
+    type: message.type,
+    text: message.text,
+    replyTo: message.referenceFromTopicItemId,
+    url: message.url,
+    subject: message.subject,
+    from: message.from,
+    to: message.to,
+    contentType: message.contentType,
+    customData: message.customData,
+  };
+}

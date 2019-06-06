@@ -7,3 +7,12 @@ interface WorkspaceAccess extends Id {
 }
 
 export default WorkspaceAccess;
+
+export function mapWorkspaceAccess(workspaceAccess: any): WorkspaceAccess {
+  return {
+    id: workspaceAccess.id,
+    role: workspaceAccess.role,
+    workspaceId: workspaceAccess.orgId,
+    userId: workspaceAccess.userId,
+  };
+}
