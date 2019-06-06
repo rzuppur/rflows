@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .sidebar-content
+  .sidebar-content.scrollbar-style.scrollbar-style-light
 
     user-display(:user="currentUserDisplay" :withName="true")
 
@@ -36,16 +36,16 @@
       template(v-else)
 
         h4.chats-section #[i.far.fa-comment] RFlows
-        chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store")
+        chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store" :action="() => { chatClick(devChat.id); }")
 
         h4.chats-section(v-if="favChats.length") #[i.far.fa-star] Favorites
-        chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store")
+        chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }")
 
         h4.chats-section(v-if="unreadChats.length") #[i.far.fa-bell] Unread
-        chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store")
+        chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }")
 
         h4.chats-section(v-if="recentChats.length") #[i.far.fa-clock] Recent
-        chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove")
+        chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove" :action="() => { chatClick(chat.id); }")
 
         h4.chats-section(v-if="allChats.length")
           btn.button-reset(:action="toggleAllChats" label="Toggle all chats")
@@ -54,7 +54,7 @@
 
       slide-in-out(:inDuration="90" :outDuration="90")
         div(v-if="showAllChats || searchText.length")
-          chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store")
+          chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }")
 
       h4.chats-section
 
@@ -192,6 +192,10 @@
       recentRemove(chatId) {
         this.$flows.chats.recentChatIds = this.$flows.chats.recentChatIds.filter(recentId => recentId !== chatId);
       },
+      chatClick(chatId) {
+        this.$store.currentChatId = chatId;
+        this.$events.$emit("hideSidebar");
+      },
     },
   };
 
@@ -205,7 +209,7 @@
     height 100%
 
     @media (max-width $media-mobile-width)
-      margin-top 56px
+      padding-top 56px
 
     @media (min-width $media-mobile-width + 1px)
       position absolute
@@ -222,6 +226,9 @@
         top 0
         left 0
         right 0
+        z-index 10
+        padding-bottom 10px
+        background alpha($color-sidebar-background, .95)
 
       & /deep/ .details
         color $color-gray-text-light

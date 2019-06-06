@@ -52,7 +52,6 @@
                   :tip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
               file-upload(
-                v-show="!mqMobile"
                 ref="fileUpload"
                 :class="{ flex0: !uploadExpanded, flex1: uploadExpanded}"
                 :chatId="chatId"

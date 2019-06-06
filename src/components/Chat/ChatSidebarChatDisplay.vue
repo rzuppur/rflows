@@ -1,7 +1,7 @@
 <template lang="pug" functional>
 
   btn.button-reset.chat(
-    :action="(() => {props.store.currentChatId = props.chat.id})"
+    :action="props.action"
     :label="props.chat.name"
     :class="[data.staticClass, { unread: !!props.chat.unread, active: props.chat.id === props.store.currentChatId }]"
   )
@@ -33,10 +33,14 @@
 
     @media (max-width $media-mobile-width)
       height 40px
+      text-regular-20()
 
     &.unread
       color #fff
       text-bold-16()
+
+      @media (max-width $media-mobile-width)
+        text-bold-20()
 
       .chat-unread
         display block
