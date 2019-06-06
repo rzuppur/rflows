@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "serve": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && vue-cli-service serve",
-    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && vue-cli-service build"
+    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service build"
   },
   "dependencies": {
     "auto-bind": "^1.2.1",
@@ -39,6 +39,7 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "tiptap-commands": "^1.6.0",
+    "typescript": "^3.5.1",
     "vue-template-compiler": "^2.5.21"
   },
   "engines": {
