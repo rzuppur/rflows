@@ -62,7 +62,7 @@
 
           .file-content(v-else-if="message.type === 'FILE'")
 
-            file-display(:message="message")
+            file-display(:text="message.text" :url="$flows.utils.relativeToFullPath(message.url)" :preview="$flows.messages.fileMessagePreviewable(message)")
 
           template(v-else-if="message.type === 'EMAIL'")
 

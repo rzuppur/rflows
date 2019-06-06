@@ -5,6 +5,7 @@ import Vue from "vue";
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import utils from "@/js/flows/utils";
+import Message from "@/js/model/Message";
 
 class Messages {
   flows: Flows2;
@@ -77,6 +78,14 @@ class Messages {
   .replace(/src=['"]\/files\/*([^'"]+)['"]/g, "src=\"https://flows.contriber.com/files/$1\"")
   .replace(/<a[^<]+href=['"]*([^'"]+)['"][^>]*>/g, "<a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"$1\">")
   .replace(/<p><\/p>/g, "<br>");
+
+  public fileMessagePreviewable = (message: Message): boolean => {
+    if (!message.url) return false;
+    if (message.originalFileName === "mime") return true;
+    let ext: any = message.url.split(".");
+    ext = ext[ext.length - 1];
+    return ["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) >= 0;
+  };
 }
 
 export default Messages;

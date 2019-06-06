@@ -13,6 +13,7 @@ interface Message extends Id {
   from?: EmailFrom;
   to?: EmailTo[];
   contentType?: string;
+  originalFileName?: string;
   customData?: any;
   error?: any;
   unread?: boolean;
@@ -41,5 +42,6 @@ export function mapMessage(message: any): Message {
     to: message.to,
     contentType: message.contentType,
     customData: message.customData,
+    originalFileName: message.originalFileName,
   };
 }

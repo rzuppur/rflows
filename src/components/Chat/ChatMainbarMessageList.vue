@@ -8,12 +8,12 @@
 
     .messages
 
-      message-display(v-for="message in messagesBeforeLoad" :message="message" :key="message.id")
+      message-display(v-for="message in messagesLoadSpilit[0]" :message="message" :key="message.id")
 
       .load-more-container
         btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
-      message-display(v-for="message in messagesAfterLoad" :message="message" :key="message.id")
+      message-display(v-for="message in messagesLoadSpilit[1]" :message="message" :key="message.id")
 
 </template>
 
@@ -60,13 +60,12 @@
 
         return this.$store.flows.messages[this.chatId].d;
       },
-      messagesBeforeLoad() {
+      messagesLoadSpilit() {
         const splitIndex = this.messages.findIndex(message => message.id >= this.startNextLoadFromId);
-        return this.messages.slice(0, splitIndex);
-      },
-      messagesAfterLoad() {
-        const splitIndex = this.messages.findIndex(message => message.id >= this.startNextLoadFromId);
-        return this.messages.slice(splitIndex, this.messages.length);
+        return [
+          this.messages.slice(0, splitIndex),
+          this.messages.slice(splitIndex, this.messages.length),
+        ];
       },
     },
     watch: {
