@@ -31,18 +31,11 @@
         immediate: true,
         handler(val, oldVal) {
           if (val === oldVal) return;
-          if (this.$events) this.$events.$emit("currentChatChange", oldVal, val);
+          this.$events.$emit("currentChatChange", oldVal, val);
           if (oldVal !== null && val) {
             const chatIds = this.$flows.chats.recentChatIds.filter(chatId => chatId !== val);
             chatIds.unshift(val);
             this.$flows.chats.recentChatIds = chatIds;
-          }
-          if (val) {
-            this.$flows.chats.getChatUsers(val);
-            this.$flows.chats.setChatOpen(val, true);
-          }
-          if (oldVal) {
-            this.$flows.chats.setChatOpen(oldVal, false);
           }
           this.updateCurrentChatName();
         },

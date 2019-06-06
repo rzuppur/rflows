@@ -52,8 +52,9 @@
             i.fas(:class="`fa-angle-${showAllChats ? 'up' : 'down'}`")
             | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
 
-      template(v-if="showAllChats || searchText.length")
-        chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store")
+      slide-in-out(:inDuration="90" :outDuration="90")
+        div(v-if="showAllChats || searchText.length")
+          chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store")
 
       h4.chats-section
 
@@ -63,11 +64,12 @@
   import { BLANK_DATA_SVG_IMAGE, DEVCHAT_ID } from "@/js/consts";
   import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
   import PopupMenu from "@/components/UI/PopupMenu.vue";
+  import SlideInOut from "@/components/UI/SlideInOut.vue";
   import UserDisplay from "@/components/UserDisplay.vue";
 
   export default {
     name: "ChatSidebar",
-    components: { UserDisplay, ChatSidebarChatDisplay, PopupMenu },
+    components: { SlideInOut, UserDisplay, ChatSidebarChatDisplay, PopupMenu },
     data() {
       return {
         showAllChats: false,

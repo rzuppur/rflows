@@ -12,6 +12,7 @@ import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
 import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
 import Message, { mapMessage } from "@/js/model/Message";
 import { mapMessagesRead } from "@/js/model/MessagesRead";
+import { mapMessageFlagged } from "@/js/model/MessagesFlagged";
 import { SocketResult } from "@/js/socket";
 
 class Chats {
@@ -33,16 +34,11 @@ class Chats {
     const _messages = this.store.flows._messages;
 
     this.store.flows.messages = new Proxy({}, {
-      // @ts-ignore
-      set(obj, prop: number, val: { v: number, d: Message[] }) {
-        console.log("SET", prop, ":", val);
-      },
       get(target, prop:string) {
         if (prop === "keys") {
           return Object.keys(_messages);
         }
         if (!Object.keys(_messages).includes(prop)) {
-          console.log("creating", prop);
           Vue.set(_messages, prop, { v: 0 });
           _messages[prop].d = [];
         }
@@ -68,8 +64,6 @@ class Chats {
   }
 
   async getChatUsers(chatId: number): Promise<void> {
-    // this.flows.connection.subscribeChatTopic("TopicUser", chatId);
-
     await Promise.all([
       this.flows.connection.findByChat("TopicUser", chatId),
     ]);
@@ -192,6 +186,10 @@ class Chats {
 
   parseChatMessagesRead(messagesRead: any[]) {
     this.flows.updateStoreArray("messagesRead", messagesRead.map(mapMessagesRead));
+  }
+
+  parseChatMessagesFlagged(messagesFlagged: any[]) {
+    this.flows.updateStoreArray("messagesFlagged", messagesFlagged.filter(flagged => flagged.flag).map(mapMessageFlagged));
   }
 
   updateChatData(): void {

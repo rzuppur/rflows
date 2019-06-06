@@ -159,7 +159,7 @@ class Connection {
 
     let action = frame.headers.destination.match(/\.(modified|deleted)$/);
     if (action && action.length > 1) action = action[1];
-    //console.log(type, action);
+    //console.log(type, action, frameBody.length);
 
     this.store.connectionError = false;
     switch (type) {
@@ -191,6 +191,10 @@ class Connection {
       }
       case "TopicItemRead": {
         this.flows.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
+        break;
+      }
+      case "TopicItemUserProperty": {
+        this.flows.chats.parseChatMessagesFlagged(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {

@@ -18,7 +18,7 @@
           .name.ellipsis {{ $store.currentChatName }}
             .placeholder(v-if="!$store.currentChatName")
 
-          UserList(:users="chatMembers")
+          user-list(:users="chatMembers")
 
         chat-mainbar-message-list(:replyToId="chat.replyToId" :chatId="chatId")
 
@@ -78,7 +78,7 @@
         td(v-for="value, key in $store.flows" v-if="!['messages', '_messages'].includes(key)")
           b.text-small {{ key }}<br>
           code v: {{ value.v }}
-          div(style="height: 90vh; overflow: auto; max-width: 150px")
+          div(style="height: 90vh; overflow: auto; max-width: 120px")
             template(v-if="key === 'users'")
               div(v-for="user in value.d")
                 .user.user-with-name.space-top-small
@@ -132,6 +132,21 @@
         editorFocused: false,
         uploadExpanded: false,
       };
+    },
+    watch: {
+      "$store.currentChatId": {
+        immediate: true,
+        handler(val, oldVal) {
+          if (val === oldVal) return;
+          if (val) {
+            this.$flows.chats.getChatUsers(val);
+            this.$flows.chats.setChatOpen(val, true);
+          }
+          if (oldVal) {
+            this.$flows.chats.setChatOpen(oldVal, false);
+          }
+        },
+      },
     },
     computed: {
       chatId() {

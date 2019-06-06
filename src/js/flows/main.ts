@@ -35,6 +35,7 @@ class Flows2 {
 
   public updateStoreArray(key: StoreKeyVersionNumber, newItems: any[]) {
     const ids = newItems.map(item => item.id);
+    // @ts-ignore
     this.store.flows[key].d = this.store.flows[key].d.filter(item => ids.indexOf(item.id) === -1);
     // @ts-ignore
     this.store.flows[key].d = this.store.flows[key].d.concat(newItems);
