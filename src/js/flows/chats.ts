@@ -247,4 +247,4 @@ export default Chats;
 
 type propChat = { type: string, id: number; };
 
-type chatFilter = { amount: number, from?: { id: number } };
+type chatFilter = { amount: number, from?: { id: number }, sticky: boolean };

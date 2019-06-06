@@ -1,11 +1,11 @@
 <template lang="pug">
 
-  a.file-preview(:href="flows.getFilePath(message.url)" target="_blank" rel="noopener noreferrer nofollow")
+  a.file-preview(:href="$flows.utils.relativeToFullPath(message.url)" target="_blank" rel="noopener noreferrer nofollow")
 
     .file-title.ellipsis #[i.fas.fa-paperclip] {{ message.text }}
 
     .image-preview(v-if="utils.fileMessagePreviewable(message)")
-      img(:src="flows.getFilePath(message.url)")
+      img(:src="$flows.utils.relativeToFullPath(message.url)")
 
 </template>
 

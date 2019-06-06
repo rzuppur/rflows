@@ -16,11 +16,11 @@
 
     template(v-else)
 
-      .name(v-if="!message") ?
+      .date(v-if="!message") Message not loaded
 
       template(v-else)
 
-        .name {{ flows.getFullName(message.creatorUserId) }}
+        .name {{ authorName }}
         .date {{ utils.fullDateAddOtherYear(message.createDate) }}
         .message-content.note-content.clamped(v-html="messageText")
 
@@ -32,6 +32,7 @@
     name: "MessagePreview",
     props: {
       messageId: Number,
+      chatId: Number,
       clickable: {
         type: Boolean,
         default: true,
@@ -43,7 +44,17 @@
     },
     computed: {
       message() {
-        return this.flows.getChatMessage(this.messageId);
+        this.$store.flows.messages[this.chatId].v;
+
+        return this.$store.flows.messages[this.chatId].d.find(message => message.id === this.messageId);
+      },
+      author() {
+        this.$store.flows.users.v;
+
+        return this.$store.flows.users.d.find(user => user.id === this.message.userId);
+      },
+      authorName() {
+        return this.$flows.utils.getFullNameFromUser(this.author);
       },
       messageText() {
         if (this.message) {
@@ -51,18 +62,19 @@
             return `✉ ${this.message.subject}\n${this.message.from.address}`;
           }
           if (this.message.type === "NOTE") {
-            return this.flows.getMessageTextRepresentation(this.message.text);
+            return this.$flows.messages.getMessageTextRepresentation(this.message.text);
           }
-          return this.flows.chatTextParse(this.message.text);
+          return this.$flows.messages.chatTextParse(this.message.text);
         }
+        return "";
       },
       tooltipText() {
         if (!this.superCompact || !this.message) return null;
-        return `${this.flows.getFullName(this.message.creatorUserId)}: ${this.messageText.substring(0, 30)}...`;
+        //return `${this.flows.getFullName(this.message.creatorUserId)}: ${this.messageText.substring(0, 30)}...`;
       },
       initials() {
-        const name = this.flows.getFullName(this.message.creatorUserId);
-        return name.charAt(0) + name.split(" ")[1].charAt(0);
+        //const name = this.flows.getFullName(this.message.creatorUserId);
+        //return name.charAt(0) + name.split(" ")[1].charAt(0);
       },
     },
     methods: {

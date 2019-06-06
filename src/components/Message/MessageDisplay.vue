@@ -42,11 +42,11 @@
 
         //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
-        //-template(v-if="message.referenceFromTopicItemId")
-          message-preview.reply-original(v-if="showReplyMessage" :messageId="message.referenceFromTopicItemId")
+        template(v-if="message.replyTo")
+          message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId")
           p.text-muted.text-small(v-else) Reply to #{""}
-            span(v-if="flows.getChatMessage(message.referenceFromTopicItemId)") {{ flows.getFullName(flows.getChatMessage(message.referenceFromTopicItemId).creatorUserId) }}
-            span(v-else) ?
+            //span(v-if="flows.getChatMessage(message.referenceFromTopicItemId)") {{ flows.getFullName(flows.getChatMessage(message.referenceFromTopicItemId).creatorUserId) }}
+            //span(v-else) ?
 
         slot(name="content")
 
@@ -60,11 +60,11 @@
             .text-clamped(v-if="compact") {{ $flows.messages.getMessageTextRepresentation(message.text) }}
             .note-content(v-else v-html="$flows.messages.noteTextParse(message.text)")
 
-          //-.file-content(v-else-if="message.type === 'FILE'")
+          .file-content(v-else-if="message.type === 'FILE'")
 
             file-display(:message="message")
 
-          //-template(v-else-if="message.type === 'EMAIL'")
+          template(v-else-if="message.type === 'EMAIL'")
 
             p.event-content(v-if="message.type === 'EMAIL' && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
 
@@ -82,7 +82,7 @@
 
               p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
 
-              button.button(v-else type="button" @click="$events.$emit('openEmail', message.id)") View email
+              //-button.button(v-else type="button" @click="$events.$emit('openEmail', message.id)") View email
 
           p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 

@@ -8,10 +8,12 @@
 
     .messages
 
-      .load-more-container
-        btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older
+      message-display(v-for="message in messagesBeforeLoad" :message="message" :key="message.id")
 
-      message-display(v-for="message in messages" :message="message" :key="message.id")
+      .load-more-container
+        btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
+
+      message-display(v-for="message in messagesAfterLoad" :message="message" :key="message.id")
 
 </template>
 
@@ -58,6 +60,14 @@
 
         return this.$store.flows.messages[this.chatId].d;
       },
+      messagesBeforeLoad() {
+        const splitIndex = this.messages.findIndex(message => message.id >= this.startNextLoadFromId);
+        return this.messages.slice(0, splitIndex);
+      },
+      messagesAfterLoad() {
+        const splitIndex = this.messages.findIndex(message => message.id >= this.startNextLoadFromId);
+        return this.messages.slice(splitIndex, this.messages.length);
+      },
     },
     watch: {
       chatId: {
@@ -65,7 +75,10 @@
         handler(chatId, oldChatId) {
           if (!chatId || chatId === oldChatId) return;
           this.$flows.chats.getChatReadAndFlagged(chatId);
-          if (!this.lastLoadedMessageId[chatId]) this.loadMessages(chatId);
+          if (!this.lastLoadedMessageId[chatId]) {
+            this.loadMessages(chatId);
+            this.$flows.chats.getChatMessages(chatId, { sticky: true });
+          }
         },
       },
     },
@@ -142,22 +155,24 @@
     min-height 100%
 
     .load-more-container
-      margin 0 20px 20px
+      margin 10px 0
+
+      &:first-child
+        margin-top -20px
 
     .button.load-more
-      border none
-      width 100%
       display block
-      margin 0 auto
-      max-width 500px
-      background #eee
+      width 100%
+      margin 0
+      border-radius 0
+      border none
+      height 40px
+      text-bold-16()
+      background $color-light-blue-background
 
       &:hover,
       &:focus
-        background darken(#eee, 2)
+        background darken($color-light-blue-background, 2)
 
-      text-bold-16()
-      text-transform uppercase
-      letter-spacing 0.06em
 
 </style>
