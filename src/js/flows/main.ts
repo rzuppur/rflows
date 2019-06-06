@@ -7,6 +7,7 @@ import Connection from "@/js/flows/connection";
 import Chats from "@/js/flows/chats";
 import Users from "@/js/flows/users";
 import Settings from "@/js/flows/settings";
+import Messages from "@/js/flows/messages";
 
 class Flows2 {
   store: STORE;
@@ -15,6 +16,7 @@ class Flows2 {
   chats: Chats;
   users: Users;
   settings: Settings;
+  messages: Messages;
 
   readonly utils = utils;
   readonly localstorage = localstorage;
@@ -27,6 +29,7 @@ class Flows2 {
     this.chats = new Chats(this);
     this.users = new Users(this);
     this.settings = new Settings(this);
+    this.messages = new Messages(this);
   }
 
   public storeUpdate(key: StoreKeyVersionNumber): void {

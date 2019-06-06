@@ -8,13 +8,18 @@
 
     .messages
 
-      message-display(v-for="i in 10")
+      .load-more-container
+        btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older
+
+      message-display(v-for="message in messages" :message="message" :key="message.id")
 
 </template>
 
 <script>
 
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
+
+  const MESSAGE_PAGE_SIZE = 15;
 
   export default {
     name: "ChatMainbarMessageList",
@@ -25,8 +30,9 @@
     },
     data() {
       return {
-        messages: [],
-        allMessagesLoaded: false,
+        lastLoadedMessageId: {},
+        canLoadMore: {},
+        messagesLoading: {},
       };
     },
     computed: {
@@ -38,26 +44,47 @@
 
         return !this.$flows.settings.getBooleanUserProp("compactMode");
       },
+      startNextLoadFromId() {
+        return this.lastLoadedMessageId[this.chatId];
+      },
+      hasOlderMessages() {
+        return this.canLoadMore[this.chatId];
+      },
+      isLoadingMessages() {
+        return this.messagesLoading[this.chatId];
+      },
+      messages() {
+        this.$store.flows.messages[this.chatId].v;
+
+        return this.$store.flows.messages[this.chatId].d;
+      },
     },
     watch: {
       chatId: {
         immediate: true,
-        async handler(chatId, oldChatId) {
+        handler(chatId, oldChatId) {
           if (!chatId || chatId === oldChatId) return;
-          this.messages = [];
-
           this.$flows.chats.getChatReadAndFlagged(chatId);
-          const messagesLoaded = await this.$flows.chats.getChatMessages(chatId, null);
-          //console.log(messagesLoaded);
-
-          // TODO: load X items, if got < X then no old messages, else load new when scrolled up
-          // store oldest chatmessage got without sticky, use id for next page
+          if (!this.lastLoadedMessageId[chatId]) this.loadMessages(chatId);
         },
       },
     },
     methods: {
       scrollTrack() {
         // console.log("todo: scrollTrack");
+      },
+      async loadMessages(chatId) {
+        try {
+          this.$set(this.messagesLoading, chatId, true);
+          const filter = this.lastLoadedMessageId[chatId] ? { amount: MESSAGE_PAGE_SIZE, from: { id: this.lastLoadedMessageId[chatId] - 1 } } : { amount: MESSAGE_PAGE_SIZE };
+          const messagesLoaded = await this.$flows.chats.getChatMessages(chatId, filter);
+          if (messagesLoaded.length) {
+            this.$set(this.lastLoadedMessageId, chatId, messagesLoaded[0].id);
+          }
+          this.$set(this.canLoadMore, chatId, (messagesLoaded.length >= MESSAGE_PAGE_SIZE));;
+        } finally {
+          this.$set(this.messagesLoading, chatId, false);
+        }
       },
     },
   };
@@ -113,5 +140,24 @@
     position relative
     background #fff
     min-height 100%
+
+    .load-more-container
+      margin 0 20px 20px
+
+    .button.load-more
+      border none
+      width 100%
+      display block
+      margin 0 auto
+      max-width 500px
+      background #eee
+
+      &:hover,
+      &:focus
+        background darken(#eee, 2)
+
+      text-bold-16()
+      text-transform uppercase
+      letter-spacing 0.06em
 
 </style>

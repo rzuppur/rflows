@@ -170,43 +170,43 @@ class Connection {
         break;
       }
       case "Topic": {
-        this.flows.chats.parseChats(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChats(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicUser": {
-        this.flows.chats.parseChatUsers(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChatUsers(Connection.bodyFilter(frameBody));
         break;
       }
       case "Organization": {
-        this.flows.chats.parseWorkspaces(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseWorkspaces(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicLocation": {
-        this.flows.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItem": {
-        this.flows.chats.parseChatMessages(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChatMessages(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItemRead": {
-        this.flows.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItemUserProperty": {
-        this.flows.chats.parseChatMessagesFlagged(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChatMessagesFlagged(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {
-        this.flows.chats.parseChatWorkspaceAccesses(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.chats.parseChatWorkspaceAccesses(Connection.bodyFilter(frameBody));
         break;
       }
       case "User": {
-        this.flows.users.parseUsers(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.users.parseUsers(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserProperty": {
-        this.flows.settings.parseSettings(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.settings.parseSettings(Connection.bodyFilter(frameBody));
         break;
       }
       case "Error": {

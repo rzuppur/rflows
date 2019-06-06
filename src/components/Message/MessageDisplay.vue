@@ -28,7 +28,7 @@
       .content-container
         b.text-error.text-small(v-if="message.error") Message was not sent #{""}
 
-        .name {{ flows.getFullName(message.creatorUserId) }}
+        .name {{ authorName }}
           span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
             i.fas.fa-thumbtack
 
@@ -42,7 +42,7 @@
 
         //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
-        template(v-if="message.referenceFromTopicItemId")
+        //-template(v-if="message.referenceFromTopicItemId")
           message-preview.reply-original(v-if="showReplyMessage" :messageId="message.referenceFromTopicItemId")
           p.text-muted.text-small(v-else) Reply to #{""}
             span(v-if="flows.getChatMessage(message.referenceFromTopicItemId)") {{ flows.getFullName(flows.getChatMessage(message.referenceFromTopicItemId).creatorUserId) }}
@@ -53,18 +53,18 @@
           p.event-content(v-if="message.type === 'EVENT'") {{ message.text }}
 
           template(v-else-if="message.type === 'CHAT'")
-            .text-clamped(v-if="compact" v-html="flows.chatTextParse(message.text)")
-            p.text-content(v-else v-html="flows.chatTextParse(message.text)")
+            .text-clamped(v-if="compact" v-html="$flows.messages.chatTextParse(message.text)")
+            p.text-content(v-else v-html="$flows.messages.chatTextParse(message.text)")
 
           template(v-else-if="message.type === 'NOTE'")
-            .text-clamped(v-if="compact") {{ flows.getMessageTextRepresentation(message.text) }}
-            .note-content(v-else v-html="flows.noteTextParse(message.text)")
+            .text-clamped(v-if="compact") {{ $flows.messages.getMessageTextRepresentation(message.text) }}
+            .note-content(v-else v-html="$flows.messages.noteTextParse(message.text)")
 
-          .file-content(v-else-if="message.type === 'FILE'")
+          //-.file-content(v-else-if="message.type === 'FILE'")
 
             file-display(:message="message")
 
-          template(v-else-if="message.type === 'EMAIL'")
+          //-template(v-else-if="message.type === 'EMAIL'")
 
             p.event-content(v-if="message.type === 'EMAIL' && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
 
@@ -115,28 +115,21 @@
       },
     },
     computed: {
+      author() {
+        this.$store.flows.users.v;
+
+        return this.$store.flows.users.d.find(user => user.id === this.message.userId);
+      },
+      authorName() {
+        return this.$flows.utils.getFullNameFromUser(this.author);
+      },
       avatarUrl() {
         this.$store.flows.chatUsers.v;
         this.$store.flows.users.v;
 
         if (!this.message) return this.$flows.utils.placeholderImageChar("");
 
-        return this.$flows.utils.getAvatarFromUser(); /*this.$store.flows.chatUsers.d.find(chatUser => chatUser.chatId === this.chatId).map((chatUser) => {
-          const user = this.$store.flows.users.d.find(user_ => user_.id === chatUser.userId);
-          if (!user) {
-            return {
-              ...chatUser,
-              name: "",
-              avatar: ,
-              userStatus: "?",
-            };
-          }
-          return {
-            ...chatUser,
-            name: this.$flows.utils.getFullNameFromUser(user),
-            avatar: this.$flows.utils.getAvatarFromUser(user),
-            userStatus: user.status,
-          };*/
+        return this.$flows.utils.getAvatarFromUser(this.author);
       },
     },
   };

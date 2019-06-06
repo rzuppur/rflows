@@ -45,6 +45,26 @@ const utils = {
   uniqueNonZeroNumberArray(array: any[]): number[] {
     return Array.from(new Set(array.map(x => +x).filter(Boolean)));
   },
+
+  escapeHTML(text: string): string {
+    // From lodash .escape()
+    const htmlEscapes: { [index: string]: string } = {
+      '&': '&amp',
+      '<': '&lt',
+      '>': '&gt',
+      '"': '&quot',
+      "'": '&#39',
+    };
+    const reUnescapedHtml = /[&<>"']/g;
+    const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+
+    return ( text && reHasUnescapedHtml.test(text) ) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text;
+  },
+
+  textToHTML(text: string): string {
+    if (text) return this.escapeHTML(text).replace(/&#10;/g, "<br>").replace(/\n/g, "<br>");
+    return "";
+  },
 };
 
 export default utils;

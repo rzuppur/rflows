@@ -82,7 +82,7 @@ class Chats {
   async getChatMessages(chatId: number, filter: chatFilter | null): Promise<Message[]> {
     this.flows.connection.subscribeChatTopic("TopicItem", chatId);
 
-    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage);
+    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b:Message) => a.id - b.id);
   }
 
   setChatOpen(chatId: number, open: boolean): void {
@@ -181,6 +181,7 @@ class Chats {
     const ids = mapped.map(message => message.id);
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => ids.indexOf(message.id) === -1);
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.concat(mapped);
+    this.store.flows.messages[chatId].d.sort((a, b) => a.id - b.id);
     this.store.flows.messages[chatId].v += 1;
   }
 
