@@ -5,7 +5,9 @@ import Vue from "vue";
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import utils from "@/js/flows/utils";
-import Message from "@/js/model/Message";
+import Message, { mapMessage } from "@/js/model/Message";
+import { mapMessagesRead } from "@/js/model/MessagesRead";
+import { mapMessageFlagged } from "@/js/model/MessagesFlagged";
 
 class Messages {
   flows: Flows2;
@@ -17,7 +19,50 @@ class Messages {
     this.store = flows.store;
     this.events = flows.events;
 
+    this.setupMessageGetter();
     autoBind(this);
+  }
+
+  private setupMessageGetter() {
+    this.store.flows._messages = JSON.parse(JSON.stringify(this.store.flows.messages || {}));
+    const _messages = this.store.flows._messages;
+
+    this.store.flows.messages = new Proxy({}, {
+      get(target, prop:string) {
+        if (prop === "keys") {
+          return Object.keys(_messages);
+        }
+        if (!Object.keys(_messages).includes(prop)) {
+          Vue.set(_messages, prop, { v: 0 });
+          _messages[prop].d = [];
+        }
+        return _messages[prop];
+      },
+      ownKeys() {
+        return Object.keys(_messages);
+      },
+    });
+  }
+
+  parseChatMessages(messages: any[]) {
+    const mapped = messages.map(mapMessage);
+
+    const chatId: number = mapped.map(chat => chat.chatId).reduce((a, b) => (a === b) ? a : NaN );
+    if (!chatId) throw new Error("Different or no chatIds in messages");
+
+    const ids = mapped.map(message => message.id);
+    this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => ids.indexOf(message.id) === -1);
+    this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.concat(mapped);
+    this.store.flows.messages[chatId].d.sort((a, b) => a.id - b.id);
+    this.store.flows.messages[chatId].v += 1;
+  }
+
+  parseChatMessagesRead(messagesRead: any[]) {
+    this.flows.updateStoreArray("messagesRead", messagesRead.map(mapMessagesRead));
+  }
+
+  parseChatMessagesFlagged(messagesFlagged: any[]) {
+    this.flows.updateStoreArray("messagesFlagged", messagesFlagged.filter(flagged => flagged.flag).map(mapMessageFlagged));
   }
 
   public chatTextParse(text: string) {

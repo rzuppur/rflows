@@ -186,15 +186,15 @@ class Connection {
         break;
       }
       case "TopicItem": {
-        if (frameBody.length) this.flows.chats.parseChatMessages(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.messages.parseChatMessages(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItemRead": {
-        if (frameBody.length) this.flows.chats.parseChatMessagesRead(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.messages.parseChatMessagesRead(Connection.bodyFilter(frameBody));
         break;
       }
       case "TopicItemUserProperty": {
-        if (frameBody.length) this.flows.chats.parseChatMessagesFlagged(Connection.bodyFilter(frameBody));
+        if (frameBody.length) this.flows.messages.parseChatMessagesFlagged(Connection.bodyFilter(frameBody));
         break;
       }
       case "UserAccess": {
