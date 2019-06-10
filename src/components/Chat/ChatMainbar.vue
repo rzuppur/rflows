@@ -132,21 +132,6 @@
         uploadExpanded: false,
       };
     },
-    watch: {
-      "$store.currentChatId": {
-        immediate: true,
-        handler(val, oldVal) {
-          if (val === oldVal) return;
-          if (val) {
-            this.$flows.chats.getChatUsers(val);
-            this.$flows.chats.setChatOpen(val, true);
-          }
-          if (oldVal) {
-            this.$flows.chats.setChatOpen(oldVal, false);
-          }
-        },
-      },
-    },
     computed: {
       chatId() {
         return this.$store.currentChatId;
@@ -197,6 +182,21 @@
         }
         if (this.$store.currentChatName.length) return `Message ${this.$store.currentChatName}`;
         return "";
+      },
+    },
+    watch: {
+      "$store.currentChatId": {
+        immediate: true,
+        handler(val, oldVal) {
+          if (val === oldVal) return;
+          if (val) {
+            this.$flows.chats.getChatUsers(val);
+            this.$flows.chats.setChatOpen(val, true);
+          }
+          if (oldVal) {
+            this.$flows.chats.setChatOpen(oldVal, false);
+          }
+        },
       },
     },
     methods: {

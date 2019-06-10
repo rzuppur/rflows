@@ -7,8 +7,9 @@
   )
 
     .chat-title.ellipsis(:class="{ placeholder: !props.chat.name }") {{ props.chat.name }}
-      span.icon.is-small.chat-flagged(v-if="props.chat.name && props.chat.flagged > 0")
-        i.fas.fa-thumbtack
+
+    .icon.is-small.chat-flagged(v-if="props.chat.flagged > 0")
+      span {{ props.chat.flagged }} #[i.fas.fa-thumbtack]
 
     .chat-removerecent(v-if="props.recentRemove" @click.stop="props.recentRemove(props.chat.id)")
       i.fa.fa-times
@@ -85,8 +86,14 @@
 
     .chat-flagged
       font-size 13px
-      color alpha($color-blue, 0.5)
+      font-weight 600
+      color alpha($color-blue, 0.6)
       margin-left 5px
+      white-space nowrap
+
+      i
+        position relative
+        top 1px
 
     .chat-unread
       display none
