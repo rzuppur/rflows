@@ -2,6 +2,9 @@ import { oc } from "ts-optchain";
 import User from "@/js/model/User";
 import Workspace from "@/js/model/Workspace";
 
+const reUnescapedHtml = /[&<>"']/g;
+const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+
 const utils = {
   relativeToFullPath(url: string): string {
     return `https://flows.contriber.com${encodeURI(url)}`;
@@ -55,8 +58,6 @@ const utils = {
       '"': '&quot',
       "'": '&#39',
     };
-    const reUnescapedHtml = /[&<>"']/g;
-    const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
 
     return ( text && reHasUnescapedHtml.test(text) ) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text;
   },
