@@ -133,7 +133,6 @@
         max-width 850px
         margin 0 auto !important
         box-shadow 0 0 0 2px alpha(#000, 0.05)
-        overflow-x hidden
         transform translate3d(0px, 0px, 0px)
 
       .typing
@@ -169,6 +168,7 @@
     position relative
     background #fff
     min-height 100%
+    overflow hidden
 
     .load-more-container
       margin 10px 0
