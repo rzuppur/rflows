@@ -4,10 +4,11 @@ import Vue from "vue";
 
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
-import utils from "@/js/flows/utils";
+import utils, { performanceLog } from "@/js/flows/utils";
 import Message, { mapMessage } from "@/js/model/Message";
 import { mapMessagesRead } from "@/js/model/MessagesRead";
 import { mapMessageFlagged } from "@/js/model/MessagesFlagged";
+import { SocketResult } from "@/js/socket";
 
 class Messages {
   flows: Flows2;
@@ -44,6 +45,26 @@ class Messages {
     });
   }
 
+  async getChatReadAndFlagged(chatId: number): Promise<SocketResult[]> {
+    const subResponses = await Promise.all([
+      this.flows.connection.subscribeChatTopic("TopicItemUserProperty", chatId),
+      this.flows.connection.subscribeChatTopic("TopicItemRead", chatId),
+    ]);
+
+    const promises = [];
+    if (!subResponses[0][0].alreadyExists || !subResponses[0][1].alreadyExists) promises.push(this.flows.connection.findByChat("TopicItemUserProperty", chatId));
+    if (!subResponses[1][0].alreadyExists || !subResponses[1][1].alreadyExists) promises.push(this.flows.connection.findByChat("TopicItemRead", chatId));
+
+    return await Promise.all(promises);
+  }
+
+  async getChatMessages(chatId: number, filter: chatFilter | null): Promise<Message[]> {
+    this.flows.connection.subscribeChatTopic("TopicItem", chatId);
+
+    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b:Message) => a.id - b.id);
+  }
+
+  @performanceLog()
   parseChatMessages(messages: any[]) {
     const mapped = messages.map(mapMessage);
 
@@ -55,14 +76,62 @@ class Messages {
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.concat(mapped);
     this.store.flows.messages[chatId].d.sort((a, b) => a.id - b.id);
     this.store.flows.messages[chatId].v += 1;
+
+    this.updateMessagesRead(chatId);
+    this.updateMessagesFlagged(chatId);
   }
 
+  @performanceLog()
   parseChatMessagesRead(messagesRead: any[]) {
-    this.flows.updateStoreArray("messagesRead", messagesRead.map(mapMessagesRead));
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+    const currentUserId = this.store.currentUser.id;
+    const mapped = messagesRead.map(mapMessagesRead).filter(x => x.userId === currentUserId);
+    this.flows.updateStoreArray("messagesRead", mapped);
+
+    const chatId: number = mapped.map(x => x.chatId).reduce((a, b) => (a === b) ? a : NaN );
+    if (chatId) {
+      this.updateMessagesRead(chatId);
+      return;
+    }
+    this.updateMessagesRead();
   }
 
+  @performanceLog()
   parseChatMessagesFlagged(messagesFlagged: any[]) {
-    this.flows.updateStoreArray("messagesFlagged", messagesFlagged.filter(flagged => flagged.flag).map(mapMessageFlagged));
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+    const currentUserId = this.store.currentUser.id;
+    this.flows.updateStoreArray("messagesFlagged", messagesFlagged.filter(flagged => flagged.flag).map(mapMessageFlagged).filter(x => x.userId === currentUserId));
+
+    this.updateMessagesFlagged();
+  }
+
+  @performanceLog()
+  private _updateMessagesReadChat(chatId: number): void {
+    if (!this.store.flows.messages[chatId].d.length) return;
+    if (!this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId)) return;
+
+    this.store.flows.messages[chatId].d.map((message) => {
+      const inReadRange = this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId && readRange.messageFrom <= message.id && readRange.messageTo >= message.id);
+      message.unread = !inReadRange;
+    });
+    this.store.flows.messages[chatId].v += 1;
+  }
+
+  @performanceLog()
+  updateMessagesRead(chatId?: number): void {
+    if (chatId) {
+      this._updateMessagesReadChat(chatId);
+    } else {
+      // @ts-ignore
+      this.store.flows.messages.keys.map((chatId) => {
+        this._updateMessagesReadChat(+chatId);
+      })
+    }
+  }
+
+  @performanceLog()
+  updateMessagesFlagged(chatId?: number): void {
+
   }
 
   public chatTextParse(text: string) {
@@ -134,3 +203,5 @@ class Messages {
 }
 
 export default Messages;
+
+type chatFilter = { amount: number, from?: { id: number }, sticky: boolean };

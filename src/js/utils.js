@@ -1,5 +1,5 @@
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
+import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 
 dayjs.extend(advancedFormat);
 //import 'dayjs/locale/et'
@@ -64,6 +64,14 @@ const utils = {
   /*
   DATE & TIME
    */
+
+  /**
+   * @param date {Date|string|number} Date or date string or Unix timestamp
+   * @returns {dayjs}
+   */
+  dayjsDate(date) {
+    return dayjs(date);
+  },
 
   /**
    * @param date {Date|string|number} Date or date string or Unix timestamp

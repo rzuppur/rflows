@@ -8,12 +8,12 @@
 
     .messages
 
-      message-display(v-for="message in messagesLoadSpilit[0]" :message="message" :key="message.id")
+      message-display(v-for="message in messagesLoadSpilit[0]" :message="message" :key="message.id" :class="message.classList")
 
       .load-more-container
         btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
-      message-display(v-for="message in messagesLoadSpilit[1]" :message="message" :key="message.id")
+      message-display(v-for="message in messagesLoadSpilit[1]" :message="message" :key="message.id" :class="message.classList")
 
 </template>
 
@@ -56,9 +56,26 @@
         return this.messagesLoading[this.chatId];
       },
       messages() {
+        if (!this.chatId) return [];
         this.$store.flows.messages[this.chatId].v;
 
-        return this.$store.flows.messages[this.chatId].d;
+        return this.$store.flows.messages[this.chatId].d.map((message, index, array) => {
+          message.classList = [];
+
+          if (this.replyToId === message.id) message.classList.push("message-highlight");
+          if (message.unread) message.classList.push("message-unread");
+
+          if (index > 0) {
+            const prevMessage = array[index - 1];
+            const sameUser = prevMessage.userId === message.userId;
+            if (sameUser) {
+              const sameDay = this.utils.datesAreSameDay(message.createDate, prevMessage.createDate);
+              if (sameDay) message.classList.push("noauthor");
+            }
+          }
+
+          return message;
+        });
       },
       messagesLoadSpilit() {
         const splitIndex = this.messages.findIndex(message => message.id >= this.startNextLoadFromId);
@@ -73,10 +90,10 @@
         immediate: true,
         handler(chatId, oldChatId) {
           if (!chatId || chatId === oldChatId) return;
-          this.$flows.chats.getChatReadAndFlagged(chatId);
+          this.$flows.messages.getChatReadAndFlagged(chatId);
           if (!this.lastLoadedMessageId[chatId]) {
             this.loadMessages(chatId);
-            this.$flows.chats.getChatMessages(chatId, { sticky: true });
+            this.$flows.messages.getChatMessages(chatId, { sticky: true });
           }
         },
       },
@@ -89,7 +106,7 @@
         try {
           this.$set(this.messagesLoading, chatId, true);
           const filter = this.lastLoadedMessageId[chatId] ? { amount: MESSAGE_PAGE_SIZE, from: { id: this.lastLoadedMessageId[chatId] - 1 } } : { amount: MESSAGE_PAGE_SIZE };
-          const messagesLoaded = await this.$flows.chats.getChatMessages(chatId, filter);
+          const messagesLoaded = await this.$flows.messages.getChatMessages(chatId, filter);
           if (messagesLoaded.length) {
             this.$set(this.lastLoadedMessageId, chatId, messagesLoaded[0].id);
           }

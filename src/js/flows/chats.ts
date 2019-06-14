@@ -10,8 +10,7 @@ import { mapChatUser } from "@/js/model/ChatUser";
 import { mapWorkspace } from "@/js/model/Workspace";
 import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
 import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
-import Message, { mapMessage } from "@/js/model/Message";
-import { SocketResult } from "@/js/socket";
+import { performanceLog } from "@/js/flows/utils";
 
 class Chats {
   flows: Flows2;
@@ -43,22 +42,6 @@ class Chats {
     await Promise.all([
       this.flows.connection.findByChat("TopicUser", chatId),
     ]);
-  }
-
-  async getChatReadAndFlagged(chatId: number): Promise<SocketResult[]> {
-    this.flows.connection.subscribeChatTopic("TopicItemUserProperty", chatId);
-    this.flows.connection.subscribeChatTopic("TopicItemRead", chatId);
-
-    return await Promise.all([
-      this.flows.connection.findByChat("TopicItemUserProperty", chatId),
-      this.flows.connection.findByChat("TopicItemRead", chatId),
-    ]);
-  }
-
-  async getChatMessages(chatId: number, filter: chatFilter | null): Promise<Message[]> {
-    this.flows.connection.subscribeChatTopic("TopicItem", chatId);
-
-    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b:Message) => a.id - b.id);
   }
 
   setChatOpen(chatId: number, open: boolean): void {
@@ -126,33 +109,38 @@ class Chats {
     }
   }
 
-  parseChats(chats: any[]) {
+  @performanceLog()
+  parseChats(chats: any[]): void {
     this.flows.updateStoreArray("chats", chats.filter(chat => !chat.integration && chat.type === "MEETING").map(mapChat));
     this.updateChatData();
   }
 
+  @performanceLog()
   parseChatUsers(chatUsers: any[]) {
     this.flows.updateStoreArray("chatUsers", chatUsers.map(mapChatUser));
     this.updateChatData();
   }
 
+  @performanceLog()
   parseWorkspaces(workspaces: any[]) {
     this.flows.updateStoreArray("workspaces", workspaces.filter(workspace => !workspace.integration).map(mapWorkspace));
   }
 
+  @performanceLog()
   parseChatWorkspaces(chatWorkspaces: any[]) {
     this.flows.updateStoreArray("chatWorkspaces", chatWorkspaces.map(mapChatWorkspace));
   }
 
+  @performanceLog()
   parseChatWorkspaceAccesses(workspaceAccesses: any[]) {
     this.flows.updateStoreArray("workspaceAccesses", workspaceAccesses.map(mapWorkspaceAccess));
   }
 
+  @performanceLog()
   updateChatData(): void {
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {
-      console.log("! No currentUser while updating chat data");
-      return;
+      throw new Error("No currentUser while updating chat data");
     }
 
     let changed = false;
@@ -201,5 +189,3 @@ class Chats {
 export default Chats;
 
 type propChat = { type: string, id: number; };
-
-type chatFilter = { amount: number, from?: { id: number }, sticky: boolean };
