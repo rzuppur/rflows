@@ -4,9 +4,7 @@ import { Vue } from "vue/types/vue";
 
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
-import Connection from "@/js/flows/connection";
-import User from "@/js/model/User";
-import Chats from "@/js/flows/chats";
+import User, { mapUser } from "@/js/model/User";
 
 class Users {
   flows: Flows2;
@@ -31,23 +29,8 @@ class Users {
   }
 
   parseUsers(users: any[]) {
-    this.flows.updateStoreArray("users", users.map(Users.mapUser));
+    this.flows.updateStoreArray("users", users.map(mapUser));
     this.flows.chats.updateChatData();
-  }
-
-  private static mapUser(user: any): User {
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      avatarUrl: user.avatarUrl,
-      workspaceId: user.homeOrgId,
-      online: user.online,
-      status: user.status,
-      lastLoggedIn: user.lastLoggedIn,
-      lastLoggedOut: user.lastLoggedOut,
-    };
   }
 }
 

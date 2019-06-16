@@ -13,3 +13,18 @@ interface User extends Id {
 }
 
 export default User;
+
+export function mapUser(user: any): User {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl,
+      workspaceId: user.homeOrgId,
+      online: user.online,
+      status: user.status,
+      lastLoggedIn: user.lastLoggedIn,
+      lastLoggedOut: user.lastLoggedOut,
+    };
+  }
