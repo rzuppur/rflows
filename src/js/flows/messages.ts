@@ -106,9 +106,22 @@ class Messages {
   }
 
   @performanceLog()
-  private _updateMessagesReadChat(chatId: number): void {
-    if (!this.store.flows.messages[chatId].d.length) return;
-    if (!this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId)) return;
+  private _updateMessagesRead(chatId: number): void {
+    if (!this.store.flows.messages[chatId].d.length) {
+      return;
+    }
+
+    if (!this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId)) {
+      return;
+    }
+
+    if (!this.flows.chats.currentUserMemberOfChat(chatId)) {
+      this.store.flows.messages[chatId].d.map((message) => {
+        message.unread = false;
+      });
+      this.store.flows.messages[chatId].v += 1;
+      return;
+    }
 
     this.store.flows.messages[chatId].d.map((message) => {
       const inReadRange = this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId && readRange.messageFrom <= message.id && readRange.messageTo >= message.id);
@@ -120,11 +133,11 @@ class Messages {
   @performanceLog()
   updateMessagesRead(chatId?: number): void {
     if (chatId) {
-      this._updateMessagesReadChat(chatId);
+      this._updateMessagesRead(chatId);
     } else {
       // @ts-ignore
       this.store.flows.messages.keys.map((chatId) => {
-        this._updateMessagesReadChat(+chatId);
+        this._updateMessagesRead(+chatId);
       })
     }
   }

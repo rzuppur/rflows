@@ -110,6 +110,15 @@ class Chats {
   }
 
   @performanceLog()
+  public currentUserMemberOfChat(chatId: number): boolean {
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    if (!currentUserId) {
+      throw new Error("No currentUser");
+    }
+    return !!this.store.flows.chatUsers.d.find(chatUser => chatUser.chatId === chatId && chatUser.userId === currentUserId);
+  }
+
+  @performanceLog()
   parseChats(chats: any[]): void {
     this.flows.updateStoreArray("chats", chats.filter(chat => !chat.integration && chat.type === "MEETING").map(mapChat));
     this.updateChatData();
@@ -117,8 +126,11 @@ class Chats {
 
   @performanceLog()
   parseChatUsers(chatUsers: any[]) {
-    this.flows.updateStoreArray("chatUsers", chatUsers.map(mapChatUser));
+    const mapped = chatUsers.map(mapChatUser);
+    this.flows.updateStoreArray("chatUsers", mapped);
     this.updateChatData();
+    const chatId: number = mapped.map(chatUser => chatUser.chatId).reduce((a, b) => (a === b) ? a : NaN );
+    this.flows.messages.updateMessagesRead(chatId);
   }
 
   @performanceLog()
