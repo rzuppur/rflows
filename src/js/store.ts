@@ -96,4 +96,4 @@ interface ConnectionStatus {
 
 export default STORE;
 
-export type StoreKeyVersionNumber = ("chats" | "chatUsers" | "users" | "userProperties" | "workspaces" | "chatWorkspaces" | "workspaceAccesses" | "messagesRead" | "messagesFlagged");
+export type StoreFlowsKey = ("chats" | "chatUsers" | "users" | "userProperties" | "workspaces" | "chatWorkspaces" | "workspaceAccesses" | "messagesRead" | "messagesFlagged");

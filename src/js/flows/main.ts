@@ -1,6 +1,6 @@
 import { Vue } from "vue/types/vue.d";
 
-import STORE, { StoreKeyVersionNumber } from "@/js/store";
+import STORE, { StoreFlowsKey } from "@/js/store";
 import utils, { performanceLog } from "@/js/flows/utils";
 import localstorage from "@/js/flows/localstorage";
 import Connection from "@/js/flows/connection";
@@ -32,12 +32,12 @@ class Flows2 {
     this.messages = new Messages(this);
   }
 
-  public storeUpdate(key: StoreKeyVersionNumber): void {
+  public storeUpdate(key: StoreFlowsKey): void {
     this.store.flows[key].v += 1;
   }
 
   @performanceLog()
-  public updateStoreArray(key: StoreKeyVersionNumber, newItems: any[]) {
+  public updateStoreArray(key: StoreFlowsKey, newItems: any[]) {
     const ids = newItems.map(item => item.id);
     // @ts-ignore
     this.store.flows[key].d = this.store.flows[key].d.filter(item => !ids.includes(item.id));
