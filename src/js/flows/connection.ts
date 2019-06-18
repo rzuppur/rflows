@@ -135,8 +135,12 @@ class Connection {
   }
 
   public reconnect(): void {
-    if (!this.canMessage) {
-      this.openSocket();
+    if (!this.canMessageAuth) {
+      const token = this.flows.localstorage.getSessionToken();
+      if (!token) {
+        throw new Error("No token in localstorage");
+      }
+      this.login({token});
     }
   }
 
