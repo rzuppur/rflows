@@ -145,7 +145,7 @@ class Socket {
    */
   subscribe(destination, response) {
     if (!this.connected) {
-      this._debug("! Socket not connected");
+      this._debug("! Socket not connected", destination);
       return Promise.reject(new Error("Socket not connected"));
     }
     if (this.subscriptions[destination]) {

@@ -7,7 +7,7 @@
 
   .settings
 
-    modal(v-if="$store.currentUser && !$store.connectionError" title="Settings" ref="settingsModal")
+    modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
 
       h4
         span Profile

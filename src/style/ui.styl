@@ -152,6 +152,15 @@ p.disabled
 .button
   user-select none
 
+  &.transparent-white
+    background none
+    border 1px solid transparent
+    color #fff
+
+    &:focus,
+    &:hover
+      background alpha(#fff, .1)
+
 .buttons.align-right
   justify-content flex-end
 

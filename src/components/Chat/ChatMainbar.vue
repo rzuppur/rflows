@@ -20,6 +20,8 @@
 
           user-list(:users="chatMembers")
 
+        connection-status(v-if="mqMobile")
+
         chat-mainbar-message-list(:replyToId="chat.replyToId" :chatId="chatId")
 
         .chat-bottom
@@ -114,10 +116,11 @@
   import Editor from "@/components/UI/Editor.vue";
   import FileUpload from "@/components/FileUpload.vue";
   import UserList from "@/components/Chat/UserList.vue";
+  import ConnectionStatus from "@/components/App/ConnectionStatus.vue";
 
   export default {
     name: "ChatMainbar",
-    components: { ChatMainbarMessageList, Editor, FileUpload, UserList },
+    components: { ConnectionStatus, ChatMainbarMessageList, Editor, FileUpload, UserList },
     data() {
       return {
         debug: "off",

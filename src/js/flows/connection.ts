@@ -14,7 +14,7 @@ class Connection {
   store: STORE;
   events: Vue;
   socket: Socket;
-  reconnect: boolean = false;
+  tryToReconnect: boolean = false;
 
   constructor(flows: Flows2) {
     this.flows = flows;
@@ -134,21 +134,64 @@ class Connection {
     this.events.$emit("logout");
   }
 
+  public reconnect(): void {
+    if (!this.canMessage) {
+      this.openSocket();
+    }
+  }
+
   private async openSocket(): Promise<OpenResult> {
+    this.store.connection.connecting = true;
     if (!this.socket) {
-      this.socket = new Socket(this.socketFrameHandler, this._socketClose);
+      this.socket = new Socket(this.socketFrameHandler, this.socketClose);
     }
     try {
       const result: OpenResult = await this.socket.open();
-      if (result.error) return result;
+      if (result.error) {
+        console.log("Error opening socket", result.error);
+        this.connectionFailure({errorMsg: "Error opening socket"});
+        return result;
+      }
+      this.connectionSuccess();
       this.subscribe("/user/queue/response");
       this.subscribe("/topic/common");
-      this.reconnect = true;
+      this.tryToReconnect = true;
       return result;
 
     } catch (errorData) {
       return errorData;
     }
+  }
+
+  private socketClose(closeEvent: any): void {
+    this.connectionFailure(closeEvent ? closeEvent : { errorMsg: "Socket closed" });
+  }
+
+  private connectionFailure(closeEvent: any) {
+    console.log("Close", closeEvent);
+    this.store.connection.error = true;
+    this.store.connection.connecting = false;
+    this.store.loginLoading = false;
+
+    if (closeEvent.errorMsg) {
+      this.store.connection.errorMsg = closeEvent.errorMsg;
+      return;
+    }
+
+    if ([1000, 1002, 1006].indexOf(closeEvent.code) > -1) {
+      this.store.connection.errorMsg = "??? todo";
+      //this.startReconnectTimer();
+    }
+    if (closeEvent.reason && closeEvent.reason.length) {
+      this.store.connection.errorMsg = closeEvent.reason;
+    } else if (closeEvent.code && closeEvent.code === 1006) {
+      this.store.connection.errorMsg = "Connection lost";
+    }
+  }
+  private connectionSuccess() {
+    this.store.connection.error = false;
+    this.store.connection.connecting = false;
+    this.store.connection.errorMsg = "";
   }
 
   private socketFrameHandler(frame: any): void {
@@ -161,7 +204,7 @@ class Connection {
     if (action && action.length > 1) action = action[1];
     //console.log(type, action, frameBody.length);
 
-    this.store.connectionError = false;
+    this.store.connection.error = false;
     switch (type) {
       case "LoginResponse": {
         localstorage.setSessionToken(frameBody.token);
@@ -210,8 +253,7 @@ class Connection {
         break;
       }
       case "Error": {
-        this.store.errorMsg = frameBody.description;
-        this.store.connectionError = true;
+        this.events.$emit("notify", frameBody.description);
         break;
       }
       case "SubscribeResponse": {
@@ -289,33 +331,6 @@ class Connection {
 
   private static bodyFilter(x: any): any[] {
     return Connection.removeDeleted(Connection.makeArrayIfNotArray(x));
-  }
-
-  private _socketClose(CloseEvent: any): void {
-    console.log("Close", CloseEvent);
-    /*this.store.connectionError = true;
-
-    this._debug("", CloseEvent);
-    if (this.store.loginLoading) {
-      this._debug("! Socket closed while logging in");
-      this.store.loginLoading = false;
-      this.store.connectionError = true;
-    }
-
-    if (!CloseEvent) {
-      this._debug("No CloseEvent");
-      this.store.errorMsg = "Socket closed";
-      return;
-    }
-
-    if ([1000, 1002, 1006].indexOf(CloseEvent.code) > -1) {
-      this.startReconnectTimer();
-    }
-    if (CloseEvent.reason?.length) {
-      this.store.errorMsg = CloseEvent.reason;
-    } else if (CloseEvent.code && CloseEvent.code === 1006) {
-      this.store.errorMsg = "Connection lost";
-    }*/
   }
 }
 

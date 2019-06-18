@@ -15,12 +15,17 @@ class STORE {
   currentUser: null | User = null;
 
   loginLoading: boolean = false;
-  connectionError: boolean = false;
-  errorMsg: string = "";
 
   modalsOpen: string[] = [];
   openMenu: string | null = null;
   route: string = "login";
+
+  connection: ConnectionStatus = {
+    connected: false,
+    connecting: false,
+    error: false,
+    errorMsg: "",
+  };
 
   flows: StoreFlows = {
     chats: {
@@ -80,6 +85,13 @@ interface StoreFlows {
   _messages: {
     [index: string]: { v: number, d: Message[] },
   };
+}
+
+interface ConnectionStatus {
+  connected: boolean;
+  connecting: boolean;
+  error: boolean;
+  errorMsg: string;
 }
 
 export default STORE;

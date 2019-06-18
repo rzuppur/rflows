@@ -2,6 +2,8 @@
 
   .sidebar-content.scrollbar-style.scrollbar-style-light
 
+    connection-status
+
     user-display(:user="currentUserDisplay" :withName="true")
 
       template(v-if="mqMobile" v-slot:avatar)
@@ -64,12 +66,13 @@
   import { BLANK_DATA_SVG_IMAGE, DEVCHAT_ID } from "@/js/consts";
   import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
   import PopupMenu from "@/components/UI/PopupMenu.vue";
-  import SlideInOut from "@/components/UI/SlideInOut.vue";
   import UserDisplay from "@/components/UserDisplay.vue";
+  import ConnectionStatus from "@/components/App/ConnectionStatus.vue";
+  import SlideInOut from "@/components/UI/SlideInOut.vue";
 
   export default {
     name: "ChatSidebar",
-    components: { SlideInOut, UserDisplay, ChatSidebarChatDisplay, PopupMenu },
+    components: { SlideInOut, ConnectionStatus, UserDisplay, ChatSidebarChatDisplay, PopupMenu },
     data() {
       return {
         showAllChats: false,
@@ -220,6 +223,12 @@
       margin-right -50px
       padding-right 50px
 
+    & /deep/ .connection-status
+      width $sidebar-width
+
+      @media (max-width $media-mobile-width)
+        width 100%
+
     .user
       @media (max-width $media-mobile-width)
         position fixed
@@ -287,12 +296,10 @@
           width 24px
           height @width
 
-  .connection-error,
   .user
     padding 10px 10px 0
 
   @media (min-width $media-mobile-width + 1px)
-    .connection-error,
     .user,
     .search
       width $sidebar-width
