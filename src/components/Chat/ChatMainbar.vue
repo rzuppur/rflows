@@ -7,11 +7,20 @@
 
         .chat-title
 
-          btn.button.is-white(v-if="mqMobile" tip="Change chat" tloc="right" :action="() => { $events.$emit('showSidebar') }")
+          btn.button.is-white(
+            v-if="mqMobile"
+            tip="Change chat"
+            tloc="right"
+            :action="() => { $events.$emit('showSidebar') }"
+          )
             span.icon.text-muted
               i.fas.fa-bars
 
-          btn.button.fav-toggle.is-white(v-if="!isDevChat" :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite")
+          btn.button.fav-toggle.is-white(
+            v-if="!isDevChat"
+            :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'"
+            :action="toggleFavourite"
+          )
             span.icon
               i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
 
