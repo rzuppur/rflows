@@ -272,7 +272,7 @@
     position relative
     z-index 100
     background #fff
-    box-shadow 0 1px 3px alpha(#000, 0.1)
+    box-shadow 0 1px 0 alpha(#000, .05)
     height 56px
     min-height 56px
     max-height 56px
@@ -311,7 +311,7 @@
     z-index 20
     background #fff
     padding 10px 20px 8px
-    box-shadow 0 -1px 3px rgba(0, 0, 0, 0.1)
+    box-shadow 0 -1px 0 alpha(#000, .05)
 
     .top-info-text
       position absolute

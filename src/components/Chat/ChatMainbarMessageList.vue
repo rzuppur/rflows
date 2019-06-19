@@ -9,8 +9,9 @@
     .messages
 
       .day(v-for="day, key in messagesByDay[0]")
+        hr.day
         .day-separator
-          .text {{ utils.weekdayDateAddOtherYear(+key) | capitalize }}
+          .text {{ getDayText(key) | capitalize }}
 
         template(v-for="message, i in day")
           message-display(:message="message" :key="message.id" :class="message.classList")
@@ -19,8 +20,9 @@
         btn.button.load-more(v-if="true || hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
       .day(v-for="day, key in messagesByDay[1]")
+        hr.day
         .day-separator
-          .text {{ utils.weekdayDateAddOtherYear(+key) | capitalize }}
+          .text {{ getDayText(key) | capitalize }}
 
         template(v-for="message, i in day")
           message-display(:message="message" :key="message.id" :class="message.classList")
@@ -140,6 +142,16 @@
           this.$set(this.messagesLoading, chatId, false);
         }
       },
+      getDayText(day) {
+        const date = +day;
+        if (this.utils.datesAreSameDay(date, Date.now())) {
+          return `Today, ${this.utils.shortDate(date)}`;
+        }
+        if (this.utils.datesAreSameDay(date, this.utils.dayjsDate().subtract(1, "day"))) {
+          return `Yesterday, ${this.utils.shortDate(date)}`;
+        }
+        return this.utils.weekdayDateAddOtherYear(date);
+      },
     },
   };
 
@@ -193,7 +205,7 @@
     position relative
     background #fff
     min-height 100%
-    overflow hidden
+    // overflow hidden  todo: breaks sticky
 
     .load-more-container
       margin 10px 0
@@ -215,42 +227,40 @@
       &:focus
         background darken($color-light-blue-background, 2)
 
+  .day
+    position relative
+
+  hr.day
+    position absolute
+    top -11px
+    left 0
+    right 0
+
   .day-separator,
   .unread-separator
-    position relative
-    margin-top 10px
-
-    &:before
-      content ""
-      position absolute
-      left 0
-      right 0
-      top 12px
-      height 2px
-      z-index 0
+    position sticky
+    top -4px
+    z-index 10
+    margin 10px 0
 
     .text
       display inline-block
-      padding 0 10px
+      padding 2px 10px
       text-bold-13()
       background #fff
+      border-radius $border-radius
       z-index 1
       position relative
+      box-shadow 0 0 0 2px alpha(#000, .05)
 
   .day-separator
     text-align center
-
-    &:before
-      background #eee
 
     .text
       color $color-blue
 
   .unread-separator
     text-align center
-
-    &:before
-      background $color-red
 
     &.rised
       text-align right
