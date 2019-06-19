@@ -27,7 +27,7 @@
     background  $color-light-blue-background
     border-radius $border-radius
     overflow hidden
-    max-width $message-item-max-width
+    max-width 100%
 
     &:hover,
     &:focus
