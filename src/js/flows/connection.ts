@@ -203,6 +203,7 @@ class Connection {
     const type = frameType.replace("[]", "");
     const frameBody = JSON.parse(frame.body);
     const frameDestination = frame.headers.destination.split(".");
+    const filteredBody = Connection.bodyFilter(frameBody);
 
     let action = frame.headers.destination.match(/\.(modified|deleted)$/);
     if (action && action.length > 1) action = action[1];
@@ -217,43 +218,43 @@ class Connection {
         break;
       }
       case "Topic": {
-        this.flows.chats.parseChats(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.chats.parseChats(filteredBody);
         break;
       }
       case "TopicUser": {
-        this.flows.chats.parseChatUsers(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.chats.parseChatUsers(filteredBody);
         break;
       }
       case "Organization": {
-        this.flows.chats.parseWorkspaces(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.chats.parseWorkspaces(filteredBody);
         break;
       }
       case "TopicLocation": {
-        this.flows.chats.parseChatWorkspaces(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.chats.parseChatWorkspaces(filteredBody);
         break;
       }
       case "TopicItem": {
-        this.flows.messages.parseChatMessages(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.messages.parseChatMessages(filteredBody);
         break;
       }
       case "TopicItemRead": {
-        this.flows.messages.parseChatMessagesRead(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.messages.parseChatMessagesRead(filteredBody);
         break;
       }
       case "TopicItemUserProperty": {
-        this.flows.messages.parseChatMessagesFlagged(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.messages.parseChatMessagesFlagged(filteredBody);
         break;
       }
       case "UserAccess": {
-        this.flows.chats.parseChatWorkspaceAccesses(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.chats.parseChatWorkspaceAccesses(filteredBody);
         break;
       }
       case "User": {
-        this.flows.users.parseUsers(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.users.parseUsers(filteredBody);
         break;
       }
       case "UserProperty": {
-        this.flows.settings.parseSettings(Connection.bodyFilter(frameBody));
+        if (filteredBody.length) this.flows.settings.parseSettings(filteredBody);
         break;
       }
       case "Error": {
