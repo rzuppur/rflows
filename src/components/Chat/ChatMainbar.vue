@@ -113,7 +113,7 @@
               .text-muted(v-if="$store.flows.messages[key].d.length > 5") Showing first 5, total {{ $store.flows.messages[key].d.length }}
               | {{ $store.flows.messages[key].d.slice(0,5) }}
 
-    btn.button(style="position: fixed; right: 0; bottom: 0; z-index: 1000000;" :action="debugToggle") debug: {{ debug }}
+    btn.button(style="position: fixed; right: 0; bottom: 0; z-index: 1000000; opacity: .5;" :action="debugToggle") debug: {{ debug }}
 
 
 </template>

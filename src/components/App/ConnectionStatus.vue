@@ -1,10 +1,15 @@
 <template lang="pug">
 
   slide-in-out(:inDuration="90" :outDuration="90")
+
     .connection-status(v-if="connectionStatus")
+
       .flex1 No connection
+
         .text-small {{ connectionStatus }}
+
       .flex0
+
         btn.button.transparent-white(
           tip="Reconnect"
           tloc="right"

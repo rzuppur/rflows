@@ -8,12 +8,23 @@
 
     .messages
 
-      message-display(v-for="message in messagesLoadSpilit[0]" :message="message" :key="message.id" :class="message.classList")
+      .day(v-for="day, key in messagesByDay[0]")
+        .day-separator
+          .text {{ utils.weekdayDateAddOtherYear(+key) | capitalize }}
+
+        template(v-for="message, i in day")
+          message-display(:message="message" :key="message.id" :class="message.classList")
 
       .load-more-container
-        btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
+        btn.button.load-more(v-if="true || hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
-      message-display(v-for="message in messagesLoadSpilit[1]" :message="message" :key="message.id" :class="message.classList")
+      .day(v-for="day, key in messagesByDay[1]")
+        .day-separator
+          .text {{ utils.weekdayDateAddOtherYear(+key) | capitalize }}
+
+        template(v-for="message, i in day")
+          message-display(:message="message" :key="message.id" :class="message.classList")
+
 
 </template>
 
@@ -83,6 +94,20 @@
           this.messages.slice(0, splitIndex),
           this.messages.slice(splitIndex, this.messages.length),
         ];
+      },
+      messagesByDay() {
+        const byDay = [{}, {}];
+        [0, 1].forEach((i) => {
+          this.messagesLoadSpilit[i].forEach((message) => {
+            const day = message.createDate - (message.createDate % (24 * 60 * 60 * 1000));
+            if (byDay[i][day]) {
+              byDay[i][day].push(message);
+            } else {
+              byDay[i][day] = [message];
+            }
+          });
+        });
+        return byDay;
       },
     },
     watch: {
@@ -189,6 +214,56 @@
       &:hover,
       &:focus
         background darken($color-light-blue-background, 2)
+
+  .day-separator,
+  .unread-separator
+    position relative
+    margin-top 10px
+
+    &:before
+      content ""
+      position absolute
+      left 0
+      right 0
+      top 12px
+      height 2px
+      z-index 0
+
+    .text
+      display inline-block
+      padding 0 10px
+      text-bold-13()
+      background #fff
+      z-index 1
+      position relative
+
+  .day-separator
+    text-align center
+
+    &:before
+      background #eee
+
+    .text
+      color $color-blue
+
+  .unread-separator
+    text-align center
+
+    &:before
+      background $color-red
+
+    &.rised
+      text-align right
+      margin-top -24px
+
+      .text
+        margin 0 15px
+
+    .text
+      color $color-red-text
+      position relative
+      top -1px
+
 
 
 </style>
