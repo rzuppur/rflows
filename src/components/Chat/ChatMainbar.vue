@@ -31,7 +31,7 @@
 
         connection-status(v-if="mqMobile")
 
-        chat-mainbar-message-list(:replyToId="chat.replyToId" :chatId="chatId")
+        chat-mainbar-message-list(:replyToId="chat.replyToId" :chatId="chatId" :chatMembersWriting="chatMembersWriting")
 
         .chat-bottom
 
@@ -175,6 +175,15 @@
             name: this.$flows.utils.getFullNameFromUser(user),
             avatar: this.$flows.utils.getAvatarFromUser(user),
             userStatus: user.status,
+          };
+        });
+      },
+      chatMembersWriting() {
+        return this.chatMembers.filter(chatMember => chatMember.status === "TYPING").map((user) => {
+          return {
+            avatar: user.avatar,
+            name: user.name,
+            userId: user.userId,
           };
         });
       },

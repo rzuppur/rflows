@@ -31,6 +31,8 @@
       .day(v-for="day, key in messagesByDay[1]")
         +chatMessagesList()
 
+      message-display(v-for="user in chatMembersWriting" :writing-user="user")
+
 </template>
 
 <script>
@@ -45,6 +47,7 @@
     props: {
       chatId: Number,
       replyToId: Number,
+      chatMembersWriting: Array,
     },
     data() {
       return {

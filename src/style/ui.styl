@@ -58,6 +58,20 @@ input[type="search"]::-webkit-search-results-decoration
   75%
     content "..."
 
+@keyframes dotJump
+  0%
+    transform translateY(0)
+    opacity 1
+  40%
+    opacity .7
+  70%
+    transform translateY(0)
+    opacity 1
+  85%
+    transform translateY(-5px)
+  100%
+    transform translateY(0)
+    opacity 1
 
 .expand-button
   $button-size = 34px

@@ -2,15 +2,21 @@
 
   .chat-message(:style="message ? '' : 'pointer-events: none;'")
 
-    template(v-if="!message")
+    template(v-if="!message || writingUser")
 
       .avatar-container
         .sticky-avatar
-          .avatar.avatar-small.placeholder
+          img.avatar.avatar-small(v-if="writingUser && writingUser.avatar" :src="writingUser.avatar")
+          .avatar.avatar-small.placeholder(v-else)
 
       .content-container
-        .name.placeholder
-        p.placeholder
+        .name(v-if="writingUser && writingUser.name") {{ writingUser.name }}
+        .name.placeholder(v-else)
+        .writing-dots(v-if="writingUser")
+          .dot1
+          .dot2
+          .dot3
+        p.placeholder(v-else)
 
     template(v-else)
 
@@ -112,6 +118,9 @@
       showReplyMessage: {
         type: Boolean,
         default: true,
+      },
+      writingUser: {
+        type: Object,
       },
     },
     computed: {
@@ -348,5 +357,32 @@
         max-width 120px
         margin 5px 0 9px
 
+    /*
+    WRITING
+     */
+
+    .writing-dots
+      display flex
+      padding-top 8px
+      $duration = 1.5s
+      $delay = 150ms
+
+      .dot1,
+      .dot2,
+      .dot3
+        background $color-gray-border
+        width 8px
+        height @width
+        margin-right @width
+        border-radius (@width / 2)
+
+      .dot1
+        animation dotJump $duration ease-in-out 0ms infinite
+
+      .dot2
+        animation dotJump $duration ease-in-out $delay infinite
+
+      .dot3
+        animation dotJump $duration ease-in-out $delay*2 infinite
 
 </style>
