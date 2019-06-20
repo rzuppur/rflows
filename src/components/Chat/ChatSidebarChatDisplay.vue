@@ -2,19 +2,21 @@
 
   btn.button-reset.chat(
     :action="props.action"
-    :label="props.chat.name"
-    :class="[data.staticClass, { unread: !!props.chat.unread, active: props.chat.id === props.store.currentChatId }]"
+    :label="props.chat && props.chat.name"
+    :class="[data.staticClass, { unread: !!(props.chat && props.chat.unread), active: (props.chat && props.chat.id === props.store.currentChatId) }]"
+    :style="[data.style, data.staticStyle]"
   )
 
-    .chat-title.ellipsis(:class="{ placeholder: !props.chat.name }") {{ props.chat.name }}
+    .chat-title.ellipsis(:class="{ placeholder: !(props.chat && props.chat.name) }"
+      :style="{ maxWidth: `${120 + 50*(data.key*999999.8 % 2.4)}px` }") {{ props.chat && props.chat.name }}
 
-    .icon.is-small.chat-flagged(v-if="props.chat.flagged > 0")
-      span {{ props.chat.flagged }} #[i.fas.fa-thumbtack]
+    .icon.is-small.chat-flagged(v-if="props.chat && props.chat.flagged > 0")
+      span {{ props.chat && props.chat.flagged }} #[i.fas.fa-thumbtack]
 
-    .chat-removerecent(v-if="props.recentRemove" @click.stop="props.recentRemove(props.chat.id)")
+    .chat-removerecent(v-if="props.recentRemove && props.chat" @click.stop="props.recentRemove(props.chat.id)")
       i.fa.fa-times
 
-    .chat-unread(:class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
+    .chat-unread(v-if="props.chat" :class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
       | {{ (!!props.chat.unreadAtme ? '@' : '') + props.chat.unread }}
 
 </template>

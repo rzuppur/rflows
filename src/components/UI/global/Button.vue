@@ -13,7 +13,7 @@
     :disabled="props.disabled"
     :aria-label="props.label"
     v-tooltip="{ content: props.tip ? `${props.tip}` : null, placement: props.tloc ? props.tloc : 'auto' }"
-    :style="data.staticStyle"
+    :style="(data.style || []).concat(data.staticStyle || [])"
   )
     slot
 

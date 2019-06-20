@@ -33,21 +33,26 @@
 
     .sidebar-chats
 
+
       div(v-if="searchText.length" style="height: 10px;")
 
       template(v-else)
 
         h4.chats-section #[i.far.fa-comment] RFlows
-        chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store" :action="() => { chatClick(devChat.id); }")
+        chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store" :action="() => { chatClick(devChat.id); }" :key="devChat.id")
+
+        template(v-if="allChats.length === 0")
+          h4.chats-section
+          chat-sidebar-chat-display(v-for="i in 7" :style="{ opacity: 1 - (i*.11), pointerEvents: 'none' }" :key="i")
 
         h4.chats-section(v-if="favChats.length") #[i.far.fa-star] Favorites
-        chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }")
+        chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
         h4.chats-section(v-if="unreadChats.length") #[i.far.fa-bell] Unread
-        chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }")
+        chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
         h4.chats-section(v-if="recentChats.length") #[i.far.fa-clock] Recent
-        chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove" :action="() => { chatClick(chat.id); }")
+        chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
         h4.chats-section(v-if="allChats.length")
           btn.button-reset(:action="toggleAllChats" label="Toggle all chats")
@@ -56,7 +61,7 @@
 
       slide-in-out(:inDuration="90" :outDuration="90")
         div(v-if="showAllChats || searchText.length")
-          chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }")
+          chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id + 10000000")
 
       h4.chats-section
 
