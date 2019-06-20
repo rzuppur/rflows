@@ -1,5 +1,19 @@
 <template lang="pug">
 
+  mixin chatMessagesList()
+    hr.day
+    .day-separator
+      .text {{ getDayText(key) | capitalize }}
+
+    template(v-for="message, i in day")
+
+      .unread-container(v-if="firstUnreadMessageId === message.id")
+        hr.unread(ref="unread")
+        .unread-separator(:class="{ rised: i === 0 }" )
+          .text new
+
+      message-display(:message="message" :key="message.id" :class="message.classList")
+
   .messages-container.scrollbar-style(
     ref="messages"
     :class="{ replyActive, limitContainerWidth }"
@@ -9,24 +23,13 @@
     .messages
 
       .day(v-for="day, key in messagesByDay[0]")
-        hr.day
-        .day-separator
-          .text {{ getDayText(key) | capitalize }}
-
-        template(v-for="message, i in day")
-          message-display(:message="message" :key="message.id" :class="message.classList")
+        +chatMessagesList()
 
       .load-more-container
-        btn.button.load-more(v-if="true || hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
+        btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
       .day(v-for="day, key in messagesByDay[1]")
-        hr.day
-        .day-separator
-          .text {{ getDayText(key) | capitalize }}
-
-        template(v-for="message, i in day")
-          message-display(:message="message" :key="message.id" :class="message.classList")
-
+        +chatMessagesList()
 
 </template>
 
@@ -48,6 +51,7 @@
         lastLoadedMessageId: {},
         canLoadMore: {},
         messagesLoading: {},
+        firstUnread: {},
       };
     },
     computed: {
@@ -111,6 +115,21 @@
         });
         return byDay;
       },
+      autoReadEnabled() {
+        this.$store.flows.userProperties.v;
+
+        return this.$flows.settings.getBooleanUserProp("autoMarkAsRead");
+      },
+      firstUnreadMessageId() {
+        if (!this.chatId) return -1;
+
+        if (this.firstUnread[this.chatId] && this.autoReadEnabled) return this.firstUnread[this.chatId];
+
+        const firstUnreadMessage = this.messages.find(message => message.unread);
+        if (!firstUnreadMessage) return -1;
+
+        return firstUnreadMessage.id;
+      },
     },
     watch: {
       chatId: {
@@ -121,6 +140,14 @@
           if (!this.lastLoadedMessageId[chatId]) {
             this.loadMessages(chatId);
             this.$flows.messages.getChatMessages(chatId, { sticky: true });
+          }
+        },
+      },
+      firstUnreadMessageId: {
+        immediate: true,
+        handler(unreadId) {
+          if (unreadId > 0 && this.autoReadEnabled) {
+            this.firstUnread[this.chatId] = unreadId;
           }
         },
       },
@@ -230,16 +257,23 @@
   .day
     position relative
 
-  hr.day
+  hr.day,
+  hr.unread
     position absolute
     top -11px
     left 0
     right 0
 
+  hr.unread
+    background lighten($color-red, 20)
+
+  .unread-container
+    position relative
+    top -2px
+
   .day-separator,
   .unread-separator
-    position sticky
-    top -4px
+    position relative
     z-index 10
     margin 10px 0
 
@@ -254,6 +288,8 @@
       box-shadow 0 0 0 2px alpha(#000, .05)
 
   .day-separator
+    position sticky
+    top -4px
     text-align center
 
     .text
@@ -264,16 +300,17 @@
 
     &.rised
       text-align right
-      margin-top -24px
+      margin-top -32px
 
       .text
-        margin 0 15px
+        margin 0 20px
 
     .text
-      color $color-red-text
+      background $color-red
+      color #fff
       position relative
       top -1px
-
+      box-shadow none
 
 
 </style>
