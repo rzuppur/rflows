@@ -17,23 +17,27 @@
           span.icon
             i.fas.fa-sign-out-alt
 
-      h4
-        span Messages
-      +settings("autoMarkAsRead")
-        .label Auto-read
-          .description {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
-      +settings("desktopNotifications")
-        .label Browser notifications
-          .description {{ notificationStatus }}
+      template(v-if="settingsLoaded")
+        h4
+          span Messages
+        +settings("autoMarkAsRead")
+          .label Auto-read
+            .description {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
+        +settings("desktopNotifications")
+          .label Browser notifications
+            .description {{ notificationStatus }}
 
-      h4
-        span Interface
-      +settings("showWorkspaceSwitcher")
-        .label Workspace filter
-          .description {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
-      +settings("compactMode")
-        .label Compact messages
-          .description {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
+        h4
+          span Interface
+        +settings("showWorkspaceSwitcher")
+          .label Workspace filter
+            .description {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
+        +settings("compactMode")
+          .label Compact messages
+            .description {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
+
+      p.text-muted.space-top-medium(v-else) Settings not available
+      .space-top-small
 
       template(v-slot:buttons)
         span
@@ -55,12 +59,6 @@
         showWorkspaceSwitcher: null,
         compactMode: null,
       };
-    },
-    mounted() {
-      this.$events.$on("openSettings", () => {
-        this.$refs.settingsModal?.open();
-        this.updateProps();
-      });
     },
     computed: {
       notificationStatus() {
@@ -85,6 +83,17 @@
           email: this.$store.currentUser?.email,
         };
       },
+      settingsLoaded() {
+        this.$store.flows.userProperties.v;
+
+        return !!this.$store.flows.userProperties.d.length;
+      },
+    },
+    mounted() {
+      this.$events.$on("openSettings", () => {
+        this.$refs.settingsModal?.open();
+        this.updateProps();
+      });
     },
     methods: {
       updateProps() {
