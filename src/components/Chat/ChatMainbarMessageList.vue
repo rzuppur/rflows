@@ -33,6 +33,9 @@
 
       message-display(v-for="user in chatMembersWriting" :writing-user="user")
 
+      template(v-if="messages.length === 0")
+        message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
+
 </template>
 
 <script>
