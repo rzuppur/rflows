@@ -20,7 +20,7 @@
     @scroll="onMessagesScroll"
   )
 
-    .messages
+    .messages(ref="messagesInner")
 
       .day(v-for="day, key in messagesByDay[0]")
         +chatMessagesList()
@@ -40,7 +40,7 @@
 
 <script>
   import ResizeObserver from "resize-observer-polyfill";
-  import { value, onUnmounted } from "vue-function-api";
+  import { value, onMounted, onUnmounted } from "vue-function-api";
   import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
@@ -57,6 +57,21 @@
       if (typeof lastScrollTop[chatId] === "undefined") return;
       const messagesEl = context.refs.messages;
       setTimeout(() => { if (messagesEl) messagesEl.scrollTop = lastScrollTop[chatId]; }, 0);
+    };
+
+    const scrollToNew = () => {
+      const unreadSepEl = context.refs.unread?.[0];
+      unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    const scrollToNewOrBottomInstant = () => {
+      const unreadSepEl = context.refs.unread?.[0];
+      if (unreadSepEl) {
+        unreadSepEl.scrollIntoView({ block: "start" });
+      } else {
+        const messagesEl = context.refs.messages;
+        if (messagesEl) messagesEl.scrollTop = height.value;
+      }
     };
 
     const chatFirstScrollDone = {};
@@ -77,22 +92,27 @@
         top.value = Math.round(messagesEl.scrollTop);
         height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
       }
+      if (!chatFirstScrollDone[props.chatId] && height.value > 0) {
+        setTimeout(scrollToNewOrBottomInstant, 0);
+        chatFirstScrollDone[props.chatId] = true;
+      }
     };
 
     const onMessagesScroll = () => {
       if (!throttleTimeout) throttleTimeout = setTimeout(scrollUpdate, SCROLL_DEBOUNCE_TIME);
     };
 
-    onUnmounted(() => { clearTimeout(throttleTimeout); });
+    const messagesObs = new ResizeObserver(onMessagesScroll);
+    onMounted(() => {
+      if (context.refs.messagesInner) messagesObs.observe(context.refs.messagesInner);
+    });
 
-    const scrollToNew = () => {
-      const unreadSepEl = context.refs.unread?.[0];
-      unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
+    onUnmounted(() => {
+      clearTimeout(throttleTimeout);
+      messagesObs.disconnect();
+    });
 
     return {
-      height,
-      top,
       onMessagesScroll,
       markChatAsNew,
       saveScrollPosition,
