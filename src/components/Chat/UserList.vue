@@ -14,6 +14,8 @@
 </template>
 
 <script>
+  import ResizeObserver from "resize-observer-polyfill";
+
   import UserDisplay from "@/components/UserDisplay.vue";
   import PopupMenu from "@/components/UI/PopupMenu.vue";
 
@@ -46,20 +48,26 @@
     watch: {
       users: {
         handler() {
-          if (this.$refs.users) {
-            const overflow = this.$refs.users.scrollWidth - (this.$refs.users.clientWidth + 4);
-            this.membersHiddenCount = (overflow > 0) ? Math.ceil((overflow + 35) / 40) : 0;
-          }
+          this.calculateOverflow();
         },
       },
     },
     mounted() {
-      const usersObs = new ResizeObserver((entries) => {
-        const users = entries[0].target;
-        const overflow = users.scrollWidth - (users.clientWidth + 4);
-        this.membersHiddenCount = (overflow > 0) ? Math.ceil((overflow + 35) / 40) : 0;
+      this.usersObs = new ResizeObserver(() => {
+        this.calculateOverflow();
       });
-      usersObs.observe(this.$refs.users);
+      if (this.$refs.users) this.usersObs.observe(this.$refs.users);
+    },
+    beforeDestroy() {
+      this.usersObs.disconnect();
+    },
+    methods: {
+      calculateOverflow() {
+        if (this.$refs.users) {
+          const overflow = this.$refs.users.scrollWidth - this.$refs.users.clientWidth;
+          this.membersHiddenCount = ( overflow > 0 ) ? Math.ceil(( overflow + 35 ) / 40) : 0;
+        }
+      },
     },
   };
 
@@ -70,7 +78,7 @@
 
   .users
     display flex
-    flex-direction row-reverse
+    //flex-direction row-reverse
     overflow hidden
     padding-top 3px
     margin-top -3px
@@ -90,6 +98,7 @@
 
     .all-users-button
       min-width 40px
+      margin-right 5px
 
       &:hover .avatar
         background $color-light-gray-background

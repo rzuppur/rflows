@@ -58,24 +58,15 @@
         return this.$store.openMenu === this.menuId;
       },
     },
+    mounted() {
+      this.$events.$on("windowResize", this.positionMenu);
+    },
     watch: {
       menuOpen: {
         initial: true,
         handler(val, oldVal) {
           if (val === oldVal) return;
-          if (val) {
-            const rect = this.$refs.container?.getBoundingClientRect();
-            if (!rect) {
-              this.top = "10px";
-              this.left = "10px";
-              this.minWidth = null;
-              return;
-            }
-            const minWidth = Math.max(220, rect.width);
-            this.top = `${rect.y}px`;
-            this.left = `${Math.min(window.innerWidth - minWidth - 10, rect.x)}px`;
-            this.minWidth = `${minWidth}px`;
-          }
+          if (val) this.positionMenu();
         },
       },
     },
@@ -86,6 +77,19 @@
       },
       menuButton() {
         this.$store.openMenu = this.menuOpen ? null : this.menuId;
+      },
+      positionMenu() {
+        const rect = this.$refs.container?.getBoundingClientRect();
+        if (!rect) {
+          this.top = "10px";
+          this.left = "10px";
+          this.minWidth = null;
+          return;
+        }
+        const minWidth = Math.max(220, rect.width);
+        this.top = `${rect.top}px`;
+        this.left = `${Math.min(window.innerWidth - minWidth - 10, rect.left)}px`;
+        this.minWidth = `${minWidth}px`;
       },
     },
   };

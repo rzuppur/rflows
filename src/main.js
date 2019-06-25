@@ -4,7 +4,6 @@ import PortalVue from "portal-vue";
 
 import STORE from "@/js/store";
 import utils from "@/js/utils";
-import Flows from "@/js/flows";
 import Flows2 from "@/js/flows/main";
 import { RESIZE_DEBOUNCE_TIME, DEBUG } from "@/js/consts";
 
@@ -87,7 +86,7 @@ Vue.mixin({
   },
 });
 
-let alwaysFullHeightTimeout = null;
+let resizeDebounceTimeout = null;
 
 function alwaysFullHeightSetSize(fixAnchor) {
   const elements = document.getElementsByClassName("alwaysFullHeight");
@@ -105,20 +104,25 @@ new Vue({
     mqMobileMatches: false,
   },
   created() {
-    //this.flows = new Flows(this.$store, events);
     this.$flows = new Flows2(this.$store, events);
 
     const fixAnchor = document.getElementById("fixAnchor");
     this.updateFullHeight = () => {
       alwaysFullHeightSetSize(fixAnchor);
     };
+
+    const resizeHandler = () => {
+      this.updateFullHeight();
+      this.$events.$emit("windowResize");
+    };
+
     window.addEventListener("resize", () => {
-      clearTimeout(alwaysFullHeightTimeout);
-      alwaysFullHeightTimeout = setTimeout(this.updateFullHeight, RESIZE_DEBOUNCE_TIME);
+      clearTimeout(resizeDebounceTimeout);
+      resizeDebounceTimeout = setTimeout(resizeHandler, RESIZE_DEBOUNCE_TIME);
     });
 
     this.mq = window.matchMedia("(max-width: 700px)");
-    this.mqListener = q => this.mqMobileMatches = q.matches;
+    this.mqListener = (q) => { this.mqMobileMatches = q.matches; };
     this.mq.addListener(this.mqListener);
     this.mqMobileMatches = this.mq.matches;
   },
