@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VTooltip from "v-tooltip";
 import PortalVue from "portal-vue";
+import { plugin } from "vue-function-api";
 
 import STORE from "@/js/store";
 import utils from "@/js/utils";
@@ -15,6 +16,7 @@ import "@/assets/main.css";
 
 Vue.use(VTooltip);
 Vue.use(PortalVue);
+Vue.use(plugin);
 Vue.config.productionTip = false;
 
 Vue.component("btn", Button);

@@ -17,7 +17,7 @@
   .messages-container.scrollbar-style(
     ref="messages"
     :class="{ replyActive, limitContainerWidth }"
-    @scroll="scrollTrack"
+    @scroll="onMessagesScroll"
   )
 
     .messages
@@ -39,10 +39,67 @@
 </template>
 
 <script>
+  import ResizeObserver from "resize-observer-polyfill";
+  import { value, onUnmounted } from "vue-function-api";
+  import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
   const MESSAGE_PAGE_SIZE = 15;
+
+  function scrollTracking(props, context) {
+    const height = value(0);
+    const top = value(0);
+
+    const lastScrollTop = {};
+    const saveScrollPosition = (chatId) => { lastScrollTop[chatId] = top.value; };
+    const restoreScrollPosition = (chatId) => {
+      if (typeof lastScrollTop[chatId] === "undefined") return;
+      const messagesEl = context.refs.messages;
+      setTimeout(() => { if (messagesEl) messagesEl.scrollTop = lastScrollTop[chatId]; }, 0);
+    };
+
+    const chatFirstScrollDone = {};
+    const keepScrollBottom = {};
+
+    const markChatAsNew = (chatId) => {
+      chatFirstScrollDone[chatId] = false;
+      keepScrollBottom[chatId] = true;
+      height.value = 0;
+      top.value = 0;
+    };
+
+    let throttleTimeout = null;
+    const scrollUpdate = () => {
+      throttleTimeout = null;
+      const messagesEl = context.refs.messages;
+      if (messagesEl) {
+        top.value = Math.round(messagesEl.scrollTop);
+        height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
+      }
+    };
+
+    const onMessagesScroll = () => {
+      if (!throttleTimeout) throttleTimeout = setTimeout(scrollUpdate, SCROLL_DEBOUNCE_TIME);
+    };
+
+    onUnmounted(() => { clearTimeout(throttleTimeout); });
+
+    const scrollToNew = () => {
+      const unreadSepEl = context.refs.unread?.[0];
+      unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    return {
+      height,
+      top,
+      onMessagesScroll,
+      markChatAsNew,
+      saveScrollPosition,
+      restoreScrollPosition,
+      scrollToNew,
+    };
+  }
 
   export default {
     name: "ChatMainbarMessageList",
@@ -141,8 +198,13 @@
       chatId: {
         immediate: true,
         handler(chatId, oldChatId) {
+          if (oldChatId) this.saveScrollPosition(oldChatId);
+
           if (!chatId || chatId === oldChatId) return;
+
           this.$flows.messages.getChatReadAndFlagged(chatId);
+          this.restoreScrollPosition(chatId);
+
           if (!this.lastLoadedMessageId[chatId]) {
             this.loadMessages(chatId);
             this.$flows.messages.getChatMessages(chatId, { sticky: true });
@@ -159,17 +221,20 @@
       },
     },
     methods: {
-      scrollTrack() {
-        // console.log("todo: scrollTrack");
-      },
       async loadMessages(chatId) {
         try {
           this.$set(this.messagesLoading, chatId, true);
           const filter = this.lastLoadedMessageId[chatId] ? { amount: MESSAGE_PAGE_SIZE, from: { id: this.lastLoadedMessageId[chatId] - 1 } } : { amount: MESSAGE_PAGE_SIZE };
+
           const messagesLoaded = await this.$flows.messages.getChatMessages(chatId, filter);
+
           if (messagesLoaded.length) {
+            if (!this.lastLoadedMessageId[chatId]) {
+              this.markChatAsNew(chatId);
+            }
             this.$set(this.lastLoadedMessageId, chatId, messagesLoaded[0].id);
           }
+
           this.$set(this.canLoadMore, chatId, (messagesLoaded.length >= MESSAGE_PAGE_SIZE));
         } finally {
           this.$set(this.messagesLoading, chatId, false);
@@ -185,6 +250,9 @@
         }
         return this.utils.weekdayDateAddOtherYear(date);
       },
+    },
+    setup(props, context) {
+      return { ...scrollTracking(props, context) };
     },
   };
 
