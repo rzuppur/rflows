@@ -2,119 +2,84 @@
 
   .chat
 
-    template(v-if="debug === 'off'")
-      .mainbar
+    .mainbar
 
-        .chat-title
+      .chat-title
 
-          btn.button.is-white(
-            v-if="mqMobile"
-            tip="Change chat"
-            tloc="right"
-            :action="() => { $events.$emit('showSidebar') }"
-          )
-            span.icon.text-muted
-              i.fas.fa-bars
+        btn.button.is-white(
+          v-if="mqMobile"
+          tip="Change chat"
+          tloc="right"
+          :action="() => { $events.$emit('showSidebar') }"
+        )
+          span.icon.text-muted
+            i.fas.fa-bars
 
-          btn.button.fav-toggle.is-white(
-            v-if="!isDevChat"
-            :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'"
-            :action="toggleFavourite"
-          )
-            span.icon
-              i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
+        btn.button.fav-toggle.is-white(
+          v-if="!isDevChat"
+          :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'"
+          :action="toggleFavourite"
+        )
+          span.icon
+            i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
 
-          .name.ellipsis {{ $store.currentChatName }}
-            .placeholder(v-if="!$store.currentChatName")
+        .name.ellipsis {{ $store.currentChatName }}
+          .placeholder(v-if="!$store.currentChatName")
 
-          user-list(:users="chatMembers")
+        user-list(:users="chatMembers")
 
-        connection-status(v-if="mqMobile")
+      connection-status(v-if="mqMobile")
 
-        chat-mainbar-message-list(:replyToId="replyToId" :chatId="chatId" :chatMembersWriting="chatMembersWriting")
+      chat-mainbar-message-list(:replyToId="replyToId" :chatId="chatId" :chatMembersWriting="chatMembersWriting")
 
-        .chat-bottom
+      .chat-bottom
 
-          .text-small.top-info-text(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
+        .text-small.top-info-text(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
-          .flex.chat-inputs
+        .flex.chat-inputs
 
-            .field.is-grouped.flex1
+          .field.is-grouped.flex1
 
-              .control.is-expanded(v-show="!uploadExpanded")
+            .control.is-expanded(v-show="!uploadExpanded")
 
-                editor(
-                  ref="editor"
-                  :showButtons="showEditorToolbar ? 'ALWAYS' : 'HIDE'"
-                  :onlyText="false"
-                  :placeholder="messageInputPlaceholder"
-                  :initEmpty="true"
-                  @submit="sendChatMessage()"
-                  @update="checkTypingStatus()"
-                  @focus="editorFocused = true"
-                  @blur="editorFocused = false"
-                  @keydown.38.native.exact.capture="editLastMessage")
+              editor(
+                ref="editor"
+                :showButtons="showEditorToolbar ? 'ALWAYS' : 'HIDE'"
+                :onlyText="false"
+                :placeholder="messageInputPlaceholder"
+                :initEmpty="true"
+                @submit="sendChatMessage()"
+                @update="checkTypingStatus()"
+                @focus="editorFocused = true"
+                @blur="editorFocused = false"
+                @keydown.38.native.exact.capture="editLastMessage")
 
-              .control(v-show="!uploadExpanded")
+            .control(v-show="!uploadExpanded")
 
-                btn.expand-button(
-                  :class="{ expanded: showEditorToolbar }"
-                  :action="() => { showEditorToolbar = !showEditorToolbar; }"
-                  :tip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
+              btn.expand-button(
+                :class="{ expanded: showEditorToolbar }"
+                :action="() => { showEditorToolbar = !showEditorToolbar; }"
+                :tip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
-              file-upload(
-                ref="fileUpload"
-                :class="{ flex0: !uploadExpanded, flex1: uploadExpanded}"
-                :chatId="chatId"
-                :replyToId="replyToId"
-                @expandChange="uploadExpanded = $event"
-                @fileUploaded="replyCancel()")
+            file-upload(
+              ref="fileUpload"
+              :class="{ flex0: !uploadExpanded, flex1: uploadExpanded}"
+              :chatId="chatId"
+              :replyToId="replyToId"
+              @expandChange="uploadExpanded = $event"
+              @fileUploaded="replyCancel()")
 
-              .control(v-if="replyToId" v-show="!uploadExpanded")
-                btn.button.is-outlined(:action="replyCancel")
-                  span(v-if="!mqMobile") Cancel
-                  span.icon(v-if="mqMobile")
-                    i.fas.fa-times
+            .control(v-if="replyToId" v-show="!uploadExpanded")
+              btn.button.is-outlined(:action="replyCancel")
+                span(v-if="!mqMobile") Cancel
+                span.icon(v-if="mqMobile")
+                  i.fas.fa-times
 
-              .control(v-show="!uploadExpanded")
-                btn.button(:class="{ 'is-primary': replyToId }" :action="sendChatMessage")
-                  span(v-if="!mqMobile") Send
-                  span.icon(v-if="mqMobile")
-                    i.fas.fa-paper-plane
-
-    table(v-else-if="debug === 'store'")
-      h3 store
-      tr
-        td(v-for="value, key in $store.flows" v-if="!['messages', '_messages'].includes(key)")
-          b.text-small {{ key }}<br>
-          code v: {{ value.v }}
-          div(style="height: 90vh; overflow: auto; max-width: 120px")
-            template(v-if="key === 'users'")
-              div(v-for="user in value.d")
-                .user.user-with-name.space-top-small
-                  img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser(user)")
-                  .text
-                    .name.ellipsis {{ $flows.utils.getFullNameFromUser(user) }}
-                    .details.text-small id: {{ user.id }}
-                .data email: {{ user.email }}
-                .data workspaceId: {{ user.workspaceId }}
-                .data status: {{ user.status }}
-            div(v-else)
-              .data {{ value.d }}
-
-    table(v-else-if="debug === 'messages'")
-      h3 messages
-      tr
-        td(v-for="key in $store.flows.messages.keys")
-          b.text-small {{ key }}<br>
-          code v: {{ $store.flows.messages[key].v }}
-          div(style="height: 85vh; overflow: auto; max-width: 250px")
-            .data
-              .text-muted(v-if="$store.flows.messages[key].d.length > 5") Showing first 5, total {{ $store.flows.messages[key].d.length }}
-              | {{ $store.flows.messages[key].d.slice(0,5) }}
-
-    btn.button(style="position: fixed; right: 0; bottom: 0; z-index: 1000000; opacity: .5;" :action="debugToggle") debug: {{ debug }}
-
+            .control(v-show="!uploadExpanded")
+              btn.button(:class="{ 'is-primary': replyToId }" :action="sendChatMessage")
+                span(v-if="!mqMobile") Send
+                span.icon(v-if="mqMobile")
+                  i.fas.fa-paper-plane
 
 </template>
 
@@ -132,8 +97,6 @@
     components: { ConnectionStatus, ChatMainbarMessageList, Editor, FileUpload, UserList },
     data() {
       return {
-        debug: "off",
-
         replyToId: null,
 
         showEditorToolbar: false,
@@ -185,15 +148,13 @@
         });
       },
       messageInputPlaceholder() {
-        // todo: watch chat messages
         this.$store.flows.users.v;
 
         if (this.replyToId) {
-          // const message = this.$store.chatMessages().find(ti => ti.id === this.replyToId);
-          const message = null; // todo: find chat message
-          if (message?.creatorUserId) {
-            const user = this.$store.flows.users.v.find(user_ => user_.id === message.creatorUserId);
-            if (user) return `Reply to ${this.$flows.utils.getFullNameFromUser(user)}`;
+          const replyingToMessage = this.$store.flows.messages[this.chatId].d.find(message => message.id === this.replyToId);
+          if (replyingToMessage?.userId) {
+            const replyingToUser = this.$store.flows.users.d.find(user => user.id === replyingToMessage.userId);
+            if (replyingToUser) return `Reply to ${this.$flows.utils.getFullNameFromUser(replyingToUser)}`;
           }
           if (this.$store.currentChatName.length) return `Reply to ${this.$store.currentChatName}`;
           return "Reply";
@@ -241,21 +202,6 @@
       },
       checkTypingStatus() {
         console.log("todo: checkTypingStatus");
-      },
-      debugToggle() {
-        switch (this.debug) {
-        case "store":
-          this.debug = "messages";
-          return;
-        case "messages":
-          this.debug = "off";
-          return;
-        case "off":
-          this.debug = "store";
-          return;
-        default:
-          this.debug = "off";
-        }
       },
     },
   };

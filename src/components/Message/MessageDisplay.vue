@@ -170,7 +170,7 @@
       padding 5px 7px
       border-radius $border-radius
       background #fff !important
-      z-index 10
+      z-index 20
 
       .buttons-container
         .field
@@ -182,6 +182,9 @@
 
     &.message-unread
       background alpha($color-unread-background, 0.1)
+
+    .note-content
+      overflow hidden
 
     /*
      BUTTONS
@@ -200,7 +203,7 @@
         top -29px
         right 15px
         position absolute
-        z-index 10
+        z-index 20
         display none // @stylint ignore
         box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
 
