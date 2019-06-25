@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VTooltip from "v-tooltip";
 import PortalVue from "portal-vue";
+import AsyncComputed from "vue-async-computed";
 import { plugin } from "vue-function-api";
 
 import STORE from "@/js/store";
@@ -16,6 +17,7 @@ import "@/assets/main.css";
 
 Vue.use(VTooltip);
 Vue.use(PortalVue);
+Vue.use(AsyncComputed);
 Vue.use(plugin);
 Vue.config.productionTip = false;
 

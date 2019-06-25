@@ -1,14 +1,15 @@
 <template lang="pug">
 
   mixin chatMessagesList()
-    hr.day
+    .day-separator-line
+      hr.day
     .day-separator
       .text {{ getDayText(key) | capitalize }}
 
     template(v-for="message, i in day")
 
-      .unread-container(v-if="firstUnreadMessageId === message.id")
-        hr.unread(ref="unread")
+      .unread-container(v-if="firstUnreadMessageId === message.id" ref="unread")
+        hr.unread
         .unread-separator(:class="{ rised: i === 0 }" )
           .text new
 
@@ -19,6 +20,12 @@
     :class="{ replyActive, limitContainerWidth }"
     @scroll="onMessagesScroll"
   )
+
+    slide-in-out(:outDuration="0")
+      btn.button-reset.new-shortcut(v-if="showNewShortcut" :action="scrollToNew")
+        span.icon.is-small(style="position: relative; left: -3px;")
+          i.fas.fa-arrow-up
+        | UNREAD
 
     .messages(ref="messagesInner")
 
@@ -44,6 +51,7 @@
   import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
+  import SlideInOut from "@/components/UI/SlideInOut.vue";
 
   const MESSAGE_PAGE_SIZE = 15;
 
@@ -113,6 +121,7 @@
     });
 
     return {
+      top,
       onMessagesScroll,
       markChatAsNew,
       saveScrollPosition,
@@ -123,7 +132,7 @@
 
   export default {
     name: "ChatMainbarMessageList",
-    components: { MessageDisplay },
+    components: { SlideInOut, MessageDisplay },
     props: {
       chatId: Number,
       replyToId: Number,
@@ -212,6 +221,20 @@
         if (!firstUnreadMessage) return -1;
 
         return firstUnreadMessage.id;
+      },
+    },
+    asyncComputed: {
+      showNewShortcut: {
+        async get() {
+          if (this.firstUnreadMessageId <= 0) return false;
+          this.top;
+          await this.$nextTick();
+
+          const unread = this.$refs.unread && this.$refs.unread[0];
+          if (unread) return (this.top - unread.offsetTop) > 100;
+          return false;
+        },
+        default: false,
       },
     },
     watch: {
@@ -326,7 +349,6 @@
     position relative
     background #fff
     min-height 100%
-    // overflow hidden  todo: breaks sticky
 
     .load-more-container
       margin 10px 0
@@ -348,7 +370,7 @@
       &:focus
         background darken($color-light-blue-background, 2)
 
-  .day
+  .day-separator-line
     position relative
 
   hr.day,
@@ -406,5 +428,18 @@
       top -1px
       box-shadow none
 
+  .new-shortcut
+    width auto
+    box-shadow 0 0 0 2px alpha(#000, .05)
+    position fixed
+    top 56px
+    right 28px
+    z-index 13
+    text-bold-13()
+    color $color-red
+    background #fff
+    padding 7px 10px
+    border-bottom-left-radius $border-radius
+    border-bottom-right-radius $border-radius
 
 </style>
