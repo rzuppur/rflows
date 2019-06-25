@@ -163,10 +163,6 @@
         return "";
       },
     },
-    mounted() {
-      this.$events.$on("replyStart", this.replyStart);
-      this.$events.$on("replyCancel", this.replyCancel);
-    },
     watch: {
       "$store.currentChatId": {
         immediate: true,
@@ -181,6 +177,10 @@
           }
         },
       },
+    },
+    mounted() {
+      this.$events.$on("replyStart", this.replyStart);
+      this.$events.$on("replyCancel", this.replyCancel);
     },
     methods: {
       toggleFavourite() {
