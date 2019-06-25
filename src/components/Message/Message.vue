@@ -2,11 +2,7 @@
 
   .chat-message-container
 
-    message-display(
-      :key="message.id"
-      :message="message"
-      :class="messageClass"
-    )
+    message-display(:message="message" :key="message.id" :class="classList")
 
       template(v-if="editMode" v-slot:content)
 
@@ -34,14 +30,14 @@
               span Cancel
 
       template(v-if="!editMode" v-slot:buttons)
-        .control(v-if="!autoMarkAsRead && message.unread")
+        .control(v-if="!autoReadEnabled && message.unread")
           button.button.is-outlined.has-text-success(
           @click.stop="markRead(message.id)"
           v-tooltip="'Mark as read'")
             span.icon.is-small
               i.fas.fa-check
 
-        .control(v-if="message.creatorUserId === currentUser.id && ['EMAIL', 'EVENT'].indexOf(message.type) < 0")
+        .control(v-if="message.userId === currentUser.id && ['EMAIL', 'EVENT'].indexOf(message.type) < 0")
           button.button.is-outlined.has-text-link(
           @click.stop="openEdit()"
           v-tooltip="'Edit'")
@@ -66,14 +62,14 @@
 
         .control(v-if="replyToId !== message.id")
           button.button.is-outlined.has-text-primary(
-          @click.stop="$emit('replyStart', message.id)"
+          @click.stop="$events.$emit('replyStart', message.id)"
           v-tooltip="'Reply'")
             span.icon.is-small
               i.fas.fa-reply
 
         .control(v-if="replyToId === message.id")
           button.button.is-outline(
-          @click.stop="$emit('replyCancel')"
+          @click.stop="$events.$emit('replyCancel', message.id)"
           v-tooltip="'Cancel reply'")
             span.icon.is-small
               i.fas.fa-times
@@ -86,12 +82,14 @@
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
   import Modal from "@/components/UI/Modal.vue";
 
-
   export default {
     name: "Message",
     components: { Editor, MessageDisplay, Modal },
-    props: ["message", "i", "replyToId", "sortedMessages", "isAdmin", "autoMarkAsRead", "firstUnreadMessageId"],
-    store: ["currentUser"],
+    props: {
+      message: Object,
+      replyToId: Number,
+      classList: Array,
+    },
     data() {
       return {
         editMode: false,
@@ -102,12 +100,10 @@
       };
     },
     computed: {
-      noAuthor() {
-        const prevMessage = this.sortedMessages[this.i - 1];
-        return (this.i > 0)
-          && prevMessage?.creatorUserId === this.message.creatorUserId
-          && this.utils.datesAreSameDay(prevMessage.createDate, this.message.createDate)
-          && this.firstUnreadMessageId !== this.message.id;
+      autoReadEnabled() {
+        this.$store.flows.userProperties.v;
+
+        return this.$flows.settings.getBooleanUserProp("autoMarkAsRead");
       },
       messageClass() {
         return {
@@ -124,12 +120,12 @@
       messageIsEdited() {
         return this.message.modifiedDate !== this.message.createDate;
       },
-      referenceMessage() {
-        return this.getMessage(this.message.referenceFromTopicItemId);
+      currentUser() {
+        return this.$store.currentUser;
       },
       canDelete() {
         if (this.currentUser) {
-          return this.message.creatorUserId === this.currentUser.id && this.message.type !== "EVENT";
+          return this.message.userId === this.currentUser.id && this.message.type !== "EVENT";
         }
         return false;
       },
@@ -163,7 +159,6 @@
       },
       cancelEdit() {
         this.editMode = false;
-        this.$events.$emit("messagesScrollUpdate");
       },
       saveEdit() {
         const text = this.$refs.editor.getHTML();
@@ -176,7 +171,7 @@
         const textCleared = text.replace(/<p>/g, "").replace(/<br>|<\/p>/g, "\n").trim();
         const isHTML = ["NOTE", "EMAIL"].indexOf(this.message.type) > -1;
 
-        if (isHTML && this.message.text === text || !isHTML && this.message.text === textCleared) {
+        if ((isHTML && this.message.text === text) || (!isHTML && this.message.text === textCleared)) {
           this._debug("nothing changed");
           return;
         }
@@ -204,42 +199,16 @@
         }
       },
       markRead(id) {
-        this.flows.markChatMessageRead(id);
-        this.$events.$emit("messagesScrollUpdate");
+        this.$flows.messages.markMessagesAsRead([id], this.message.chatId);
       },
       async deleteChatMessage(instant) {
         if (instant || await this.$root.confirm("Delete message? You can ctrl+click for instant delete.", "Delete", "Cancel")) {
           this.flows.deleteChatMessage(this.message.id);
         }
       },
-      getMessage(messageId) {
-        if (this.sortedMessages) {
-          const message = this.sortedMessages.find(sortedMessage => sortedMessage.id === messageId);
-          if (message) return message;
-        }
-      },
     },
   };
 </script>
-
-<style lang="stylus">
-  @import "~@/shared.styl"
-
-  $verticalPadding = 12px
-
-  .extra-space .chat-message
-    padding $verticalPadding 30px !important
-
-    &.message-highlight
-      padding $verticalPadding 17px !important
-
-    @media (max-width $media-sidebar-hide)
-      padding $verticalPadding 20px !important
-
-    p
-      line-height 1.6
-
-</style>
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
 
@@ -261,19 +230,8 @@
       .note-content
         opacity 0.4
 
-    &.message-unread
-      background alpha($color-unread-background, 0.1)
-
     &.message-saved
       background alpha(#409df1, 0.05)
-
-    &.message-highlight
-      box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(68, 85, 114, 0.2)
-      margin 0 13px
-      padding 5px 7px
-      border-radius $border-radius
-      background #fff !important
-      z-index 10
 
     &.message-softhighlight
       animation highlight-soft 5s

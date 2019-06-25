@@ -64,6 +64,13 @@ class Messages {
     return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b:Message) => a.id - b.id);
   }
 
+  markMessagesAsRead(messageIds: number[], chatId: number): Promise<SocketResult> {
+    return this.flows.connection.messageWithResponse("/app/TopicItemRead.markAsRead", {
+      topicId: chatId,
+      itemIds: messageIds,
+    });
+  }
+
   @performanceLog()
   parseChatMessages(messages: any[]) {
     const mapped = messages.map(mapMessage);
@@ -144,7 +151,7 @@ class Messages {
 
   @performanceLog()
   updateMessagesFlagged(chatId?: number): void {
-
+    //todo
   }
 
   public chatTextParse(text: string) {

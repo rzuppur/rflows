@@ -13,7 +13,13 @@
         .unread-separator(:class="{ rised: i === 0 }" )
           .text new
 
-      message-display(:message="message" :key="message.id" :class="message.classList")
+      message(
+        :message="message"
+        :replyToId="replyToId"
+        :classList="message.classList"
+        :key="message.id"
+        :ref="'message-' + message.id"
+      )
 
   .messages-container.scrollbar-style(
     ref="messages"
@@ -50,10 +56,11 @@
   import { value, onMounted, onUnmounted } from "vue-function-api";
   import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
-  import MessageDisplay from "@/components/Message/MessageDisplay.vue";
   import SlideInOut from "@/components/UI/SlideInOut.vue";
+  import Message from "@/components/Message/Message.vue";
+  import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
-  const MESSAGE_PAGE_SIZE = 15;
+  const MESSAGE_PAGE_SIZE = 50;
 
   function scrollTracking(props, context) {
     const height = value(0);
@@ -132,7 +139,7 @@
 
   export default {
     name: "ChatMainbarMessageList",
-    components: { SlideInOut, MessageDisplay },
+    components: { Message, SlideInOut, MessageDisplay },
     props: {
       chatId: Number,
       replyToId: Number,
@@ -441,5 +448,26 @@
     padding 7px 10px
     border-bottom-left-radius $border-radius
     border-bottom-right-radius $border-radius
+
+    &:hover
+      box-shadow 0 0 0 2px alpha(#000, .15)
+
+</style>
+
+<style lang="stylus">
+  @import "~@/shared.styl"
+  $verticalPadding = 12px
+
+  .limitContainerWidth .chat-message
+    padding $verticalPadding 30px !important
+
+    &.message-highlight
+      padding $verticalPadding 17px !important
+
+    @media (max-width $media-sidebar-hide)
+      padding $verticalPadding 20px !important
+
+    p
+      line-height 1.6
 
 </style>

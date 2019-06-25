@@ -31,7 +31,7 @@
 
         connection-status(v-if="mqMobile")
 
-        chat-mainbar-message-list(:replyToId="chat.replyToId" :chatId="chatId" :chatMembersWriting="chatMembersWriting")
+        chat-mainbar-message-list(:replyToId="replyToId" :chatId="chatId" :chatMembersWriting="chatMembersWriting")
 
         .chat-bottom
 
@@ -66,18 +66,18 @@
                 ref="fileUpload"
                 :class="{ flex0: !uploadExpanded, flex1: uploadExpanded}"
                 :chatId="chatId"
-                :replyToId="chat.replyToId"
+                :replyToId="replyToId"
                 @expandChange="uploadExpanded = $event"
                 @fileUploaded="replyCancel()")
 
-              .control(v-if="chat.replyToId" v-show="!uploadExpanded")
+              .control(v-if="replyToId" v-show="!uploadExpanded")
                 btn.button.is-outlined(:action="replyCancel")
                   span(v-if="!mqMobile") Cancel
                   span.icon(v-if="mqMobile")
                     i.fas.fa-times
 
               .control(v-show="!uploadExpanded")
-                btn.button(:class="{ 'is-primary': chat.replyToId }" :action="sendChatMessage")
+                btn.button(:class="{ 'is-primary': replyToId }" :action="sendChatMessage")
                   span(v-if="!mqMobile") Send
                   span.icon(v-if="mqMobile")
                     i.fas.fa-paper-plane
@@ -134,10 +134,7 @@
       return {
         debug: "off",
 
-        chat: {
-          replyToId: null,
-          // todo: maybe save scroll position here for changing chats?
-        },
+        replyToId: null,
 
         showEditorToolbar: false,
         editorFocused: false,
@@ -191,7 +188,7 @@
         // todo: watch chat messages
         this.$store.flows.users.v;
 
-        if (this.chat.replyToId) {
+        if (this.replyToId) {
           // const message = this.$store.chatMessages().find(ti => ti.id === this.replyToId);
           const message = null; // todo: find chat message
           if (message?.creatorUserId) {
@@ -204,6 +201,10 @@
         if (this.$store.currentChatName.length) return `Message ${this.$store.currentChatName}`;
         return "";
       },
+    },
+    mounted() {
+      this.$events.$on("replyStart", this.replyStart);
+      this.$events.$on("replyCancel", this.replyCancel);
     },
     watch: {
       "$store.currentChatId": {
@@ -231,8 +232,12 @@
       sendChatMessage() {
         console.log("todo: sendChatMessage");
       },
-      replyCancel() {
-        console.log("todo: replyCancel");
+      replyStart(messageId) {
+        this.replyToId = messageId;
+      },
+      // eslint-disable-next-line no-unused-vars
+      replyCancel(messageId) {
+        this.replyToId = null;
       },
       checkTypingStatus() {
         console.log("todo: checkTypingStatus");

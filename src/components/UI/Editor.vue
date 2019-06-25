@@ -148,7 +148,7 @@
     computed: {
       showMenuBar() {
         return !this.onlyText && (
-              this.showButtons === "ALWAYS"
+          this.showButtons === "ALWAYS"
           || (this.showButtons === "MULTILINE" && this.multiline)
         );
       },
@@ -194,12 +194,13 @@
       },
       setMessage(message) {
         const editorText = ["NOTE", "EMAIL"].indexOf(message.type) > -1
-          ? this.flows.noteTextParse(message.text)
+          ? this.$flows.messages.noteTextParse(message.text)
           : this.utils.textToHTML(message.text);
         this._initOrSetContent(editorText, true);
       },
       getHTML() {
         if (this.editor) return this.editor.getHTML();
+        return false;
       },
       focus() {
         if (this.editor) {

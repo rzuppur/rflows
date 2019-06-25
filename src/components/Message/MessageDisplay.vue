@@ -172,6 +172,14 @@
       background #fff !important
       z-index 10
 
+      .buttons-container
+        .field
+          opacity 1
+
+        @media (max-width $buttons-switch-to-mobile)
+          right 2px
+          display block
+
     &.message-unread
       background alpha($color-unread-background, 0.1)
 
