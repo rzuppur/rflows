@@ -27,6 +27,8 @@ class STORE {
     errorMsg: "",
   };
 
+  debugMode: boolean = false;
+
   flows: StoreFlows = {
     chats: {
       v: 0,

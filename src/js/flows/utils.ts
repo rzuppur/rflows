@@ -75,23 +75,19 @@ export function performanceLog() {
   return (target: any, key: string, descriptor: PropertyDescriptor) => {
     //return descriptor;
 
-    // Ensure we have the descriptor that might been overriden by another decorator
     if (descriptor === undefined) {
       // @ts-ignore
       descriptor = Object.getOwnPropertyDescriptor(target, key);
     }
 
     const originalMethod = descriptor.value;
-    // Redefine the method to this new method who will call the original method
-    // Use the function's this context instead of the value of this when log is called (no arrow function)
     descriptor.value = function (...args: any[]) {
       const startTime = window.performance.now();
       const result = originalMethod.apply(this, args); // Call the original method
       const endTime = window.performance.now();
       const timespan = endTime - startTime;
-      const stringResult = JSON.stringify(result);
-      const message = `%c${Math.round(timespan * 10) / 10}ms %c${key}(${args.length && key.startsWith("parse") && ("[" + args[0].length + "]") || ("" + args[0]).slice(0, 18)})%c => %c${stringResult && stringResult.slice(0, 18)}`;
-      const colors = ["color: #777", "color: #e84", "color: #777", "color: #396"];
+      const message = `%c${Math.round(timespan * 10) / 10}ms %c${key}(${args.length && key.startsWith("parse") && ("[" + args[0].length + "]") || ("" + args[0]).slice(0, 18)})`;
+      const colors = ["color: #888", "color: #bbb"];
       if (timespan < 4) {
         console.log(message, ...colors);
       } else if (timespan < 10) {

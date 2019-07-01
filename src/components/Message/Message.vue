@@ -37,7 +37,7 @@
             span.icon.is-small
               i.fas.fa-check
 
-        .control(v-if="message.userId === currentUser.id && ['EMAIL', 'EVENT'].indexOf(message.type) < 0")
+        .control(v-if="canEdit")
           button.button.is-outlined.has-text-link(
           @click.stop="openEdit()"
           v-tooltip="'Edit'")
@@ -123,7 +123,15 @@
       currentUser() {
         return this.$store.currentUser;
       },
+      canEdit() {
+        if (this.$store.debugMode) return true;
+        if (this.currentUser) {
+          return this.message.userId === this.currentUser.id && !["EMAIL", "EVENT"].includes(this.message.type);
+        }
+        return false;
+      },
       canDelete() {
+        if (this.$store.debugMode) return true;
         if (this.currentUser) {
           return this.message.userId === this.currentUser.id && this.message.type !== "EVENT";
         }
@@ -203,7 +211,7 @@
       },
       async deleteChatMessage(instant) {
         if (instant || await this.$root.confirm("Delete message? You can ctrl+click for instant delete.", "Delete", "Cancel")) {
-          this.flows.deleteChatMessage(this.message.id);
+          this.$flows.messages.deleteMessage(this.message.id);
         }
       },
     },

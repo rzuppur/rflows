@@ -7,7 +7,7 @@ import { plugin } from "vue-function-api";
 import STORE from "@/js/store";
 import utils from "@/js/utils";
 import Flows2 from "@/js/flows/main";
-import { RESIZE_DEBOUNCE_TIME, DEBUG } from "@/js/consts";
+import { RESIZE_DEBOUNCE_TIME } from "@/js/consts";
 
 import App from "@/App.vue";
 import Button from "@/components/UI/global/Button.vue";
@@ -65,14 +65,13 @@ Vue.mixin({
     this.$flows = this.$root.$flows;
     this.$events = events;
     this.utils = utils;
-    this.DEBUG = DEBUG;
   },
   created() {
     this.flows = this.$root.flows;
   },
   methods: {
     _debug(text, ...extra) {
-      if (this.DEBUG) {
+      if (this.$store.debugMode) {
         const caller = new Error().stack.split("\n")[2].replace(/ \(.+/g, "").replace(/\s.+at [^.]*\./g, "");
         this._logDebug(text, caller);
         if (extra) console.log(...extra); // eslint-disable-line no-console

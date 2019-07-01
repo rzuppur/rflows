@@ -48,6 +48,15 @@
     },
     created() {
       this.$events.$on("loginDone", this.loginDone);
+
+      window.enableDebugMode = () => {
+        this.$store.debugMode = true;
+      };
+      window.disableDebugMode = () => {
+        this.$store.debugMode = false;
+      };
+
+      // if (process?.env.NODE_ENV === "development") this.$store.debugMode = true;
     },
     mounted() {
       this.loginIfHasToken();

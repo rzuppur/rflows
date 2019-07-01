@@ -72,6 +72,10 @@ class Messages {
     });
   }
 
+  deleteMessage(messageId: number): Promise<SocketResult> {
+    return this.flows.connection.messageWithResponse("/app/TopicItem.delete", { id: messageId });
+  }
+
   @performanceLog()
   parseChatMessages(messages: any[], action: FrameAction) {
     const ids = messages.map(message => message.id);

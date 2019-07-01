@@ -21,6 +21,8 @@
         span.icon.is-small.is-right
           i.fas.fa-search
 
+    h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding-top: 15px; padding-bottom: 0; color: #fd0;") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+
     .workspace-filter(v-if="showWorkspaceFilter")
       popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
         template(v-slot:trigger="open")
@@ -77,7 +79,8 @@
 
   export default {
     name: "ChatSidebar",
-    components: { SlideInOut, ConnectionStatus, UserDisplay, ChatSidebarChatDisplay, PopupMenu },
+    components: { SlideInOut, ConnectionStatus, UserDisplay,
+      ChatSidebarChatDisplay, PopupMenu },
     data() {
       return {
         showAllChats: false,

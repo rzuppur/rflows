@@ -40,7 +40,7 @@ export const ALL_TOPICS = GLOBAL_TOPICS.concat(CHAT_TOPICS.concat(["TopicItemRea
 export const SCROLL_DEBOUNCE_TIME = 66;
 export const RESIZE_DEBOUNCE_TIME = 132;
 
-export const DEBUG = process?.env.NODE_ENV === "development";
+//export const DEBUG = process?.env.NODE_ENV === "development";
 export const SOCKET_TRAFFIC_DEBUG = false;
 
 export const DEVCHAT_ID = 37479;

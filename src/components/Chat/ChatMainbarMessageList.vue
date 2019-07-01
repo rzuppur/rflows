@@ -114,6 +114,7 @@
         top.value = Math.round(messagesEl.scrollTop);
         height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
         keepScrollBottom[props.chatId] = top.value >= (height.value - keepScrollBottomThreshold);
+        //console.log(`%cBOTTOM ${keepScrollBottom[props.chatId]}`, "color: green; font-size: 20px;");
       }
     };
 
@@ -143,6 +144,7 @@
       }
       if (keepScrollBottom[props.chatId]) {
         messagesEl.scrollTop = height.value;
+        //console.log("%cKEEPING BOTTOM", "color: red; font-size: 20px;");
       }
     };
 
