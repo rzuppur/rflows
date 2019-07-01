@@ -9,6 +9,7 @@ import Message, { mapMessage } from "@/js/model/Message";
 import { mapMessagesRead } from "@/js/model/MessagesRead";
 import { mapMessageFlagged } from "@/js/model/MessagesFlagged";
 import { SocketResult } from "@/js/socket";
+import { FrameAction } from "@/js/flows/connection";
 
 class Messages {
   flows: Flows2;
@@ -72,13 +73,19 @@ class Messages {
   }
 
   @performanceLog()
-  parseChatMessages(messages: any[]) {
-    const mapped = messages.map(mapMessage);
-
-    const chatId: number = mapped.map(chat => chat.chatId).reduce((a, b) => (a === b) ? a : NaN );
+  parseChatMessages(messages: any[], action: FrameAction) {
+    const ids = messages.map(message => message.id);
+    const chatId: number = messages.map(chat => chat.topicId).reduce((a, b) => (a === b) ? a : NaN );
     if (!chatId) throw new Error("Different or no chatIds in messages");
 
-    const ids = mapped.map(message => message.id);
+    if (action === "deleted") {
+      this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => ids.indexOf(message.id) === -1);
+      this.store.flows.messages[chatId].v += 1;
+      return;
+    }
+
+    const mapped = messages.map(mapMessage);
+
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => ids.indexOf(message.id) === -1);
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.concat(mapped);
     this.store.flows.messages[chatId].d.sort((a, b) => a.id - b.id);
@@ -89,7 +96,11 @@ class Messages {
   }
 
   @performanceLog()
-  parseChatMessagesRead(messagesRead: any[]) {
+  parseChatMessagesRead(messagesRead: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("messagesRead", messagesRead);
+      return;
+    }
     if (!this.store.currentUser) throw new Error("No currentUser in store");
     const currentUserId = this.store.currentUser.id;
     const mapped = messagesRead.map(mapMessagesRead).filter(x => x.userId === currentUserId);
@@ -104,7 +115,11 @@ class Messages {
   }
 
   @performanceLog()
-  parseChatMessagesFlagged(messagesFlagged: any[]) {
+  parseChatMessagesFlagged(messagesFlagged: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("messagesFlagged", messagesFlagged);
+      return;
+    }
     if (!this.store.currentUser) throw new Error("No currentUser in store");
     const currentUserId = this.store.currentUser.id;
     this.flows.updateStoreArray("messagesFlagged", messagesFlagged.filter(flagged => flagged.flag).map(mapMessageFlagged).filter(x => x.userId === currentUserId));

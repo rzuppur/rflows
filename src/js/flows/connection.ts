@@ -203,11 +203,12 @@ class Connection {
     const type = frameType.replace("[]", "");
     const frameBody = JSON.parse(frame.body);
     const frameDestination = frame.headers.destination.split(".");
-    const filteredBody = Connection.bodyFilter(frameBody);
 
     let action = frame.headers.destination.match(/\.(modified|deleted)$/);
     if (action && action.length > 1) action = action[1];
-    //console.log(type, action, frameBody.length);
+    const filteredBody = Connection.bodyFilter(frameBody, action === "modified");
+
+    //console.log(type, action, filteredBody);
 
     this.store.connection.error = false;
     switch (type) {
@@ -218,43 +219,43 @@ class Connection {
         break;
       }
       case "Topic": {
-        if (filteredBody.length) this.flows.chats.parseChats(filteredBody);
+        if (filteredBody.length) this.flows.chats.parseChats(filteredBody, action);
         break;
       }
       case "TopicUser": {
-        if (filteredBody.length) this.flows.chats.parseChatUsers(filteredBody);
+        if (filteredBody.length) this.flows.chats.parseChatUsers(filteredBody, action);
         break;
       }
       case "Organization": {
-        if (filteredBody.length) this.flows.chats.parseWorkspaces(filteredBody);
+        if (filteredBody.length) this.flows.chats.parseWorkspaces(filteredBody, action);
         break;
       }
       case "TopicLocation": {
-        if (filteredBody.length) this.flows.chats.parseChatWorkspaces(filteredBody);
+        if (filteredBody.length) this.flows.chats.parseChatWorkspaces(filteredBody, action);
         break;
       }
       case "TopicItem": {
-        if (filteredBody.length) this.flows.messages.parseChatMessages(filteredBody);
+        if (filteredBody.length) this.flows.messages.parseChatMessages(filteredBody, action);
         break;
       }
       case "TopicItemRead": {
-        if (filteredBody.length) this.flows.messages.parseChatMessagesRead(filteredBody);
+        if (filteredBody.length) this.flows.messages.parseChatMessagesRead(filteredBody, action);
         break;
       }
       case "TopicItemUserProperty": {
-        if (filteredBody.length) this.flows.messages.parseChatMessagesFlagged(filteredBody);
+        if (filteredBody.length) this.flows.messages.parseChatMessagesFlagged(filteredBody, action);
         break;
       }
       case "UserAccess": {
-        if (filteredBody.length) this.flows.chats.parseChatWorkspaceAccesses(filteredBody);
+        if (filteredBody.length) this.flows.chats.parseChatWorkspaceAccesses(filteredBody, action);
         break;
       }
       case "User": {
-        if (filteredBody.length) this.flows.users.parseUsers(filteredBody);
+        if (filteredBody.length) this.flows.users.parseUsers(filteredBody, action);
         break;
       }
       case "UserProperty": {
-        if (filteredBody.length) this.flows.settings.parseSettings(filteredBody);
+        if (filteredBody.length) this.flows.settings.parseSettings(filteredBody, action);
         break;
       }
       case "Error": {
@@ -334,12 +335,16 @@ class Connection {
     return x.filter(a => !a.deleted);
   }
 
-  private static bodyFilter(x: any): any[] {
-    return Connection.removeDeleted(Connection.makeArrayIfNotArray(x));
+  private static bodyFilter(x: any, removeDeleted: boolean): any[] {
+    if (removeDeleted) {
+      return Connection.removeDeleted(Connection.makeArrayIfNotArray(x));
+    }
+    return Connection.makeArrayIfNotArray(x)
   }
 }
 
 type GlobalUserTopic = ("TopicUser" | "UserProperty" | "Topic" | "Organization" | "TopicLocation" | "User" | "OrganizationContact" | "UserAccess");
 type ChatTopic = ("TopicItem" | "TopicUser" | "TopicItemUserProperty" | "TopicItemRead");
+export type FrameAction = ("modified" | "deleted");
 
 export default Connection;

@@ -45,6 +45,15 @@ class Flows2 {
     this.store.flows[key].d = this.store.flows[key].d.concat(newItems);
     this.storeUpdate(key);
   }
+
+  @performanceLog()
+  public deleteStoreArrayItems(key: StoreFlowsKey, deletedItems: any[]) {
+    console.log("%cDELETE" + key, "color: red");
+    const ids = deletedItems.map(item => item.id);
+    // @ts-ignore
+    this.store.flows[key].d = this.store.flows[key].d.filter(item => !ids.includes(item.id));
+    this.storeUpdate(key);
+  }
 }
 
 export default Flows2;

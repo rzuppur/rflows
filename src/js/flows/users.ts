@@ -5,6 +5,7 @@ import { Vue } from "vue/types/vue";
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import User, { mapUser } from "@/js/model/User";
+import { FrameAction } from "@/js/flows/connection";
 
 class Users {
   flows: Flows2;
@@ -28,7 +29,11 @@ class Users {
     ]);
   }
 
-  parseUsers(users: any[]) {
+  parseUsers(users: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("users", users);
+      return;
+    }
     this.flows.updateStoreArray("users", users.map(mapUser));
     this.flows.chats.updateChatData();
   }

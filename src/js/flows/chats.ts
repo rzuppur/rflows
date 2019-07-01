@@ -11,6 +11,7 @@ import { mapWorkspace } from "@/js/model/Workspace";
 import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
 import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
 import { performanceLog } from "@/js/flows/utils";
+import { FrameAction } from "@/js/flows/connection";
 
 class Chats {
   flows: Flows2;
@@ -118,13 +119,21 @@ class Chats {
   }
 
   @performanceLog()
-  parseChats(chats: any[]): void {
+  parseChats(chats: any[], action: FrameAction): void {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("chats", chats);
+      return;
+    }
     this.flows.updateStoreArray("chats", chats.filter(chat => !chat.integration && chat.type === "MEETING").map(mapChat));
     this.updateChatData();
   }
 
   @performanceLog()
-  parseChatUsers(chatUsers: any[]) {
+  parseChatUsers(chatUsers: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("chatUsers", chatUsers);
+      return;
+    }
     const mapped = chatUsers.map(mapChatUser);
     this.flows.updateStoreArray("chatUsers", mapped);
     this.updateChatData();
@@ -133,17 +142,29 @@ class Chats {
   }
 
   @performanceLog()
-  parseWorkspaces(workspaces: any[]) {
+  parseWorkspaces(workspaces: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("workspaces", workspaces);
+      return;
+    }
     this.flows.updateStoreArray("workspaces", workspaces.filter(workspace => !workspace.integration).map(mapWorkspace));
   }
 
   @performanceLog()
-  parseChatWorkspaces(chatWorkspaces: any[]) {
+  parseChatWorkspaces(chatWorkspaces: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("chatWorkspaces", chatWorkspaces);
+      return;
+    }
     this.flows.updateStoreArray("chatWorkspaces", chatWorkspaces.map(mapChatWorkspace));
   }
 
   @performanceLog()
-  parseChatWorkspaceAccesses(workspaceAccesses: any[]) {
+  parseChatWorkspaceAccesses(workspaceAccesses: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("workspaceAccesses", workspaceAccesses);
+      return;
+    }
     this.flows.updateStoreArray("workspaceAccesses", workspaceAccesses.map(mapWorkspaceAccess));
   }
 

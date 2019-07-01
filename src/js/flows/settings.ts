@@ -5,8 +5,7 @@ import { Vue } from "vue/types/vue";
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import UserProperty from "@/js/model/UserProperty";
-import Connection from "@/js/flows/connection";
-import Chats from "@/js/flows/chats";
+import { FrameAction } from "@/js/flows/connection";
 
 class Settings {
   flows: Flows2;
@@ -56,7 +55,11 @@ class Settings {
     ]);
   }
 
-  parseSettings(settings: any[]) {
+  parseSettings(settings: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("userProperties", settings);
+      return;
+    }
     this.flows.updateStoreArray("userProperties", settings.map(Settings.mapProperty));
 
     if (this.getBooleanUserProp("desktopNotifications") && Notification.permission === "default") {
