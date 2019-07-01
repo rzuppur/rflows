@@ -2,7 +2,8 @@
 
   .toast-list
     transition-group.toast-list-inner(name="toast-list" tag="div")
-      .toast-notification(v-for="notification in queue" @click="remove(notification.index)" :key="notification.index") {{ notification.text }}
+      .toast-notification-wrap(v-for="notification in queue" :key="notification.index")
+        .toast-notification(@click="remove(notification.index)") {{ notification.text }}
 
 </template>
 
@@ -59,9 +60,10 @@
     pointer-events none
 
   .toast-list-inner
-    max-width 400px
+    max-width 450px
     margin 0 auto
     position relative
+    text-align center
 
   .toast-notification
     text-regular-16()
@@ -73,6 +75,7 @@
     border-radius $border-radius
     box-shadow 0 4px 8px -3px alpha(#000, 0.5)
     transition all 0.2s cubic-bezier(0.23, 1, 0.32, 1)
+    display inline-block
     pointer-events all
 
   .toast-list-enter,

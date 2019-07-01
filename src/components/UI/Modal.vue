@@ -180,7 +180,7 @@
     .modal-enter,
     .modal-leave-to
       .modal
-        transform translateY(100px)
+        transform translateY(10px)
         opacity 0
 
     .modal-overlay

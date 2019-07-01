@@ -113,8 +113,8 @@
               if (result === "denied") this.$events.$emit("notify", "Notifications are blocked, you can change this in site settings");
               if (result === "granted") this.$events.$emit("notify", "Notifications enabled");
             });
-          } else {
-
+          } else if (Notification.permission !== "granted") {
+            this.$events.$emit("notify", "Can't enable notifications, possibly blocked from browser");
           }
         }
       },
