@@ -208,7 +208,7 @@ class Connection {
 
     let action = frame.headers.destination.match(/\.(modified|deleted)$/);
     if (action && action.length > 1) action = action[1];
-    const filteredBody = Connection.bodyFilter(frameBody, action === "modified");
+    const filteredBody = Connection.bodyFilter(frameBody, action !== "deleted");
 
     //console.log(type, action, filteredBody);
 
@@ -275,11 +275,11 @@ class Connection {
     if (this.store.debugMode) {
       const timespan = window.performance.now() - STARTTIME;
       if (timespan < 6) {
-        console.log(`${Math.round(timespan * 10) / 10}ms ${type}[${filteredBody.length}]`);
+        console.log(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
       } else if (timespan < 15) {
-        console.warn(`${Math.round(timespan * 10) / 10}ms ${type}[${filteredBody.length}]`);
+        console.warn(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
       } else {
-        console.error(`${Math.round(timespan * 10) / 10}ms ${type}[${filteredBody.length}]`);
+        console.error(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
       }
     }
   }
@@ -305,6 +305,6 @@ class Connection {
 
 type GlobalUserTopic = ("TopicUser" | "UserProperty" | "Topic" | "Organization" | "TopicLocation" | "User" | "OrganizationContact" | "UserAccess");
 type ChatTopic = ("TopicItem" | "TopicUser" | "TopicItemUserProperty" | "TopicItemRead");
-export type FrameAction = ("modified" | "deleted");
+export type FrameAction = ("modified" | "deleted" | null);
 
 export default Connection;

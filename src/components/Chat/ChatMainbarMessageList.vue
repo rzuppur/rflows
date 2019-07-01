@@ -68,6 +68,8 @@
     const lastScrollTop = {};
     const chatFirstScrollDone = {};
     const keepScrollBottom = {};
+    let scrollThrottle = null;
+    let resizeThrottle = null;
 
     const saveScrollPosition = (chatId) => {
       lastScrollTop[chatId] = top.value;
@@ -104,8 +106,7 @@
     /*
     SCROLL
      */
-    const keepScrollBottomThreshold = 10;
-    let scrollThrottle = null;
+    const keepScrollBottomThreshold = 20;
 
     const scrollUpdate = () => {
       scrollThrottle = null;
@@ -113,7 +114,7 @@
       if (messagesEl) {
         top.value = Math.round(messagesEl.scrollTop);
         height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
-        keepScrollBottom[props.chatId] = top.value >= (height.value - keepScrollBottomThreshold);
+        if (!resizeThrottle) keepScrollBottom[props.chatId] = top.value >= (height.value - keepScrollBottomThreshold);
         // console.log(`%cBOTTOM ${keepScrollBottom[props.chatId]}`, "color: green; font-size: 20px;");
       }
     };
@@ -129,8 +130,6 @@
     /*
     RESIZE
      */
-    let resizeThrottle = null;
-
     const resizeUpdate = () => {
       resizeThrottle = null;
       const messagesEl = context.refs.messages;
@@ -144,6 +143,7 @@
       }
       if (keepScrollBottom[props.chatId]) {
         messagesEl.scrollTop = height.value;
+        top.value = height.value;
         // console.log("%cKEEPING BOTTOM", "color: red; font-size: 20px;");
       }
     };
@@ -310,6 +310,16 @@
         handler(unreadId) {
           if (unreadId > 0 && this.autoReadEnabled) {
             this.firstUnread[this.chatId] = unreadId;
+          }
+        },
+      },
+      messages: {
+        handler() {
+          if (this.autoReadEnabled && this.messages.find(message => message.unread)) {
+            this.$flows.messages.markMessagesAsRead(
+              this.messages.filter(message => message.unread).map(message => message.id),
+              this.chatId,
+            );
           }
         },
       },
