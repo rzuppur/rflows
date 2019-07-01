@@ -132,8 +132,10 @@
 
   h4
     margin-bottom 10px
-    margin-top 30px
     position relative
+
+    &:not(:first-of-type)
+      margin-top 30px
 
     &:before
       content ""
@@ -142,7 +144,7 @@
       position absolute
       left 0
       right 0
-      top 7px
+      top 8px
 
     span
       position relative

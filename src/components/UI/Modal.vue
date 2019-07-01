@@ -211,7 +211,7 @@
   .modal-header
     display flex
     align-items center
-    margin-bottom 15px
+    margin-bottom 10px
 
     .title
       flex 1 1 auto

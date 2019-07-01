@@ -210,7 +210,7 @@
         this.$flows.messages.markMessagesAsRead([id], this.message.chatId);
       },
       async deleteChatMessage(instant) {
-        if (instant || await this.$root.confirm("Delete message? You can ctrl+click for instant delete.", "Delete", "Cancel")) {
+        if (instant || await this.$root.confirm("Delete message?", "Delete", "Cancel", "You can ctrl+click for instant delete.")) {
           this.$flows.messages.deleteMessage(this.message.id);
         }
       },
