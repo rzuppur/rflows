@@ -65,9 +65,14 @@
   function scrollTracking(props, context) {
     const height = value(0);
     const top = value(0);
-
     const lastScrollTop = {};
-    const saveScrollPosition = (chatId) => { lastScrollTop[chatId] = top.value; };
+    const chatFirstScrollDone = {};
+    const keepScrollBottom = {};
+
+    const saveScrollPosition = (chatId) => {
+      lastScrollTop[chatId] = top.value;
+    };
+
     const restoreScrollPosition = (chatId) => {
       if (typeof lastScrollTop[chatId] === "undefined") return;
       const messagesEl = context.refs.messages;
@@ -89,9 +94,6 @@
       }
     };
 
-    const chatFirstScrollDone = {};
-    const keepScrollBottom = {};
-
     const markChatAsNew = (chatId) => {
       chatFirstScrollDone[chatId] = false;
       keepScrollBottom[chatId] = true;
@@ -99,9 +101,37 @@
       top.value = 0;
     };
 
-    let throttleTimeout = null;
+    /*
+    SCROLL
+     */
+    const keepScrollBottomThreshold = 10;
+    let scrollThrottle = null;
+
     const scrollUpdate = () => {
-      throttleTimeout = null;
+      scrollThrottle = null;
+      const messagesEl = context.refs.messages;
+      if (messagesEl) {
+        top.value = Math.round(messagesEl.scrollTop);
+        height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
+        keepScrollBottom[props.chatId] = top.value >= (height.value - keepScrollBottomThreshold);
+      }
+    };
+
+    const onMessagesScroll = () => {
+      if (!scrollThrottle) scrollThrottle = setTimeout(scrollUpdate, SCROLL_DEBOUNCE_TIME);
+    };
+
+    onUnmounted(() => {
+      clearTimeout(scrollThrottle);
+    });
+
+    /*
+    RESIZE
+     */
+    let resizeThrottle = null;
+
+    const resizeUpdate = () => {
+      resizeThrottle = null;
       const messagesEl = context.refs.messages;
       if (messagesEl) {
         top.value = Math.round(messagesEl.scrollTop);
@@ -111,21 +141,29 @@
         setTimeout(scrollToNewOrBottomInstant, 0);
         chatFirstScrollDone[props.chatId] = true;
       }
+      if (keepScrollBottom[props.chatId]) {
+        messagesEl.scrollTop = height.value;
+      }
     };
 
-    const onMessagesScroll = () => {
-      if (!throttleTimeout) throttleTimeout = setTimeout(scrollUpdate, SCROLL_DEBOUNCE_TIME);
+    const onMessagesResize = () => {
+      if (!resizeThrottle) resizeThrottle = setTimeout(resizeUpdate, SCROLL_DEBOUNCE_TIME);
     };
 
-    const messagesObs = new ResizeObserver(onMessagesScroll);
+    const messagesObs = new ResizeObserver(onMessagesResize);
     onMounted(() => {
       if (context.refs.messagesInner) messagesObs.observe(context.refs.messagesInner);
+      if (context.refs.messages) messagesObs.observe(context.refs.messages);
     });
 
     onUnmounted(() => {
-      clearTimeout(throttleTimeout);
+      clearTimeout(resizeThrottle);
       messagesObs.disconnect();
     });
+
+    /*
+    EXPORT
+     */
 
     return {
       top,
@@ -441,7 +479,7 @@
     position fixed
     top 56px
     right 28px
-    z-index 13
+    z-index 23
     text-bold-13()
     color $color-red
     background #fff
