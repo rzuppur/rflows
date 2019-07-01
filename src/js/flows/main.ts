@@ -36,7 +36,6 @@ class Flows2 {
     this.store.flows[key].v += 1;
   }
 
-  @performanceLog()
   public updateStoreArray(key: StoreFlowsKey, newItems: any[]) {
     const ids = newItems.map(item => item.id);
     // @ts-ignore
@@ -46,9 +45,7 @@ class Flows2 {
     this.storeUpdate(key);
   }
 
-  @performanceLog()
   public deleteStoreArrayItems(key: StoreFlowsKey, deletedItems: any[]) {
-    console.log("%cDELETE" + key, "color: red");
     const ids = deletedItems.map(item => item.id);
     // @ts-ignore
     this.store.flows[key].d = this.store.flows[key].d.filter(item => !ids.includes(item.id));

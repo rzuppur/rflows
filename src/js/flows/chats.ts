@@ -109,7 +109,6 @@ class Chats {
     }
   }
 
-  @performanceLog()
   public currentUserMemberOfChat(chatId: number): boolean {
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {
@@ -118,7 +117,6 @@ class Chats {
     return !!this.store.flows.chatUsers.d.find(chatUser => chatUser.chatId === chatId && chatUser.userId === currentUserId);
   }
 
-  @performanceLog()
   parseChats(chats: any[], action: FrameAction): void {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("chats", chats);
@@ -128,7 +126,6 @@ class Chats {
     this.updateChatData();
   }
 
-  @performanceLog()
   parseChatUsers(chatUsers: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("chatUsers", chatUsers);
@@ -141,7 +138,6 @@ class Chats {
     this.flows.messages.updateMessagesRead(chatId);
   }
 
-  @performanceLog()
   parseWorkspaces(workspaces: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("workspaces", workspaces);
@@ -150,7 +146,6 @@ class Chats {
     this.flows.updateStoreArray("workspaces", workspaces.filter(workspace => !workspace.integration).map(mapWorkspace));
   }
 
-  @performanceLog()
   parseChatWorkspaces(chatWorkspaces: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("chatWorkspaces", chatWorkspaces);
@@ -159,7 +154,6 @@ class Chats {
     this.flows.updateStoreArray("chatWorkspaces", chatWorkspaces.map(mapChatWorkspace));
   }
 
-  @performanceLog()
   parseChatWorkspaceAccesses(workspaceAccesses: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("workspaceAccesses", workspaceAccesses);
@@ -168,7 +162,6 @@ class Chats {
     this.flows.updateStoreArray("workspaceAccesses", workspaceAccesses.map(mapWorkspaceAccess));
   }
 
-  @performanceLog()
   updateChatData(): void {
     const currentUserId = this.store.currentUser && this.store.currentUser.id;
     if (!currentUserId) {

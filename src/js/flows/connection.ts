@@ -199,6 +199,8 @@ class Connection {
   }
 
   private socketFrameHandler(frame: any): void {
+    const STARTTIME = window.performance.now();
+
     const frameType = frame.headers.cl;
     const type = frameType.replace("[]", "");
     const frameBody = JSON.parse(frame.body);
@@ -270,58 +272,16 @@ class Connection {
         console.log(frame);
       }
     }
-    /*
-    if (frameDestination[frameDestination.length - 1] === "deleted") {
-      const itemIndex = this.store.topics[frameType].findIndex(item => item.id === parseInt(frameBody.id, 10));
-      this._debug("Delete", frameType, frameBody);
-      if (itemIndex > -1) {
-        Vue.delete(this.store.topics[frameType], itemIndex);
-      }
-    }
-
-    if (["ServerInfo", "SubscribeResponse"].indexOf(frameType) > -1) return;
-    if (frameType === "LoginResponse") {
-      if (frameBody.token) {
-        localStorage.setItem("session", JSON.stringify({ token: frameBody.token }));
-      }
-      frameBody.user ? this._debug(`log in ${frameBody.user.email}`) : this._debug("log out");
-      return;
-    }
-
-    if (ALL_TOPICS.map(t => `${t}[]`).indexOf(frameType) > -1) {
-      if (this.store.topics[type]) {
-        const newIds = frameBody.map(o => o.id);
-        Vue.set(this.store.topics, type, this.store.topics[type].filter(o => newIds.indexOf(o.id) < 0).concat(frameBody));
+    if (this.store.debugMode) {
+      const timespan = window.performance.now() - STARTTIME;
+      if (timespan < 6) {
+        console.log(`${Math.round(timespan * 10) / 10}ms ${type}[${filteredBody.length}]`);
+      } else if (timespan < 15) {
+        console.warn(`${Math.round(timespan * 10) / 10}ms ${type}[${filteredBody.length}]`);
       } else {
-        Vue.set(this.store.topics, type, frameBody);
+        console.error(`${Math.round(timespan * 10) / 10}ms ${type}[${filteredBody.length}]`);
       }
-    } else if (ALL_TOPICS.indexOf(frameType) > -1) {
-      const old = this.store.topics[frameType]
-        ? this.store.topics[frameType].find(topic => topic.id === frameBody.id)
-        : false;
-      if (old) {
-        const index = this.store.topics[frameType].indexOf(old);
-        Vue.set(this.store.topics[frameType], index, frameBody);
-      } else {
-        if (!this.store.topics[frameType]) Vue.set(this.store.topics, frameType, []);
-        this.store.topics[frameType].push(frameBody);
-      }
-    } else if (frameType === "Error") {
-      this._debug("! Socket error", frameBody);
-      if (frameBody.description) this.$events.$emit("notify", frameBody.description);
-    } else {
-      this._debug(`! UNHANDLED MESSAGE: ${frameType}`, frame.headers, frameBody);
     }
-
-    if (["TopicItem", "TopicItemRead", "TopicItemUserProperty", "TopicUser"].indexOf(type) > -1) {
-      this.store.lastUpdateChat = frame.headers["message-id"];
-
-      if (type === "TopicItem" && !frame.headers["response-id"]) {
-        if (typeof frameBody === "object" && !frameBody.deleted && frameBody.creatorUserId !== this.store.currentUser.id) {
-          this._messageNotification(frameBody);
-        }
-      }
-    }*/
   }
 
   private static makeArrayIfNotArray(x: any): any[] {

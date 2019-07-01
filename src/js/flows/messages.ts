@@ -76,7 +76,6 @@ class Messages {
     return this.flows.connection.messageWithResponse("/app/TopicItem.delete", { id: messageId });
   }
 
-  @performanceLog()
   parseChatMessages(messages: any[], action: FrameAction) {
     const ids = messages.map(message => message.id);
     const chatId: number = messages.map(chat => chat.topicId).reduce((a, b) => (a === b) ? a : NaN );
@@ -99,7 +98,6 @@ class Messages {
     this.updateMessagesFlagged(chatId);
   }
 
-  @performanceLog()
   parseChatMessagesRead(messagesRead: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("messagesRead", messagesRead);
@@ -118,7 +116,6 @@ class Messages {
     this.updateMessagesRead();
   }
 
-  @performanceLog()
   parseChatMessagesFlagged(messagesFlagged: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("messagesFlagged", messagesFlagged);
@@ -131,7 +128,6 @@ class Messages {
     this.updateMessagesFlagged();
   }
 
-  @performanceLog()
   private _updateMessagesRead(chatId: number): void {
     if (!this.store.flows.messages[chatId].d.length) {
       return;
@@ -156,7 +152,6 @@ class Messages {
     this.store.flows.messages[chatId].v += 1;
   }
 
-  @performanceLog()
   updateMessagesRead(chatId?: number): void {
     if (chatId) {
       this._updateMessagesRead(chatId);
@@ -168,7 +163,6 @@ class Messages {
     }
   }
 
-  @performanceLog()
   updateMessagesFlagged(chatId?: number): void {
     //todo
   }
