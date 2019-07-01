@@ -117,6 +117,13 @@ class Chats {
     return !!this.store.flows.chatUsers.d.find(chatUser => chatUser.chatId === chatId && chatUser.userId === currentUserId);
   }
 
+  public setTypingStatus(typing: boolean, chatId: number): void {
+    this.flows.connection.message("/app/Topic.setMyStatus", {
+      topicId: chatId,
+      status: typing ? "TYPING" : "OPEN",
+    });
+  }
+
   parseChats(chats: any[], action: FrameAction): void {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("chats", chats);

@@ -102,6 +102,7 @@
         showEditorToolbar: false,
         editorFocused: false,
         uploadExpanded: false,
+        isTyping: false,
       };
     },
     computed: {
@@ -175,6 +176,7 @@
           if (oldVal) {
             this.$flows.chats.setChatOpen(oldVal, false);
           }
+          this.isTyping = false;
         },
       },
     },
@@ -200,8 +202,17 @@
       replyCancel(messageId) {
         this.replyToId = null;
       },
+      _getEditorContent() {
+        return this.$refs.editor ? this.$refs.editor.getHTML() : "";
+      },
       checkTypingStatus() {
-        console.log("todo: checkTypingStatus");
+        const text = this._getEditorContent();
+        const isTyping = this.utils.editorTextNotEmpty(text);
+
+        if (isTyping !== this.isTyping) {
+          this.$flows.chats.setTypingStatus(isTyping, this.chatId);
+          this.isTyping = isTyping;
+        }
       },
     },
   };
