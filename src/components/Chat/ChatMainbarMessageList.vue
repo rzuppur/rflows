@@ -114,7 +114,7 @@
         top.value = Math.round(messagesEl.scrollTop);
         height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
         keepScrollBottom[props.chatId] = top.value >= (height.value - keepScrollBottomThreshold);
-        //console.log(`%cBOTTOM ${keepScrollBottom[props.chatId]}`, "color: green; font-size: 20px;");
+        // console.log(`%cBOTTOM ${keepScrollBottom[props.chatId]}`, "color: green; font-size: 20px;");
       }
     };
 
@@ -144,7 +144,7 @@
       }
       if (keepScrollBottom[props.chatId]) {
         messagesEl.scrollTop = height.value;
-        //console.log("%cKEEPING BOTTOM", "color: red; font-size: 20px;");
+        // console.log("%cKEEPING BOTTOM", "color: red; font-size: 20px;");
       }
     };
 
@@ -262,7 +262,11 @@
       firstUnreadMessageId() {
         if (!this.chatId) return -1;
 
-        if (this.firstUnread[this.chatId] && this.autoReadEnabled) return this.firstUnread[this.chatId];
+        if (this.firstUnread[this.chatId] && this.autoReadEnabled) {
+          if (this.messages.find(message => message.id === this.firstUnread[this.chatId])) {
+            return this.firstUnread[this.chatId];
+          }
+        }
 
         const firstUnreadMessage = this.messages.find(message => message.unread);
         if (!firstUnreadMessage) return -1;
