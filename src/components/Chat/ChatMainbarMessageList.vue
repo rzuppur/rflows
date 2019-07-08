@@ -215,25 +215,27 @@
         if (!this.chatId) return [];
         this.$store.flows.messages[this.chatId].v;
 
-        return this.$store.flows.messages[this.chatId].d.map((message, index, array) => {
-          message.classList = [];
+        return this.$store.flows.messages[this.chatId].d
+          .filter(message => !message.parentTopicItemId)
+          .map((message, index, array) => {
+            message.classList = [];
 
-          if (this.replyToId === message.id) message.classList.push("message-highlight");
-          if (message.unread) message.classList.push("message-unread");
-          if (message.shadow) message.classList.push("message-shadow");
-          if (message.error) message.classList.push("message-error");
+            if (this.replyToId === message.id) message.classList.push("message-highlight");
+            if (message.unread) message.classList.push("message-unread");
+            if (message.shadow) message.classList.push("message-shadow");
+            if (message.error) message.classList.push("message-error");
 
-          if (index > 0) {
-            const prevMessage = array[index - 1];
-            const sameUser = prevMessage.userId === message.userId;
-            if (sameUser) {
-              const sameDay = this.utils.datesAreSameDay(message.createDate, prevMessage.createDate);
-              if (sameDay) message.classList.push("noauthor");
+            if (index > 0) {
+              const prevMessage = array[index - 1];
+              const sameUser = prevMessage.userId === message.userId;
+              if (sameUser) {
+                const sameDay = this.utils.datesAreSameDay(message.createDate, prevMessage.createDate);
+                if (sameDay) message.classList.push("noauthor");
+              }
             }
-          }
 
-          return message;
-        });
+            return message;
+          });
       },
       messagesLoadSpilit() {
         const splitIndex = this.messages.findIndex(message => message.id >= this.startNextLoadFromId);

@@ -222,7 +222,7 @@ const utils = {
   },
 
   getEmailText(text) {
-    text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
+    text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location.origin}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
     if (text.includes("<head>")) {
       return text.replace("<head>", "<head><base href=\"https://flows.contriber.com\"><style>body { font-family: sans-serif; }</style>");
     }

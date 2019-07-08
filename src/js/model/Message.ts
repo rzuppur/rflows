@@ -7,7 +7,8 @@ interface Message extends Id {
   chatId: number;
   type: ("CHAT" | "NOTE" | "EMAIL" | "FILE" | "EVENT" | "CLEARING");
   text: string;
-  replyTo?: null;
+  replyTo?: number;
+  parentTopicItemId?: number;
   url?: string;
   subject?: string;
   from?: EmailFrom;
@@ -37,6 +38,7 @@ export function mapMessage(message: any): Message {
     type: message.type,
     text: message.text,
     replyTo: message.referenceFromTopicItemId,
+    parentTopicItemId: message.parentTopicItemId,
     url: message.url,
     subject: message.subject,
     from: message.from,
@@ -57,6 +59,7 @@ export function messageToDB(message: Message): any {
     type: message.type,
     text: message.text,
     referenceFromTopicItemId: message.replyTo,
+    parentTopicItemId: message.parentTopicItemId,
     url: message.url,
     subject: message.subject,
     from: message.from,
