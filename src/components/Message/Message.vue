@@ -218,7 +218,7 @@
       },
       async deleteChatMessage(instant) {
         if (instant || await this.$root.confirm("Delete message?", "Delete", "Cancel", "You can ctrl+click for instant delete.")) {
-          this.$flows.messages.deleteMessage(this.message.id);
+          this.$flows.messages.deleteMessage(this.message);
         }
       },
     },

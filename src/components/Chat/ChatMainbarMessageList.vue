@@ -326,6 +326,17 @@
         },
       },
     },
+    mounted() {
+      this.$events.$on("editMessage", (messageId) => {
+        const message = this.$refs[`message-${messageId}`]?.[0];
+        if (message) {
+          setTimeout(() => {
+            message.$el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 10);
+          message.openEdit();
+        }
+      });
+    },
     methods: {
       async loadMessages(chatId) {
         try {

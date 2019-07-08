@@ -73,8 +73,10 @@ class Messages {
     });
   }
 
-  deleteMessage(messageId: number): Promise<SocketResult> {
-    return this.flows.connection.messageWithResponse("/app/TopicItem.delete", { id: messageId });
+  deleteMessage(message: Message): Promise<SocketResult> {
+    if (message.type === "FILE" && message.url) this.flows.files.deleteFile(message.url);
+
+    return this.flows.connection.messageWithResponse("/app/TopicItem.delete", { id: message.id });
   }
 
   async sendMessage(message: any, chatId: number) {

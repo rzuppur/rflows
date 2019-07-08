@@ -8,6 +8,7 @@ import Chats from "@/js/flows/chats";
 import Users from "@/js/flows/users";
 import Settings from "@/js/flows/settings";
 import Messages from "@/js/flows/messages";
+import Files from "@/js/flows/files";
 
 class Flows2 {
   store: STORE;
@@ -17,6 +18,7 @@ class Flows2 {
   users: Users;
   settings: Settings;
   messages: Messages;
+  files: Files;
 
   readonly utils = utils;
   readonly localstorage = localstorage;
@@ -30,6 +32,7 @@ class Flows2 {
     this.users = new Users(this);
     this.settings = new Settings(this);
     this.messages = new Messages(this);
+    this.files = new Files(this);
   }
 
   public storeUpdate(key: StoreFlowsKey): void {

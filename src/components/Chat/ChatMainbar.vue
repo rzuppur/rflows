@@ -54,7 +54,7 @@
                 @blur="editorFocused = false"
                 @keydown.38.native.exact.capture="editLastMessage")
 
-            .control(v-show="!uploadExpanded")
+            .control(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
 
               btn.expand-button(
                 :class="{ expanded: showEditorToolbar }"
@@ -234,6 +234,17 @@
             this._debug("Could not set typing status:", e);
           }
           this.isTyping = isTyping;
+        }
+      },
+      editLastMessage(event) {
+        const text = this._getEditorContent();
+        if (text === "<p></p>") {
+          event.stopPropagation();
+          const myMessages = this.$store.flows.messages[this.chatId].d.filter(message => message.userId === this.$store.currentUser.id);
+          if (myMessages.length) {
+            const messageId = myMessages[myMessages.length - 1].id;
+            this.$events.$emit("editMessage", messageId);
+          }
         }
       },
     },

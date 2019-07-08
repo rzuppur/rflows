@@ -18,10 +18,17 @@
           placeholder="File name"
           @keydown.enter.prevent="upload")
 
-      .control
-        label.button.is-outlined(tabindex="0" for="fileInput" @keyup.enter="e => e.target.click()" v-tooltip="expanded ? 'Change file' :  'Upload file'")
+      .control(v-show="!expanded || !mqMobile")
+
+        label.button.is-outlined(
+          tabindex="0"
+          for="fileInput"
+          @keyup.enter="e => e.target.click()"
+          v-tooltip="expanded ? 'Change file' :  'Upload file'"
+        )
           span.icon.is-small
             i.fas.fa-paperclip
+
         input#fileInput(
           type="file"
           name="file"
@@ -31,14 +38,16 @@
           style="display: none")
 
       .control(v-if="expanded && formData")
-        button.button(
-          type="button"
-          @click="_reset()") Cancel
+        button.button(type="button" @click="_reset()")
+          span(v-if="!mqMobile") Cancel
+          span.icon(v-if="mqMobile")
+            i.fas.fa-times
 
       .control(v-show="expanded")
-        button.button.is-primary(
-          @click="upload()"
-          :class="{ 'is-loading': currentStatus === 'UPLOADING' }") Upload
+        button.button.is-primary(@click="upload()" :class="{ 'is-loading': currentStatus === 'UPLOADING' }")
+          span(v-if="!mqMobile") Upload
+          span.icon(v-if="mqMobile")
+            i.fas.fa-upload
 
 </template>
 
@@ -135,12 +144,12 @@
         if (!this.formData) return;
         this.currentStatus = "UPLOADING";
         this._debug("Starting file upload");
-        this.flows.uploadFileToChat(this.formData, this.fileName, this.replyToId)
+        this.$flows.files.uploadFile(this.formData, this.fileName, this.chatId, this.replyToId)
           .then((response) => {
             if (response.status !== 200) {
-              console.log(response);
               this.currentStatus = "ERROR";
               this.$events.$emit("notify", "Error uploading file");
+              console.log(response);
               return;
             }
             this.currentStatus = "SUCCESS";
