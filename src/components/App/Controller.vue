@@ -13,7 +13,7 @@
         handler(val) {
           setTimeout(() => this.$root.updateFullHeight(), 0);
           if (val === "login") {
-            document.title = "RFlows";
+            setTimeout(() => { document.title = "RFlows"; }, 0);
           }
         },
       },
@@ -37,7 +37,7 @@
           if (val === oldVal) return;
           this.$events.$emit("currentChatChange", oldVal, val);
 
-          if (!val) document.title = "RFlows";
+          if (!val) document.title = `${this.$store.unreadMessagesTotal}RFlows`;
 
           if (oldVal !== null && val) {
             const chatIds = this.$flows.chats.recentChatIds.filter(chatId => chatId !== val);
@@ -134,11 +134,11 @@
         const name = currentChat?.name;
         if (name) {
           this.$store.currentChatName = name;
-          document.title = `${this.$store.currentChatName} · RFlows`;
+          document.title = `${this.$store.unreadMessagesTotal}${this.$store.currentChatName} · RFlows`;
           window.history.replaceState({ chatId: currentChatId }, "", `/${currentChatId}/${name.replace(/\s+/g, "-").toLowerCase()}`);
         } else {
           this.$store.currentChatName = "";
-          document.title = "RFlows";
+          document.title = `${this.$store.unreadMessagesTotal}RFlows`;
         }
       },
     },

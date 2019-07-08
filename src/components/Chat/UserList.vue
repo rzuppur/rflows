@@ -66,6 +66,7 @@
         if (this.$refs.users) {
           const overflow = this.$refs.users.scrollWidth - this.$refs.users.clientWidth;
           this.membersHiddenCount = ( overflow > 0 ) ? Math.ceil(( overflow + 35 ) / 40) : 0;
+          if (this.membersHiddenCount === 1) this.membersHiddenCount = 0;
         }
       },
     },
@@ -86,9 +87,6 @@
     margin-right -5px
     padding-bottom 3px
     margin-bottom -3px
-
-    @media (max-width $media-mobile-width)
-     display none
 
     & /deep/ .menu-container
       height 0

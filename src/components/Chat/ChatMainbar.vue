@@ -12,8 +12,9 @@
           tloc="right"
           :action="() => { $events.$emit('showSidebar') }"
         )
-          span.icon.text-muted
+          span.icon.text-muted(v-if="!$store.unreadMessagesTotal")
             i.fas.fa-bars
+          span.icon.unread-total(v-else) {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
         btn.button.fav-toggle.is-white(
           v-if="!isDevChat"
@@ -286,10 +287,10 @@
     padding 0 20px 0 17px
 
     @media (max-width $media-mobile-width)
-      padding 0 10px 0 17px
+      padding 0 10px
 
     .button
-      margin-right 12px
+      margin-right 10px
 
     .fav-toggle
       .far
@@ -300,6 +301,7 @@
 
     .name
       text-title-20()
+      margin-left 1px
       margin-right 10px
       min-width 150px
       flex 1 1 auto
@@ -309,6 +311,12 @@
         height 18px
         border-radius @height
         max-width 170px
+
+    .unread-total
+      background $color-blue
+      border-radius $border-radius
+      color #fff
+      text-bold-16()
 
   .chat-bottom
     position relative

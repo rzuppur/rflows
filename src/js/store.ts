@@ -20,6 +20,8 @@ class STORE {
   openMenu: string | null = null;
   route: string = "login";
 
+  unreadMessagesTotal: string = "";
+
   connection: ConnectionStatus = {
     connected: false,
     connecting: false,

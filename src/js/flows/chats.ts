@@ -216,6 +216,9 @@ class Chats {
     if (changed) {
       this.store.flows.chats.d.sort((a, b) => ( a.name ? a.name : "" ).localeCompare(b.name ? b.name : ""));
       this.flows.storeUpdate("chats");
+
+      const totalUnread: number = this.store.flows.chats.d.reduce((a, b) => (a + (b.unread || 0)), 0);
+      this.store.unreadMessagesTotal = totalUnread ? `(${totalUnread}) ` : "";
     }
   }
 }
