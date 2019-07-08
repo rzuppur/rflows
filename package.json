@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "serve": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service serve",
-    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service build"
+    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service build && cp _redirects ./dist/_redirects"
   },
   "dependencies": {
     "auto-bind": "^1.2.1",
