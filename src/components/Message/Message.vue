@@ -186,23 +186,24 @@
         const isHTML = ["NOTE", "EMAIL"].indexOf(this.message.type) > -1;
 
         if ((isHTML && this.message.text === text) || (!isHTML && this.message.text === textCleared)) {
-          this._debug("nothing changed");
+          this._debug("Nothing changed");
           return;
         }
 
-        this.editBackup = { ...this.message };
+        // this.editBackup = { ...this.message };
         const editedMessage = { ...this.message };
         editedMessage.text = isHTML ? text : this.utils.unEscapeHTML(textCleared);
 
         this.$nextTick(() => {
-          this.flows.editChatMessage(editedMessage)
-            .then(() => {
-              this.editBackup = null;
-            }).catch((error) => {
+          this.$flows.messages.editMessage(editedMessage)
+            .then(() => {})
+            .catch((error) => {
               this._debug(`Error editing message: ${error}`);
               this.$events.$emit("notify", "Error editing message");
-              this.flows.replaceLocalMessage(this.editBackup);
-              this.editBackup = null;
+              // this.flows.replaceLocalMessage(this.editBackup);
+            })
+            .finally(() => {
+              // this.editBackup = null;
             });
         });
       },

@@ -46,3 +46,23 @@ export function mapMessage(message: any): Message {
     originalFileName: message.originalFileName,
   };
 }
+
+export function messageToDB(message: Message): any {
+  return {
+    id: message.id,
+    createDate: message.createDate,
+    modifiedDate: message.modifiedDate,
+    creatorUserId: message.userId,
+    topicId: message.chatId,
+    type: message.type,
+    text: message.text,
+    referenceFromTopicItemId: message.replyTo,
+    url: message.url,
+    subject: message.subject,
+    from: message.from,
+    to: message.to,
+    contentType: message.contentType,
+    customData: message.customData,
+    originalFileName: message.originalFileName,
+  }
+}

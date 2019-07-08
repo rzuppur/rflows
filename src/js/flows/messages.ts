@@ -5,7 +5,7 @@ import Vue from "vue";
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
 import utils, { performanceLog } from "@/js/flows/utils";
-import Message, { mapMessage } from "@/js/model/Message";
+import Message, { mapMessage, messageToDB } from "@/js/model/Message";
 import { mapMessagesRead } from "@/js/model/MessagesRead";
 import { mapMessageFlagged } from "@/js/model/MessagesFlagged";
 import { SocketResult } from "@/js/socket";
@@ -120,6 +120,16 @@ class Messages {
       }
       this.store.flows.messages[chatId].v += 1;
     }
+  }
+
+  async editMessage(message: Message): Promise<SocketResult> {
+    const messageUpdate = messageToDB(message);
+    delete messageUpdate.createDate;
+    delete messageUpdate.modifiedDate;
+    delete messageUpdate.creatorUserId;
+    //messageUpdate.childFileIds = [];  //TODO: note sees olevad pildid, nende id mis saab kohe base64 uploadeides
+
+    return this.flows.connection.messageWithResponse("/app/TopicItem.save", messageUpdate);
   }
 
   parseChatMessages(messages: any[], action: FrameAction) {
