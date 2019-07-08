@@ -142,6 +142,8 @@ class Chats {
     this.flows.updateStoreArray("chatUsers", mapped);
     this.updateChatData();
     const chatId: number = mapped.map(chatUser => chatUser.chatId).reduce((a, b) => (a === b) ? a : NaN );
+
+    // todo: this is called every time someone's status changes, should only be updated if user leaves a chat
     this.flows.messages.updateMessagesRead(chatId);
   }
 

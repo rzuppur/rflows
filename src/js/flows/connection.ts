@@ -68,6 +68,11 @@ class Connection {
     return Promise.all(promises);
   }
 
+  public subscribeUserQueueChatTopic(topic: ChatTopic, id: number) {
+    const promises = ["modified", "deleted"].map(type => this.subscribeWithResponse(`/user/queue/Topic.${id}.${topic}.${type}`));
+    return Promise.all(promises);
+  }
+
   get canMessage(): boolean {
     return !!(this.socket && this.socket.connected);
   }
@@ -211,6 +216,7 @@ class Connection {
     const filteredBody = Connection.bodyFilter(frameBody, action !== "deleted");
 
     //console.log(type, action, filteredBody);
+    //console.log(frame);
 
     this.store.connection.error = false;
     switch (type) {
@@ -261,7 +267,11 @@ class Connection {
         break;
       }
       case "Error": {
-        this.events.$emit("notify", frameBody.description);
+        if (frameBody.description) {
+          this.events.$emit("notify", frameBody.description)
+        } else if (frameBody.shortName) {
+          this.events.$emit("notify", frameBody.shortName);
+        }
         break;
       }
       case "SubscribeResponse": {

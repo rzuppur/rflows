@@ -15,9 +15,10 @@ interface Message extends Id {
   contentType?: string;
   originalFileName?: string;
   customData?: any;
-  error?: any;
   unread?: boolean;
   flagged?: boolean;
+  shadow?: boolean,
+  error?: any,
 }
 
 export default Message;

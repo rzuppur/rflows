@@ -29,7 +29,7 @@
                 i.fas.fa-times
               span Cancel
 
-      template(v-if="!editMode" v-slot:buttons)
+      template(v-if="showButtons" v-slot:buttons)
         .control(v-if="!autoReadEnabled && message.unread")
           button.button.is-outlined.has-text-success(
           @click.stop="markRead(message.id)"
@@ -105,18 +105,18 @@
 
         return this.$flows.settings.getBooleanUserProp("autoMarkAsRead");
       },
-      messageClass() {
+      /* messageClass() {
         return {
           noauthor: this.noAuthor,
           "message-highlight": this.replyToId === this.message.id,
           "message-unread": this.message.unread,
           "message-edit": this.editMode,
           "message-softhighlight": this.highlighted,
-          "message-shadow": (!this.editMode && !!this.editBackup) || this.message.shadow,
+          "message-shadow": this.isShadow,
           "message-error": this.message.error,
           "message-saved": this.message.flagged,
         };
-      },
+      }, */
       messageIsEdited() {
         return this.message.modifiedDate !== this.message.createDate;
       },
@@ -136,6 +136,12 @@
           return this.message.userId === this.currentUser.id && this.message.type !== "EVENT";
         }
         return false;
+      },
+      isShadow() {
+        return this.message.shadow;
+      },
+      showButtons() {
+        return !this.isShadow && !this.editMode;
       },
     },
     methods: {
@@ -229,24 +235,6 @@
       background alpha($color-gold, 0.05)
 
   .chat-message
-    /*
-     HIGHLIGHTS
-     */
-
-    &.message-shadow
-      .text-content,
-      .note-content
-        opacity 0.4
-
-    &.message-saved
-      background alpha(#409df1, 0.05)
-
-    &.message-softhighlight
-      animation highlight-soft 5s
-
-    &.message-error
-      background alpha($color-red, 0.05)
-
     /*
      EDITOR
      */

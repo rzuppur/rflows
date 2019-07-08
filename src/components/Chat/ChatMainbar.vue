@@ -193,7 +193,19 @@
         this.$flows.chats.favChatIds = this.$flows.chats.favChatIds.concat([this.chatId]);
       },
       sendChatMessage() {
-        console.log("todo: sendChatMessage");
+        const text = this._getEditorContent();
+        const { replyToId } = this;
+        if (this.chatId && this.utils.editorTextNotEmpty(text)) {
+          this.replyCancel();
+          this.editorClear();
+          const textCleared = text.replace(/<p>/g, "").replace(/<br>|<\/p>/g, "\n").trim();
+          const isHTML = /<[a-z][\s\S]*>/i.test(textCleared);
+          this.$flows.messages.sendMessage({
+            type: isHTML ? "NOTE" : "CHAT",
+            text: isHTML ? text : this.utils.unEscapeHTML(textCleared),
+            referenceFromTopicItemId: replyToId,
+          }, this.chatId);
+        }
       },
       replyStart(messageId) {
         this.replyToId = messageId;
@@ -201,6 +213,12 @@
       // eslint-disable-next-line no-unused-vars
       replyCancel(messageId) {
         this.replyToId = null;
+      },
+      editorClear() {
+        if (this.$refs.editor) this.$refs.editor.empty();
+        this.isTyping = false;
+        this.showEditorToolbar = false;
+        this.$flows.chats.setTypingStatus(false, this.chatId);
       },
       _getEditorContent() {
         return this.$refs.editor ? this.$refs.editor.getHTML() : "";
@@ -210,7 +228,11 @@
         const isTyping = this.utils.editorTextNotEmpty(text);
 
         if (isTyping !== this.isTyping) {
-          this.$flows.chats.setTypingStatus(isTyping, this.chatId);
+          try {
+            this.$flows.chats.setTypingStatus(isTyping, this.chatId);
+          } catch (e) {
+            this._debug("Could not set typing status:", e);
+          }
           this.isTyping = isTyping;
         }
       },

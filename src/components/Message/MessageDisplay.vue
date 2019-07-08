@@ -25,26 +25,20 @@
         .sticky-avatar
           img.avatar.avatar-small(:src="avatarUrl")
 
-        .date(v-tooltip="message.modifiedDate !== message.createDate ? 'Edited ' + utils.dateTimeAddOtherYear(message.modifiedDate) : utils.weekdayDate(message.createDate)")
-          | {{ utils.time(message.createDate) + (message.modifiedDate !== message.createDate ? '*' : '') }}
+        .date(v-if="dateShort" v-tooltip="dateMedium")
+          | {{ dateShort }}
 
         .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
           i.fas.fa-thumbtack
 
       .content-container
-        b.text-error.text-small(v-if="message.error") Message was not sent #{""}
+        b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
         .name {{ authorName }}
           span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
             i.fas.fa-thumbtack
 
-        .date
-
-          span(v-if="compact") {{ utils.dateTimeAddOtherYear(message.createDate) }}
-
-          template(v-else)
-            span(v-tooltip="utils.weekdayDate(message.createDate)") {{ utils.time(message.createDate) }}
-            span(v-if="message.modifiedDate !== message.createDate") , edited {{ utils.dateTime(message.modifiedDate) }}
+        .date(v-if="dateShort" v-tooltip="dateMedium") {{ dateShort }}
 
         //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
@@ -140,6 +134,16 @@
 
         return this.$flows.utils.getAvatarFromUser(this.author);
       },
+      isEdited() {
+        return this.message.modifiedDate !== this.message.createDate;
+      },
+      dateShort() {
+        if (this.message.shadow) return false;
+        return this.utils.time(this.message.createDate) + (this.isEdited ? "*" : "");
+      },
+      dateMedium() {
+        return this.isEdited ? `Edited ${this.utils.dateTimeAddOtherYear(this.message.modifiedDate)}` : this.utils.weekdayDate(this.message.createDate);
+      },
     },
   };
 
@@ -164,6 +168,10 @@
         .field
           opacity 1
 
+    /*
+    HIGHLIGHTS
+     */
+
     &.message-highlight
       box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(68, 85, 114, 0.2)
       margin 0 13px
@@ -180,11 +188,22 @@
           right 2px
           display block
 
+     &.message-shadow
+      .text-content,
+      .note-content
+        opacity 0.4
+
+    &.message-saved
+      background alpha(#409df1, 0.05)
+
+    &.message-softhighlight
+      animation highlight-soft 5s
+
     &.message-unread
       background alpha($color-unread-background, 0.1)
 
-    .note-content
-      overflow hidden
+    &.message-error
+      background alpha($color-red, 0.05)
 
     /*
      BUTTONS
@@ -292,6 +311,9 @@
      /*
      CONTENT
       */
+
+    .note-content
+      overflow hidden
 
     .content-container
       word-wrap break-word

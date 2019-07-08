@@ -220,6 +220,8 @@
 
           if (this.replyToId === message.id) message.classList.push("message-highlight");
           if (message.unread) message.classList.push("message-unread");
+          if (message.shadow) message.classList.push("message-shadow");
+          if (message.error) message.classList.push("message-error");
 
           if (index > 0) {
             const prevMessage = array[index - 1];
@@ -473,16 +475,13 @@
       color $color-blue
 
   .unread-separator
-    text-align center
+    text-align right
 
     &.rised
-      text-align right
       margin-top -32px
 
-      .text
-        margin 0 20px
-
     .text
+      margin 0 20px
       background $color-red
       color #fff
       position relative

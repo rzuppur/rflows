@@ -84,10 +84,12 @@
       updateCurrentChatName() {
         if (!this.$store.currentChatId) {
           this.$store.currentChatName = "";
+          document.title = "RFlows";
           return;
         }
         const currentChat = this.$store.flows.chats.d.find(chat => chat.id === this.$store.currentChatId);
         this.$store.currentChatName = currentChat?.name || "";
+        document.title = this.$store.currentChatName ? `${this.$store.currentChatName} | RFlows` : "RFlows";
       },
     },
     render() {

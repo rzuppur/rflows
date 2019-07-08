@@ -15,6 +15,7 @@ class Messages {
   flows: Flows2;
   store: STORE;
   events: Vue;
+  shadowMessageId: number = 10000000;
 
   constructor(flows: Flows2) {
     this.flows = flows;
@@ -49,7 +50,7 @@ class Messages {
   async getChatReadAndFlagged(chatId: number): Promise<SocketResult[]> {
     const subResponses = await Promise.all([
       this.flows.connection.subscribeChatTopic("TopicItemUserProperty", chatId),
-      this.flows.connection.subscribeChatTopic("TopicItemRead", chatId),
+      this.flows.connection.subscribeUserQueueChatTopic("TopicItemRead", chatId),
     ]);
 
     const promises = [];
@@ -65,8 +66,8 @@ class Messages {
     return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b:Message) => a.id - b.id);
   }
 
-  markMessagesAsRead(messageIds: number[], chatId: number): Promise<SocketResult> {
-    return this.flows.connection.messageWithResponse("/app/TopicItemRead.markAsRead", {
+  markMessagesAsRead(messageIds: number[], chatId: number): void {
+    this.flows.connection.message("/app/TopicItemRead.markAsRead", {
       topicId: chatId,
       itemIds: messageIds,
     });
@@ -74,6 +75,51 @@ class Messages {
 
   deleteMessage(messageId: number): Promise<SocketResult> {
     return this.flows.connection.messageWithResponse("/app/TopicItem.delete", { id: messageId });
+  }
+
+  async sendMessage(message: any, chatId: number) {
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+
+    message.creatorUserId = this.store.currentUser.id;
+    message.topicId = chatId;
+    message.customData = { test: true };
+
+    const shadowId = this.shadowMessageId++;
+    const shadowMessage = mapMessage(message);
+    shadowMessage.id = shadowId;
+    shadowMessage.shadow = true;
+    shadowMessage.createDate = Date.now();
+    shadowMessage.modifiedDate = shadowMessage.createDate;
+    this.store.flows.messages[chatId].d.push(shadowMessage);
+    this.store.flows.messages[chatId].v += 1;
+
+    let error = false;
+    let errorRecoverable = true;
+
+    try {
+      const result: SocketResult = await this.flows.connection.messageWithResponse("/app/TopicItem.save", message);
+      if (result.type !== "TopicItem") throw new Error("Result not TopicItem");
+    } catch (e) {
+      if (e.type === "Error") {
+        error = e.body.description ? e.body.description : "Could not send message";
+        if (e.body.code === 401) {
+          errorRecoverable = false;
+        }
+      } else {
+        error = e;
+      }
+    } finally {
+      const shadow = this.store.flows.messages[chatId].d.find(message => message.id === shadowId);
+      if (shadow) {
+        if (error) {
+          shadow.error = error;
+        }
+        if (!error || !errorRecoverable) {
+          this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => message.id !== shadowId);
+        }
+      }
+      this.store.flows.messages[chatId].v += 1;
+    }
   }
 
   parseChatMessages(messages: any[], action: FrameAction) {
@@ -99,6 +145,7 @@ class Messages {
   }
 
   parseChatMessagesRead(messagesRead: any[], action: FrameAction) {
+    console.log("parseChatMessagesRead");
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("messagesRead", messagesRead);
       return;
@@ -146,6 +193,10 @@ class Messages {
     }
 
     this.store.flows.messages[chatId].d.map((message) => {
+      if (message.shadow) {
+        message.unread = false;
+        return;
+      }
       const inReadRange = this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId && readRange.messageFrom <= message.id && readRange.messageTo >= message.id);
       message.unread = !inReadRange;
     });
