@@ -145,7 +145,6 @@ class Messages {
   }
 
   parseChatMessagesRead(messagesRead: any[], action: FrameAction) {
-    console.log("parseChatMessagesRead");
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("messagesRead", messagesRead);
       return;

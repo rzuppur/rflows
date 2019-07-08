@@ -3,14 +3,18 @@
   export default {
     name: "Controller",
     data() {
-      return {};
+      return {
+        lastChatIdChangeWasFromNav: false,
+      };
     },
     watch: {
       "$store.route": {
         immediate: true,
         handler(val) {
           setTimeout(() => this.$root.updateFullHeight(), 0);
-          if (val === "login") document.title = "RFlows";
+          if (val === "login") {
+            document.title = "RFlows";
+          }
         },
       },
       "$store.currentUser": {
@@ -32,11 +36,29 @@
         handler(val, oldVal) {
           if (val === oldVal) return;
           this.$events.$emit("currentChatChange", oldVal, val);
+
+          if (!val) document.title = "RFlows";
+
           if (oldVal !== null && val) {
             const chatIds = this.$flows.chats.recentChatIds.filter(chatId => chatId !== val);
             chatIds.unshift(val);
             this.$flows.chats.recentChatIds = chatIds;
           }
+
+          if (this.lastChatIdChangeWasFromNav) {
+            this.lastChatIdChangeWasFromNav = false;
+          } else {
+            if (!oldVal && val) {
+              window.history.replaceState({ chatId: val }, "", `/${val}/}`);
+            }
+            if (val && oldVal) {
+              window.history.pushState({ chatId: oldVal }, "", `/${oldVal}/${this.$store.currentChatName.replace(/\s+/g, "-").toLowerCase()}`);
+            }
+            if (oldVal && !val) {
+              window.history.replaceState(null, "", "/");
+            }
+          }
+
           this.updateCurrentChatName();
         },
       },
@@ -56,10 +78,31 @@
         this.$store.debugMode = false;
       };
 
-      // if (process?.env.NODE_ENV === "development") this.$store.debugMode = true;
+      if (process?.env.NODE_ENV === "development") this.$store.debugMode = true;
     },
-    mounted() {
-      this.loginIfHasToken();
+    async mounted() {
+      await this.loginIfHasToken();
+
+      if (window.history.state?.chatId) {
+        this._debug(`Opening ${window.history.state.chatId} from history.state`);
+        this.$store.currentChatId = window.history.state.chatId;
+        this.lastChatIdChangeWasFromNav = true;
+      } else {
+        const parts = window.location.pathname.split("/").filter(part => part);
+        if (parts.length && parts[0] && +parts[0]) {
+          this._debug(`Opening ${+parts[0]} from URL`);
+          this.$store.currentChatId = +parts[0];
+          this.lastChatIdChangeWasFromNav = true;
+        }
+      }
+
+      window.onpopstate = (event) => {
+        if (event.state?.chatId) {
+          this._debug(`Opening ${event.state.chatId} from onpopstate`);
+          this.$store.currentChatId = event.state.chatId;
+          this.lastChatIdChangeWasFromNav = true;
+        }
+      };
     },
     methods: {
       loginDone() {
@@ -84,12 +127,19 @@
       updateCurrentChatName() {
         if (!this.$store.currentChatId) {
           this.$store.currentChatName = "";
-          document.title = "RFlows";
           return;
         }
-        const currentChat = this.$store.flows.chats.d.find(chat => chat.id === this.$store.currentChatId);
-        this.$store.currentChatName = currentChat?.name || "";
-        document.title = this.$store.currentChatName ? `${this.$store.currentChatName} | RFlows` : "RFlows";
+        const { currentChatId } = this.$store;
+        const currentChat = this.$store.flows.chats.d.find(chat => chat.id === currentChatId);
+        const name = currentChat?.name;
+        if (name) {
+          this.$store.currentChatName = name;
+          document.title = `${this.$store.currentChatName} · RFlows`;
+          window.history.replaceState({ chatId: currentChatId }, "", `/${currentChatId}/${name.replace(/\s+/g, "-").toLowerCase()}`);
+        } else {
+          this.$store.currentChatName = "";
+          document.title = "RFlows";
+        }
       },
     },
     render() {

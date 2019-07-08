@@ -282,7 +282,7 @@ class Connection {
         console.log(frame);
       }
     }
-    if (this.store.debugMode) {
+    if (false && this.store.debugMode) {
       const timespan = window.performance.now() - STARTTIME;
       if (timespan < 6) {
         console.log(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
