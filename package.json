@@ -5,8 +5,8 @@
   "author": "Reino Zuppur <reino@reinozuppur.com>",
   "private": true,
   "scripts": {
-    "serve": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && vue-cli-service serve",
-    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && vue-cli-service build"
+    "serve": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service serve",
+    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service build"
   },
   "dependencies": {
     "auto-bind": "^1.2.1",
@@ -14,14 +14,16 @@
     "fuse.js": "^3.3.0",
     "intersection-observer": "^0.5.1",
     "portal-vue": "^2.1.4",
+    "resize-observer-polyfill": "^1.5.1",
     "sockjs-client": "^1.3.0",
     "tiptap": "^1.13.0",
     "tiptap-extensions": "^1.13.0",
+    "ts-optchain": "^0.1.7",
     "v-tooltip": "^2.0.0-rc.33",
     "vue": "^2.5.21",
+    "vue-async-computed": "^3.7.0",
     "vue-focus-lock": "^1.3.1",
-    "vue-images-loaded": "^1.1.2",
-    "vue-stash": "^2.0.1-beta",
+    "vue-function-api": "^2.0.6",
     "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
@@ -39,6 +41,7 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "tiptap-commands": "^1.6.0",
+    "typescript": "^3.5.1",
     "vue-template-compiler": "^2.5.21"
   },
   "engines": {

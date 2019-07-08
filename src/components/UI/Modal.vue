@@ -60,7 +60,6 @@
         type: Boolean,
       },
     },
-    store: ["modalsOpen"],
     data() {
       return {
         modalOpen: false,
@@ -80,11 +79,11 @@
     },
     methods: {
       open() {
-        this.modalsOpen.push(this._id);
+        this.$store.modalsOpen.push(this._id);
         this.modalOpen = true;
       },
       close() {
-        this.modalsOpen.splice(this.modalsOpen.indexOf(this._id), 1);
+        this.$store.modalsOpen.splice(this.$store.modalsOpen.indexOf(this._id), 1);
         this.modalOpen = false;
         this.$emit("close");
       },
@@ -181,7 +180,7 @@
     .modal-enter,
     .modal-leave-to
       .modal
-        transform translateY(100px)
+        transform translateY(10px)
         opacity 0
 
     .modal-overlay
@@ -212,7 +211,7 @@
   .modal-header
     display flex
     align-items center
-    margin-bottom 15px
+    margin-bottom 10px
 
     .title
       flex 1 1 auto

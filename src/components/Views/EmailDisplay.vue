@@ -8,7 +8,7 @@
 
         iframe.email-frame(:srcdoc="utils.getEmailText(message.text)" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
 
-      file-display(v-for="file in attachments" :message="file" :key="file.id")
+      file-display(v-for="file in attachments" :url="file.url" :text="file.text")
 
       template(v-slot:buttons)
         span
@@ -31,15 +31,19 @@
     computed: {
       attachments() {
         if (!this.message) return [];
-        return this.flows.messageChilds(this.message.id);
+        const childs = this.$store.flows.messages[this.message.chatId].d.filter(message => message.parentTopicItemId === this.message.id);
+        if (childs.length) {
+          childs.sort((a, b) => a.id - b.id);
+          console.log(childs);
+          return childs;
+        }
+        return [];
       },
     },
     mounted() {
-      this.eventBus.$on("openEmail", (messageId) => {
-        const message = this.flows.getChatMessage(messageId);
+      this.$events.$on("openEmail", (message) => {
         if (message) {
           this.message = message;
-          this._debug(`Opening email, message id ${message.id}`);
           this.$nextTick(() => {
             this.$refs.emailModal?.open();
           });

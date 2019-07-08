@@ -18,10 +18,17 @@
           placeholder="File name"
           @keydown.enter.prevent="upload")
 
-      .control
-        label.button.is-outlined(tabindex="0" for="fileInput" @keyup.enter="e => e.target.click()" v-tooltip="expanded ? 'Change file' :  'Upload file'")
+      .control(v-show="!expanded || !mqMobile")
+
+        label.button.is-outlined(
+          tabindex="0"
+          for="fileInput"
+          @keyup.enter="e => e.target.click()"
+          v-tooltip="expanded ? 'Change file' :  'Upload file'"
+        )
           span.icon.is-small
             i.fas.fa-paperclip
+
         input#fileInput(
           type="file"
           name="file"
@@ -31,21 +38,26 @@
           style="display: none")
 
       .control(v-if="expanded && formData")
-        button.button(
-          type="button"
-          @click="_reset()") Cancel
+        button.button(type="button" @click="_reset()")
+          span(v-if="!mqMobile") Cancel
+          span.icon(v-if="mqMobile")
+            i.fas.fa-times
 
       .control(v-show="expanded")
-        button.button.is-primary(
-          @click="upload()"
-          :class="{ 'is-loading': currentStatus === 'UPLOADING' }") Upload
+        button.button.is-primary(@click="upload()" :class="{ 'is-loading': currentStatus === 'UPLOADING' }")
+          span(v-if="!mqMobile") Upload
+          span.icon(v-if="mqMobile")
+            i.fas.fa-upload
 
 </template>
 
 <script>
   export default {
     name: "FileUpload",
-    props: ["chatId", "replyToId"],
+    props: {
+      chatId: Number,
+      replyToId: Number,
+    },
     data() {
       return {
         fileName: "",
@@ -62,13 +74,13 @@
     watch: {
       expanded(val) {
         this.$emit("expandChange", val);
-        this.eventBus.$emit("messagesScrollUpdate");
+        this.$events.$emit("messagesScrollUpdate");
       },
       previewUrl() {
-        this.eventBus.$emit("messagesScrollUpdate");
+        this.$events.$emit("messagesScrollUpdate");
       },
       dropping(val, oldVal) {
-        if (val !== oldVal) this.eventBus.$emit("dropOverlay", val);
+        if (val !== oldVal) this.$events.$emit("dropOverlay", val);
       },
     },
     created() {
@@ -80,7 +92,7 @@
       this.dragCounter = 0;
     },
     mounted() {
-      this.loginToken = this.flows.getLoginToken();
+      this.loginToken = this.$flows.localstorage.getSessionToken();
     },
     destroyed() {
       window.removeEventListener("paste", this._pasteFromClipboard);
@@ -132,17 +144,17 @@
         if (!this.formData) return;
         this.currentStatus = "UPLOADING";
         this._debug("Starting file upload");
-        this.flows.uploadFileToChat(this.formData, this.fileName, this.replyToId)
+        this.$flows.files.uploadFile(this.formData, this.fileName, this.chatId, this.replyToId)
           .then((response) => {
             if (response.status !== 200) {
-              console.log(response);
               this.currentStatus = "ERROR";
-              this.eventBus.$emit("notify", "Error uploading file");
+              this.$events.$emit("notify", "Error uploading file");
+              console.log(response);
               return;
             }
             this.currentStatus = "SUCCESS";
             this._reset(true);
-            this.eventBus.$emit("notify", "File uploaded");
+            this.$events.$emit("notify", "File uploaded");
             this.$emit("fileUploaded");
             this._processQueue();
           })
@@ -150,12 +162,12 @@
             if (error.message === "File too large") {
               this.uploadError = error.message;
               this.currentStatus = "ERROR";
-              this.eventBus.$emit("notify", "File too large, maximum 5MB");
+              this.$events.$emit("notify", "File too large, maximum 5MB");
               return;
             }
             this.uploadError = error.response;
             this.currentStatus = "ERROR";
-            this.eventBus.$emit("notify", "Error uploading file");
+            this.$events.$emit("notify", "Error uploading file");
           });
       },
       _reset(keepQueue) {
@@ -217,6 +229,7 @@
       },
     },
   };
+
 </script>
 
 <style lang="stylus" scoped>
@@ -229,6 +242,5 @@
     display block
     margin 0 auto 15px
     box-shadow 0 0 0 2px rgba(0, 0, 0, .1)
-
 
 </style>

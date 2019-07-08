@@ -4,6 +4,8 @@
 
     portal-target(name="modals" multiple)
 
+    portal-target(name="popupMenu" multiple)
+
     confirm-modal
 
     .drop-overlay(:class="{ dropping }")
@@ -26,7 +28,7 @@
       };
     },
     created() {
-      this.eventBus.$on("dropOverlay", this.dropOverlay);
+      this.$events.$on("dropOverlay", this.dropOverlay);
     },
     methods: {
       dropOverlay(visible) {

@@ -1,8 +1,8 @@
 <template lang="pug">
 
-  modal(v-if="promiseResolve" :title="false" ref="confirmModal" :blocking="true")
+  modal(v-if="promiseResolve" :title="question" ref="confirmModal" :blocking="true")
 
-    .question {{ question }}
+    p(v-if="desc") {{ desc }}
 
     template(v-slot:buttons)
 
@@ -23,6 +23,7 @@
     data() {
       return {
         question: "",
+        desc: false,
         yesText: "Yes",
         noText: "No",
         promiseResolve: null,
@@ -36,12 +37,13 @@
       this.$root.confirm = this.confirm;
     },
     methods: {
-      async confirm(question, yesText, noText) {
+      async confirm(question, yesText, noText, desc) {
         if (this.promiseResolve || this.promiseReject) {
           this._debug("! Already confirming");
           return Promise.reject();
         }
         this.question = question;
+        if (desc) this.desc = desc;
         if (yesText) this.yesText = yesText;
         if (noText) this.noText = noText;
 
@@ -78,6 +80,7 @@
       _cleanup() {
         this.$refs.confirmModal?.close();
         this.question = "";
+        this.desc = false;
         this.yesText = "Yes";
         this.noText = "No";
         this.promiseResolve = null;
@@ -91,8 +94,11 @@
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
 
-  .question
-    text-title-20()
+  p
     margin-bottom 30px
+
+  @media (max-width 500px)
+    .button
+      flex 1 1 0
 
 </style>

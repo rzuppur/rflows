@@ -4,8 +4,7 @@
     button.button.is-small(
     :class=(hasActive ? "{ 'is-active': isActive."+command+" }" : "")
     @pointerdown.prevent
-    @pointerup="commands."+command
-    @keyup.enter="commands."+command
+    @click="commands."+command
     v-tooltip.top="{ content: '"+tooltip+"', popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
     )
       block
@@ -148,7 +147,7 @@
     computed: {
       showMenuBar() {
         return !this.onlyText && (
-              this.showButtons === "ALWAYS"
+          this.showButtons === "ALWAYS"
           || (this.showButtons === "MULTILINE" && this.multiline)
         );
       },
@@ -165,7 +164,7 @@
               setTimeout(this.cursorToEnd, 5);
             },
             onUpdate: () => {
-              this.eventBus.$emit("messagesScrollUpdate");
+              this.$events.$emit("messagesScrollUpdate");
               this.multiline = this.$refs.editor ? this.$refs.editor.$el.clientHeight > 40 : false;
               this.$emit("update");
             },
@@ -181,7 +180,7 @@
           if (focus) setTimeout(this.focus, 10);
           setTimeout(() => {
             this.multiline = this.$refs.editor ? this.$refs.editor.$el.clientHeight > 40 : false;
-            this.eventBus.$emit("messagesScrollUpdate");
+            this.$events.$emit("messagesScrollUpdate");
             this.cursorToEnd();
           }, 5);
         }
@@ -194,17 +193,18 @@
       },
       setMessage(message) {
         const editorText = ["NOTE", "EMAIL"].indexOf(message.type) > -1
-          ? this.flows.noteTextParse(message.text)
+          ? this.$flows.messages.noteTextParse(message.text)
           : this.utils.textToHTML(message.text);
         this._initOrSetContent(editorText, true);
       },
       getHTML() {
         if (this.editor) return this.editor.getHTML();
+        return false;
       },
       focus() {
         if (this.editor) {
           this.editor.focus();
-          this.eventBus.$emit("messagesScrollUpdate");
+          this.$events.$emit("messagesScrollUpdate");
         }
       },
       cursorToEnd() {

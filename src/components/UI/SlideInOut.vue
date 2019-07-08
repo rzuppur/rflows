@@ -17,8 +17,14 @@
   export default {
     name: "SlideInOut",
     props: {
-      inDuration: Number,
-      outDuration: Number,
+      inDuration: {
+        type: Number,
+        default: 90,
+      },
+      outDuration: {
+        type: Number,
+        default: 90,
+      },
     },
     methods: {
       beforeEnter(el) {
@@ -52,8 +58,3 @@
     },
   };
 </script>
-
-<style lang="stylus" scoped>
-  @import "~@/shared.styl"
-
-</style>

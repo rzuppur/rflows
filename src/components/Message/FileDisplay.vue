@@ -1,11 +1,11 @@
-<template lang="pug">
+<template lang="pug" functional>
 
-  a.file-preview(:href="flows.getFilePath(message.url)" target="_blank" rel="noopener noreferrer nofollow")
+  a.file-preview(:href="props.url" target="_blank" rel="noopener noreferrer nofollow")
 
-    .file-title.ellipsis #[i.fas.fa-paperclip] {{ message.text }}
+    .file-title.ellipsis #[i.fas.fa-paperclip] {{ props.text }}
 
-    .image-preview(v-if="utils.fileMessagePreviewable(message)")
-      img(:src="flows.getFilePath(message.url)")
+    .image-preview(v-if="props.preview")
+      img(:src="props.url")
 
 </template>
 
@@ -13,9 +13,6 @@
 
   export default {
     name: "FileDisplay",
-    props: {
-      message: Object,
-    },
   };
 
 </script>
@@ -30,7 +27,7 @@
     background  $color-light-blue-background
     border-radius $border-radius
     overflow hidden
-    max-width $message-item-max-width
+    max-width 100%
 
     &:hover,
     &:focus

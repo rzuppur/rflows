@@ -8,7 +8,7 @@ $color-focus-blue = #0d7cc8
 
 $color-red = #e24161
 $color-red-text = #c15d71
-$color-red-error = #cd193d
+$color-red-error = #cc2b30
 
 $color-yellow = #ffdd57
 $color-gold = #eebc41
@@ -19,7 +19,9 @@ $color-text = #4a4a4a
 
 $color-light-gray-background = #f9f9fa
 $color-light-blue-background = #eef0ff
-$color-sidebar-background = #1d2a35
+//$color-sidebar-background = #1d2a35
+$color-sidebar-background = #102530
+//$color-sidebar-background = #0e2335
 $color-unread-background = saturate(darken($color-gold, 10), 20)
 
 $color-gray-border = #ddd
@@ -37,6 +39,7 @@ $message-item-max-width = 700px
 $buttons-switch-to-mobile = 1300px
 $chat-sidebar-hide = 1050px
 $media-sidebar-hide = 800px
+$media-mobile-width = 700px
 
 /*
 TYPOGRAPHY
@@ -73,6 +76,12 @@ text-regular-16()
 
 text-bold-16()
   createTextStyle(16, 600)
+
+text-regular-20()
+  createTextStyle(20)
+
+text-bold-20()
+  createTextStyle(20, 600)
 
 text-title-20()
   createTextStyle(20, 600)

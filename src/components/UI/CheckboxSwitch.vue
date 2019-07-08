@@ -1,14 +1,14 @@
-<!-- Based on https://github.com/rafaelpimpa/vue-checkbox-switch -->
+<!-- Modified from https://github.com/rafaelpimpa/vue-checkbox-switch -->
 <template lang="pug">
 
   label.switch
     input.switch-input(
-      :class="classes"
       type="checkbox"
-      :checked="checked"
-      @change="changed"
       :name="name"
-      :disabled="disabled")
+      :checked="value"
+      @change="$emit('input', $event.target.checked)"
+      :disabled="disabled"
+    )
     span.switch-toggle(:disabled="disabled")
       slot
 
@@ -18,35 +18,10 @@
   export default {
     name: "CheckboxSwitch",
     props: {
+      value: Boolean,
+      name: String,
       disabled: Boolean,
-      classes: String,
-      checked: Boolean,
-      name: String
     },
-    data() {
-      return {
-        value: null
-      }
-    },
-    beforeMount() {
-      this.value = this.checked
-    },
-    mounted() {
-      this.$emit('input', this.value)
-    },
-    methods: {
-      changed(event) {
-        this.value = event.target.checked;
-      },
-    },
-    watch: {
-      value(val) {
-        this.$emit('input', val)
-      },
-      checked(val) {
-        this.value = val
-      }
-    }
   }
 </script>
 

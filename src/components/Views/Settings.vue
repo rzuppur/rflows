@@ -1,232 +1,158 @@
 <template lang="pug">
 
-  .settings-section.alwaysFullHeight
+  mixin settings(name)
+    .setting-block
+      checkbox-switch(:disabled=name + " === null" :value=name @input="valueUpdate('" + name + "', $event)" name=name)
+        block
 
-    .title-bar
+  .settings
 
-      .name.ellipsis {{ loaded ? 'Settings' : 'Loading...' }}
+    modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
 
-      button.button.is-white(v-tooltip="'Close'" @click="$emit('closeSettings')" style="margin-right: 5px;")
-        span.icon
-          i.fas.fa-times.text-muted
+      h4
+        span Profile
 
-    .settings.scrollbar-style
-      .settings-container(v-if="loaded")
+      user-display(:user="currentUser" :withName="true")
+        btn.button(:action="$flows.connection.logout" tip="Log out" tloc="right" icon)
+          span.icon
+            i.fas.fa-sign-out-alt
 
-        template(v-if="!nameEdit")
-          .user-with-name
-            img.avatar.avatar-small(:src="flows.getAvatarFromUser(currentUser)" style="margin-right: 20px;")
-            .text
-              .name.ellipsis {{ flows.getFullNameFromUser(currentUser) }}
-              .details.text-muted.ellipsis {{ currentUser.email }}
-            button.button(v-if="currentUser.avatarUrl" v-tooltip="'Remove avatar'" @click="removeAvatar()")
-              span.icon
-                i.fas.fa-user-times
-            button.button(v-tooltip="'Change name'" @click="openNameEdit()")
-              span.icon
-                i.fas.fa-edit
-        template(v-if="nameEdit")
-          .field.is-grouped
-            .control.is-expanded
-              .label First name
-              input.input(type="text" v-model="user.firstName")
-            .control.is-expanded
-              .label Last name
-              input.input(type="text" v-model="user.lastName")
-          .buttons
-            button.button.is-primary(@click="saveNameEdit()") Save
-            button.button(@click="nameEdit = false") Cancel
+      template(v-if="settingsLoaded")
+        h4
+          span Messages
+        +settings("autoMarkAsRead")
+          .label Auto-read
+            .description {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
+        +settings("desktopNotifications")
+          .label Browser notifications
+            .description {{ notificationStatus }}
 
-        .field
-          .control
-            checkbox-switch(v-model="autoMarkAsRead" :checked="autoMarkAsRead")
-              .label Mark messages as read automatically
-                .description(v-if="autoMarkAsRead") Messages will be marked as read when opened
-                .description(v-else) Messages have to be marked as read manually
-        .field
-          .control
-            checkbox-switch(v-model="desktopNotifications" :checked="desktopNotifications")
-              .label Notifications
-                template(v-if="desktopNotifications")
-                  .description(v-if="notificationGranted()") Notifications enabled
-                  .description(v-else) Notifications are disabled from browser
-                .description(v-else) Notifications are turned off
-        .field
-          .control
-            checkbox-switch(v-model="showWorkspaceSwitcher" :checked="showWorkspaceSwitcher")
-              .label Show workspace filter on sidebar
-        .field
-          .control
-            checkbox-switch(v-model="compactMode" :checked="compactMode")
-              .label Compact message display
-                .description(v-if="compactMode") Maximize number of messages displayed
-                .description(v-else) More space around messages
+        h4
+          span Interface
+        +settings("showWorkspaceSwitcher")
+          .label Workspace filter
+            .description {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
+        +settings("compactMode")
+          .label Compact messages
+            .description {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
 
-        div(style="height: 30px")
-        button.button.is-outlined(@click="flows.logout") Log out
+      p.text-muted.space-top-medium(v-else) Settings not available
+      .space-top-small
+
+      template(v-slot:buttons)
+        span
 
 </template>
 
 <script>
-  import CheckboxSwitch from "@/components/UI/CheckboxSwitch"
+  import Modal from "@/components/UI/Modal.vue";
+  import CheckboxSwitch from "@/components/UI/CheckboxSwitch.vue";
+  import UserDisplay from "@/components/UserDisplay.vue";
 
   export default {
     name: "Settings",
-    components: {CheckboxSwitch},
-    store: ["currentUser", "topics"],
-    data: function () {
+    components: { UserDisplay, CheckboxSwitch, Modal },
+    data() {
       return {
         autoMarkAsRead: null,
         desktopNotifications: null,
         showWorkspaceSwitcher: null,
         compactMode: null,
-        user: {
-          firstName: "",
-          lastName: "",
-        },
-        nameEdit: false,
       };
     },
-    created() {
-      this.eventBus.$on("currentChatChange", () => {this.$emit('closeSettings')});
-      if (this.topics.UserProperty) {
-        this.autoMarkAsRead = this.flows.autoMarkAsRead;
-        this.desktopNotifications = this.flows.desktopNotifications;
-        this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
-        this.compactMode = this.flows.compactMode;
-      }
-      if (this.currentUser) {
-        this.user.firstName = this.currentUser.firstName;
-        this.user.lastName = this.currentUser.lastName;
-      }
-    },
     computed: {
-      loaded() {
-        return this.currentUser && this.autoMarkAsRead !== null && this.desktopNotifications !== null;
+      notificationStatus() {
+        if (this.desktopNotifications) {
+          switch (Notification.permission) {
+            case "default":
+              return "Permission needed";
+            case "granted":
+              return "Notifications enabled";
+            case "denied":
+              return "Notifications blocked, you can change this in site settings";
+            default:
+              return "Error";
+          }
+        }
+        return "Notifications disabled";
       },
+      currentUser() {
+        return {
+          avatar: this.$flows.utils.getAvatarFromUser(this.$store.currentUser),
+          name: this.$flows.utils.getFullNameFromUser(this.$store.currentUser),
+          email: this.$store.currentUser?.email,
+        };
+      },
+      settingsLoaded() {
+        this.$store.flows.userProperties.v;
+
+        return !!this.$store.flows.userProperties.d.length;
+      },
+    },
+    mounted() {
+      this.$events.$on("openSettings", () => {
+        this.$refs.settingsModal?.open();
+        this.updateProps();
+      });
     },
     methods: {
-      openNameEdit() {
-        this.user.firstName = this.currentUser.firstName;
-        this.user.lastName = this.currentUser.lastName;
-        this.nameEdit = true;
+      updateProps() {
+        this.autoMarkAsRead = this.$flows.settings.getBooleanUserProp("autoMarkAsRead");
+        this.desktopNotifications = this.$flows.settings.getBooleanUserProp("desktopNotifications");
+        this.showWorkspaceSwitcher = this.$flows.settings.getBooleanUserProp("showWorkspaceSwitcher");
+        this.compactMode = this.$flows.settings.getBooleanUserProp("compactMode");
       },
-      saveNameEdit() {
-        if (this.user.firstName.length && this.user.lastName.length) {
-          this.flows.setUserName(this.user.firstName, this.user.lastName);
-          this.nameEdit = false;
-        } else {
-          this.eventBus.$emit("notify", "Name can't be empty");
-        }
-      },
-      async removeAvatar() {
-        if (await this.$root.confirm("Delete avatar?", "Delete", "Cancel")) this.flows.removeAvatar();
-      },
-      notificationGranted() {
-        return window.Notification.permission === "granted";
-      },
-    },
-    watch: {
-      autoMarkAsRead(val, oldVal) {
-        if (oldVal !== null) this._debug(`autoMarkAsRead ${oldVal} => ${val}`);
-        if (val === null || oldVal === null) return;
-        if (this.flows.autoMarkAsRead !== val) this.flows.autoMarkAsRead = val;
-      },
-      showWorkspaceSwitcher(val, oldVal) {
-        if (oldVal !== null) this._debug(`showWorkspaceSwitcher ${oldVal} => ${val}`);
-        if (val === null || oldVal === null) return;
-        if (this.flows.showWorkspaceSwitcher !== val) this.flows.showWorkspaceSwitcher = val;
-      },
-      desktopNotifications(val, oldVal) {
-        if (oldVal !== null) this._debug(`desktopNotifications ${oldVal} => ${val}`);
-        if (val === null || oldVal === null) return;
-        if (this.flows.desktopNotifications !== val) this.flows.desktopNotifications = val;
-        if (val === true) {
+      valueUpdate(prop, value) {
+        this.$flows.settings.setBooleanUserProperty(prop, value);
+        this[prop] = null;
+
+        if (value && prop === "desktopNotifications") {
           if (Notification.permission === "default") {
-            Notification.requestPermission().then(result => {
-              if (result === "default") this.eventBus.$emit("notify", "Notifications are disabled");
-              if (result === "denied") this.eventBus.$emit("notify", "Notifications are blocked, you can change this in site settings");
-              if (result === "granted") this.eventBus.$emit("notify", "Notifications enabled");
+            Notification.requestPermission().then((result) => {
+              if (result === "default") this.$events.$emit("notify", "Notifications are disabled");
+              if (result === "denied") this.$events.$emit("notify", "Notifications are blocked, you can change this in site settings");
+              if (result === "granted") this.$events.$emit("notify", "Notifications enabled");
             });
+          } else if (Notification.permission !== "granted") {
+            this.$events.$emit("notify", "Can't enable notifications, possibly blocked from browser");
           }
         }
       },
-      compactMode(val, oldVal) {
-        if (oldVal !== null) this._debug(`compactMode ${oldVal} => ${val}`);
-        if (val === null || oldVal === null) return;
-        if (this.flows.compactMode !== val) this.flows.compactMode = val;
-      },
-      "topics.UserProperty": function (val) {
-        if (val) {
-          this.autoMarkAsRead = this.flows.autoMarkAsRead;
-          this.desktopNotifications = this.flows.desktopNotifications;
-          this.showWorkspaceSwitcher = this.flows.showWorkspaceSwitcher;
-          this.compactMode = this.flows.compactMode;
-        } else {
-          this._debug("userProp watch reset to null");
-          this.autoMarkAsRead = null;
-          this.desktopNotifications= null;
-          this.showWorkspaceSwitcher = null;
-          this.compactMode= null;
-        }
-      },
-      currentUser(val, oldVal) {
-        if (val && (val.firstName !== oldVal.firstName || val.lastName !== oldVal.lastName)) {
-          this.user.firstName = this.currentUser.firstName;
-          this.user.lastName = this.currentUser.lastName;
-        } else {
-          this.user.firstName = "";
-          this.user.lastName = "";
-        }
+    },
+    watch: {
+      "$store.flows.userProperties.v": function () {
+        this.updateProps();
       },
     },
-  }
+  };
 </script>
 
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
 
-  .settings-section
-    height 100%
-    display flex
-    flex-direction column
+  h4
+    margin-bottom 10px
+    position relative
 
-  .title-bar
-    background #fff
-    box-shadow 0 1px 3px rgba(0, 0, 0, 0.1)
-    overflow hidden
-    z-index 1
-    max-height 56px
-    min-height 56px
-    display flex
-    align-items center
-    padding 0 20px
+    &:not(:first-of-type)
+      margin-top 30px
 
-    .name
-      flex 1
-      margin-right 20px
-      text-title-20()
-      margin-top -1px
+    &:before
+      content ""
+      height 2px
+      background $color-light-border
+      position absolute
+      left 0
+      right 0
+      top 8px
 
-  .settings
-    flex 1
-    overflow-y auto
-    background $color-light-gray-background
-
-    .settings-container
-      max-width 700px
-      margin 0 auto
-      padding 20px
+    span
+      position relative
+      z-index 1
       background #fff
-      box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
+      padding-right 5px
 
-      .user-with-name
-        margin-bottom 30px
-
-        .button:not(:last-child)
-          margin-right -6px
-
-      .field:not(:last-child)
-        margin-bottom 20px
+  .setting-block
+    margin-bottom 20px
 
 </style>

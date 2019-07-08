@@ -4,18 +4,25 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration
   -webkit-appearance none
 
-img.avatar
+.avatar
   border-radius 100px
   width 42px
   height 56px
+
   &.avatar-small
     width 30px
     height 40px
+
+  &.placeholder
+    background alpha(#000, 0.05)
 
 .user-with-name
   display flex
   align-items center
   overflow hidden
+
+  .avatar-container
+    min-width 40px
 
   .avatar
     margin-right 10px
@@ -31,8 +38,6 @@ img.avatar
   .button
     background transparent
     border-color transparent
-    align-self flex-start
-    margin-top 4px
     margin-left 10px
     color alpha(#000, 0.5)
 
@@ -53,6 +58,17 @@ img.avatar
   75%
     content "..."
 
+@keyframes dotJump
+  0%
+    transform translateY(0)
+    opacity 1
+  15%
+    transform translateY(-5px)
+  30%
+    transform translateY(0)
+    opacity 1
+  70%
+    opacity .7
 
 .expand-button
   $button-size = 34px
@@ -99,37 +115,6 @@ img.avatar
       transform rotate(45deg)
     &:after
         transform rotate(-45deg)
-
-.popup-menu-container
-  position relative
-
-  .popup-menu
-    position absolute
-    left 0
-    right 0
-    top 0
-    margin-top 2px
-    padding 5px 0
-    background #fff
-    border 1px solid $color-gray-border
-    border-radius $border-radius
-    box-shadow 0 2px 5px alpha(#000, 0.1)
-    z-index 100
-
-    .popup-menu-item
-      padding 7px 10px
-      margin 0 -1px
-      color $color-text
-      text-align left
-      user-select none
-      cursor pointer
-
-      &.active
-        background $color-light-blue-background
-
-      &:hover
-        background $color-focus-blue
-        color #fff
 
 .workspace
   display flex
@@ -178,5 +163,32 @@ p.disabled
 .button
   user-select none
 
+  &.transparent-white
+    background none
+    border 1px solid transparent
+    color #fff
+
+    &:focus,
+    &:hover
+      background alpha(#fff, .1)
+
 .buttons.align-right
   justify-content flex-end
+
+.button-reset
+  display block
+  border none
+  margin 0
+  padding 0
+  user-select none
+  cursor pointer
+  font inherit
+  line-height inherit
+  text-decoration inherit
+  text-transform inherit
+  color inherit
+  letter-spacing inherit
+  width 100%
+  text-align inherit
+  background transparent
+  -webkit-appearance none

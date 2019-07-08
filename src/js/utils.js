@@ -1,9 +1,9 @@
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
+import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 
 dayjs.extend(advancedFormat);
-//import 'dayjs/locale/et'
-//dayjs.locale('et');
+// import 'dayjs/locale/et'
+// dayjs.locale('et');
 
 const utils = {
   /*
@@ -17,16 +17,16 @@ const utils = {
   escapeHTML(text) {
     // From lodash .escape()
     const htmlEscapes = {
-      '&': '&amp',
-      '<': '&lt',
-      '>': '&gt',
-      '"': '&quot',
-      "'": '&#39',
+      "&": "&amp",
+      "<": "&lt",
+      ">": "&gt",
+      "\"": "&quot",
+      "'": "&#39",
     };
     const reUnescapedHtml = /[&<>"']/g;
     const reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
 
-    return ( text && reHasUnescapedHtml.test(text) ) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text;
+    return ( text && reHasUnescapedHtml.test(text) ) ? text.replace(reUnescapedHtml, chr => htmlEscapes[chr]) : text;
   },
 
   /**
@@ -36,13 +36,13 @@ const utils = {
   unEscapeHTML(text) {
     text = text.toString();
     const htmlUnEscapes = {
-      '&amp;': '&',
-      '&lt;': '<',
-      '&gt;': '>',
-      '&nbsp;': ' ',
+      "&amp;": "&",
+      "&lt;": "<",
+      "&gt;": ">",
+      "&nbsp;": " ",
     };
     const reEscapedHtml = /(&lt;|&gt;|&amp;|&nbsp;)/g;
-    return text.replace(reEscapedHtml, (chr) => htmlUnEscapes[chr]);
+    return text.replace(reEscapedHtml, chr => htmlUnEscapes[chr]);
   },
 
   /**
@@ -67,6 +67,14 @@ const utils = {
 
   /**
    * @param date {Date|string|number} Date or date string or Unix timestamp
+   * @returns {dayjs}
+   */
+  dayjsDate(date) {
+    return dayjs(date);
+  },
+
+  /**
+   * @param date {Date|string|number} Date or date string or Unix timestamp
    * @returns {string} Time
    */
   time(date) {
@@ -83,10 +91,18 @@ const utils = {
 
   /**
    * @param date {Date|string|number} Date or date string or Unix timestamp
+   * @returns {string} Day and month
+   */
+  shortDate(date) {
+    return dayjs(date).format("MMM Do");
+  },
+
+  /**
+   * @param date {Date|string|number} Date or date string or Unix timestamp
    * @returns {string} Day, month and year
    */
   fullDate(date) {
-    return dayjs(date).format('MMM Do YYYY');
+    return dayjs(date).format("MMM Do YYYY");
   },
 
   /**
@@ -94,7 +110,7 @@ const utils = {
    * @returns {string} Day, month, year and time
    */
   fullDateTime(date) {
-    return dayjs(date).format('MMM Do YYYY, HH:mm');
+    return dayjs(date).format("MMM Do YYYY, HH:mm");
   },
 
   /**
@@ -103,7 +119,7 @@ const utils = {
    */
   dateTimeAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjs(date).format(( dayjsDate.year() === dayjs().year() ) ? 'MMM Do, HH:mm' : 'MMM Do YYYY, HH:mm');
+    return dayjs(date).format(( dayjsDate.year() === dayjs().year() ) ? "MMM Do, HH:mm" : "MMM Do YYYY, HH:mm");
   },
 
   /**
@@ -112,7 +128,7 @@ const utils = {
    */
   fullDateAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? 'MMM Do' : 'MMM Do YYYY');
+    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? "MMM Do" : "MMM Do YYYY");
   },
 
   /**
@@ -129,7 +145,7 @@ const utils = {
    */
   weekdayDateAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? 'dddd MMM Do' : 'dddd MMM Do YYYY');
+    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? "dddd, MMM Do" : "dddd, MMM Do YYYY");
   },
 
   /**
@@ -149,7 +165,7 @@ const utils = {
    * @returns {boolean} Dates are on the same day
    */
   datesAreSameDay(dateA, dateB) {
-    return dayjs(dateA).isSame(dateB, 'day');
+    return dayjs(dateA).isSame(dateB, "day");
   },
 
   /*
@@ -157,7 +173,7 @@ const utils = {
    */
 
   createCanvas(width, height) {
-    let canvas = document.createElement("canvas");
+    const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
     return canvas;
@@ -206,7 +222,7 @@ const utils = {
   },
 
   getEmailText(text) {
-    text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
+    text = text.replace(/(<img.*?(?:src=)["']?)((?:.(?!["']?\\s+(?:\S+)=|[>"']))+.)(["']?[^>]*>)/g, `<img src='${window.location.origin}/img_placeholder.svg' width=40 title='Image removed - RFlows'>`);
     if (text.includes("<head>")) {
       return text.replace("<head>", "<head><base href=\"https://flows.contriber.com\"><style>body { font-family: sans-serif; }</style>");
     }
