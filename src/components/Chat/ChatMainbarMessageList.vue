@@ -248,7 +248,7 @@
         const byDay = [{}, {}];
         [0, 1].forEach((i) => {
           this.messagesLoadSpilit[i].forEach((message) => {
-            const day = message.createDate - (message.createDate % (24 * 60 * 60 * 1000));
+            const day = +(new Date(this.utils.dayjsDate(message.createDate).format("YYYY MM DD")));
             if (byDay[i][day]) {
               byDay[i][day].push(message);
             } else {

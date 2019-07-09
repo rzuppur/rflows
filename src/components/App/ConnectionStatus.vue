@@ -46,6 +46,7 @@
     background $color-red-error
     display flex
     align-items center
+    z-index 100
 
     .flex1
       font-weight 600
