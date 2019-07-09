@@ -246,9 +246,11 @@
       },
       messagesByDay() {
         const byDay = [{}, {}];
+        const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
         [0, 1].forEach((i) => {
           this.messagesLoadSpilit[i].forEach((message) => {
-            const day = +(new Date(this.utils.dayjsDate(message.createDate).format("YYYY MM DD")));
+            const timezoneDate = message.createDate - timezoneOffset;
+            const day = timezoneDate - (timezoneDate % (24 * 60 * 60 * 1000));
             if (byDay[i][day]) {
               byDay[i][day].push(message);
             } else {
