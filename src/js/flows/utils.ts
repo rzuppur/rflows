@@ -11,7 +11,7 @@ const utils = {
   },
 
   getAvatarFromUser(user?: User): string {
-    if (oc(user).avatarUrl()) {
+    if (user && user.avatarUrl) {
       return this.relativeToFullPath(user.avatarUrl);
     }
     const char = oc(user).firstName("?").charAt(0);
