@@ -31,7 +31,7 @@
 
       connection-status(v-if="mqMobile")
 
-      chat-mainbar-message-list(:replyToId="replyToId" :chatId="chatId" :chatMembersWriting="chatMembersWriting")
+      chat-mainbar-message-list(:chatId="chatId" :chatMembersWriting="chatMembersWriting")
 
       .chat-bottom
 
@@ -93,13 +93,15 @@
   import UserList from "@/components/Chat/UserList.vue";
   import ConnectionStatus from "@/components/App/ConnectionStatus.vue";
 
+  import members from "./ChatMainbarMembers";
+  import starred from "./ChatMainbarStarred";
+  import saveRestore from "./ChatMainbarSaveRestoreEditor";
+
   export default {
     name: "ChatMainbar",
     components: { ConnectionStatus, ChatMainbarMessageList, Editor, FileUpload, UserList },
     data() {
       return {
-        replyToId: null,
-
         showEditorToolbar: false,
         editorFocused: false,
         uploadExpanded: false,
@@ -107,47 +109,14 @@
       };
     },
     computed: {
+      replyToId() {
+        return this.$store.currentChatReplyToId;
+      },
       chatId() {
         return this.$store.currentChatId;
       },
       isDevChat() {
         return this.chatId === DEVCHAT_ID;
-      },
-      isStarred() {
-        this.$store.flows.userProperties.v;
-
-        return this.$flows.chats.favChatIds.includes(this.chatId);
-      },
-      chatMembers() {
-        this.$store.flows.chatUsers.v;
-        this.$store.flows.users.v;
-
-        return this.$store.flows.chatUsers.d.filter(chatUser => chatUser.chatId === this.chatId).map((chatUser) => {
-          const user = this.$store.flows.users.d.find(user_ => user_.id === chatUser.userId);
-          if (!user) {
-            return {
-              ...chatUser,
-              name: "",
-              avatar: this.$flows.utils.getAvatarFromUser(),
-              userStatus: "?",
-            };
-          }
-          return {
-            ...chatUser,
-            name: this.$flows.utils.getFullNameFromUser(user),
-            avatar: this.$flows.utils.getAvatarFromUser(user),
-            userStatus: user.status,
-          };
-        });
-      },
-      chatMembersWriting() {
-        return this.chatMembers.filter(chatMember => chatMember.status === "TYPING").map((user) => {
-          return {
-            avatar: user.avatar,
-            name: user.name,
-            userId: user.userId,
-          };
-        });
       },
       messageInputPlaceholder() {
         this.$store.flows.users.v;
@@ -186,13 +155,6 @@
       this.$events.$on("replyCancel", this.replyCancel);
     },
     methods: {
-      toggleFavourite() {
-        if (this.isStarred) {
-          this.$flows.chats.favChatIds = this.$flows.chats.favChatIds.filter(favId => favId !== this.chatId);
-          return;
-        }
-        this.$flows.chats.favChatIds = this.$flows.chats.favChatIds.concat([this.chatId]);
-      },
       sendChatMessage() {
         const text = this._getEditorContent();
         const { replyToId } = this;
@@ -209,17 +171,18 @@
         }
       },
       replyStart(messageId) {
-        this.replyToId = messageId;
+        this.$store.currentChatReplyToId = messageId;
       },
       // eslint-disable-next-line no-unused-vars
       replyCancel(messageId) {
-        this.replyToId = null;
+        this.$store.currentChatReplyToId = null;
       },
       editorClear() {
-        if (this.$refs.editor) this.$refs.editor.empty();
-        this.isTyping = false;
+        if (this.$refs.editor) {
+          this.$refs.editor.empty();
+        }
         this.showEditorToolbar = false;
-        this.$flows.chats.setTypingStatus(false, this.chatId);
+        setTimeout(() => { this.$flows.chats.setTypingStatus(false, this.chatId); }, 0);
       },
       _getEditorContent() {
         return this.$refs.editor ? this.$refs.editor.getHTML() : "";
@@ -248,6 +211,13 @@
           }
         }
       },
+    },
+    setup(props, context) {
+      return {
+        ...members(props, context),
+        ...starred(props, context),
+        ...saveRestore(props, context),
+      };
     },
   };
 

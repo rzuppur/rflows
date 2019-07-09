@@ -179,7 +179,7 @@
         this.cancelEdit();
 
         if (text.replace(/<p>|<\/p>/g, "").trim() === "") {
-          this.flows.deleteChatMessage(this.message.id);
+          this.$flows.messages.deleteMessage(this.message);
           return;
         }
         const textCleared = text.replace(/<p>/g, "").replace(/<br>|<\/p>/g, "\n").trim();
