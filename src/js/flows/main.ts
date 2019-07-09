@@ -9,6 +9,7 @@ import Users from "@/js/flows/users";
 import Settings from "@/js/flows/settings";
 import Messages from "@/js/flows/messages";
 import Files from "@/js/flows/files";
+import Notifications from "@/js/flows/notifications";
 
 class Flows2 {
   store: STORE;
@@ -19,6 +20,7 @@ class Flows2 {
   settings: Settings;
   messages: Messages;
   files: Files;
+  notifications: Notifications;
 
   readonly utils = utils;
   readonly localstorage = localstorage;
@@ -33,6 +35,7 @@ class Flows2 {
     this.settings = new Settings(this);
     this.messages = new Messages(this);
     this.files = new Files(this);
+    this.notifications = new Notifications(this);
   }
 
   public storeUpdate(key: StoreFlowsKey): void {

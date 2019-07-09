@@ -103,7 +103,7 @@
         this.compactMode = this.$flows.settings.getBooleanUserProp("compactMode");
       },
       valueUpdate(prop, value) {
-        this.$flows.settings.setBooleanUserProperty(prop, value);
+        this.$flows.settings.setBooleanUserProp(prop, value);
         this[prop] = null;
 
         if (value && prop === "desktopNotifications") {

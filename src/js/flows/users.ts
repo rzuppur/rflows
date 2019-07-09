@@ -29,6 +29,16 @@ class Users {
     ]);
   }
 
+  public getUserName(userId: number): string {
+    const user = this.store.flows.users.d.find(user => user.id === userId);
+    return this.flows.utils.getFullNameFromUser(user);
+  }
+
+  public getUserAvatar(userId: number): string {
+    const user = this.store.flows.users.d.find(user => user.id === userId);
+    return this.flows.utils.getAvatarFromUser(user);
+  }
+
   parseUsers(users: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("users", users);

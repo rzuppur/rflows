@@ -124,6 +124,12 @@ class Chats {
     });
   }
 
+  public getChatName(chatId: number): string {
+    const chat = this.store.flows.chats.d.find(chat => chat.id === chatId);
+    if (!chat || !chat.name) return "?";
+    return chat.name;
+  }
+
   parseChats(chats: any[], action: FrameAction): void {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("chats", chats);

@@ -32,18 +32,53 @@ class Settings {
     }
   }
 
-  setBooleanUserProperty(property: BooleanUserProperty, value: boolean): void {
+  setBooleanUserProp(property: BooleanUserProperty, value: boolean): void {
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+    const currentUserId = this.store.currentUser.id;
+
     let prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === property)
       || {
         name: property,
         value: null,
         id: null,
+        userId: currentUserId,
+        orgId: null,
       };
     prop.value = value;
     try {
       this.flows.connection.message("/app/UserProperty.save", prop);
     } catch (error) {
       console.log(error);
+      this.events.$emit("notify", `Error saving ${property}`);
+    }
+  }
+
+  getNumberUserProp(property: NumberUserProperty): number {
+    const prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === property);
+    if (prop) return prop.value;
+    switch (property) {
+      default:
+        return 0;
+    }
+  }
+
+  setNumberUserProp(property: NumberUserProperty, value: number): void {
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+    const currentUserId = this.store.currentUser.id;
+
+    let prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === property)
+      || {
+        name: property,
+        value: null,
+        id: null,
+        userId: currentUserId,
+        orgId: null,
+      };
+    prop.value = value;
+    try {
+      this.flows.connection.message("/app/UserProperty.save", prop);
+    } catch (error) {
+      console.warn(error);
       this.events.$emit("notify", `Error saving ${property}`);
     }
   }
@@ -85,3 +120,4 @@ class Settings {
 export default Settings;
 
 type BooleanUserProperty = ("autoMarkAsRead" | "desktopNotifications" | "showWorkspaceSwitcher" | "compactMode");
+type NumberUserProperty = ("lastNotifiedMessageId");

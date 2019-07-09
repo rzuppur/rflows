@@ -203,15 +203,21 @@ class Messages {
       return;
     }
 
+    let lastUnread = null;
+
     this.store.flows.messages[chatId].d.map((message) => {
+      message.unread = false;
       if (message.shadow) {
-        message.unread = false;
         return;
       }
       const inReadRange = this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId && readRange.messageFrom <= message.id && readRange.messageTo >= message.id);
-      message.unread = !inReadRange;
+      if (!inReadRange) {
+        message.unread = true;
+        lastUnread = message;
+      }
     });
     this.store.flows.messages[chatId].v += 1;
+    if (lastUnread) this.flows.notifications.messageNotification(lastUnread);
   }
 
   updateMessagesRead(chatId?: number): void {
