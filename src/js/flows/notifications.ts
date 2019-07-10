@@ -37,7 +37,7 @@ class Notifications {
       this.flows.settings.setNumberUserProp("lastNotifiedMessageId", message.id);
       const chatName = this.flows.chats.getChatName(message.chatId);
       const creatorName = this.flows.users.getUserName(message.userId);
-      const title = creatorName + ( chatName !== creatorName ? ` - ${chatName}` : "" );
+      const title = creatorName + (chatName !== creatorName ? ` - ${chatName}` : "");
       const options: NotificationOptions = {
         body: message.type === "CHAT"
           ? this.flows.messages.getMessageTextRepresentation(this.flows.messages.chatTextParse(message.text))
@@ -73,11 +73,11 @@ class Notifications {
       if (avatar.indexOf("data:") === 0) {
         // For svg placeholder avatars, draw them to canvas to get a bitmap
         const canvas = this.flows.utils.createCanvas(42 * 3, 42 * 3);
-        const ctx  = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d");
         const img = new Image();
         img.onload = () => {
           if (ctx) {
-            ctx.drawImage(img, 0, ( 56 - 42 ) * -1.5, 42 * 3, 56 * 3);
+            ctx.drawImage(img, 0, (56 - 42) * -1.5, 42 * 3, 56 * 3);
             options.icon = canvas.toDataURL();
           }
           notification = new Notification(title, options);

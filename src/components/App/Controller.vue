@@ -13,14 +13,16 @@
         handler(val) {
           setTimeout(() => this.$root.updateFullHeight(), 0);
           if (val === "login") {
-            setTimeout(() => { document.title = "RFlows"; }, 0);
+            setTimeout(() => {
+              document.title = "RFlows";
+            }, 0);
           }
         },
       },
       "$store.currentUser": {
         immediate: true,
         handler(val, oldVal) {
-          if ((typeof oldVal === "undefined") || val?.email !== oldVal?.email) {
+          if (( typeof oldVal === "undefined" ) || val?.email !== oldVal?.email) {
             if (val == null) {
               this._debug("Log out");
               this.$store.route = "login";

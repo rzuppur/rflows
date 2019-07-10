@@ -11,7 +11,7 @@ import MessageFlagged from "@/js/model/MessagesFlagged";
 
 class STORE {
   currentChatId: null | number = null;
-  currentChatName: string =  "";
+  currentChatName: string = "";
   currentChatReplyToId: null | number = null;
   currentUser: null | User = null;
 

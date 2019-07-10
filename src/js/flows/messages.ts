@@ -31,12 +31,12 @@ class Messages {
     const _messages = this.store.flows._messages;
 
     this.store.flows.messages = new Proxy({}, {
-      get(target, prop:string) {
+      get(target, prop: string) {
         if (prop === "keys") {
           return Object.keys(_messages);
         }
         if (!Object.keys(_messages).includes(prop)) {
-          Vue.set(_messages, prop, { v: 0 });
+          Vue.set(_messages, prop, {v: 0});
           _messages[prop].d = [];
         }
         return _messages[prop];
@@ -63,7 +63,7 @@ class Messages {
   async getChatMessages(chatId: number, filter: chatFilter | null): Promise<Message[]> {
     this.flows.connection.subscribeChatTopic("TopicItem", chatId);
 
-    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b:Message) => a.id - b.id);
+    return (await this.flows.connection.findByChat("TopicItem", chatId, filter)).body.map(mapMessage).sort((a: Message, b: Message) => a.id - b.id);
   }
 
   markMessagesAsRead(messageIds: number[], chatId: number): void {
@@ -76,7 +76,7 @@ class Messages {
   deleteMessage(message: Message): Promise<SocketResult> {
     if (message.type === "FILE" && message.url) this.flows.files.deleteFile(message.url);
 
-    return this.flows.connection.messageWithResponse("/app/TopicItem.delete", { id: message.id });
+    return this.flows.connection.messageWithResponse("/app/TopicItem.delete", {id: message.id});
   }
 
   async sendMessage(message: any, chatId: number) {
@@ -84,7 +84,7 @@ class Messages {
 
     message.creatorUserId = this.store.currentUser.id;
     message.topicId = chatId;
-    message.customData = { test: true };
+    message.customData = {test: true};
 
     const shadowId = this.shadowMessageId++;
     const shadowMessage = mapMessage(message);
@@ -136,7 +136,7 @@ class Messages {
 
   parseChatMessages(messages: any[], action: FrameAction) {
     const ids = messages.map(message => message.id);
-    const chatId: number = messages.map(chat => chat.topicId).reduce((a, b) => (a === b) ? a : NaN );
+    const chatId: number = messages.map(chat => chat.topicId).reduce((a, b) => (a === b) ? a : NaN);
     if (!chatId) throw new Error("Different or no chatIds in messages");
 
     if (action === "deleted") {
@@ -166,7 +166,7 @@ class Messages {
     const mapped = messagesRead.map(mapMessagesRead).filter(x => x.userId === currentUserId);
     this.flows.updateStoreArray("messagesRead", mapped);
 
-    const chatId: number = mapped.map(x => x.chatId).reduce((a, b) => (a === b) ? a : NaN );
+    const chatId: number = mapped.map(x => x.chatId).reduce((a, b) => (a === b) ? a : NaN);
     if (chatId) {
       this.updateMessagesRead(chatId);
       return;
@@ -240,7 +240,7 @@ class Messages {
 
   public chatTextParse(text: string) {
     if (!text) return "";
-    const { currentUser } = this.store;
+    const {currentUser} = this.store;
     const firstName = currentUser ? currentUser.firstName : "";
     const lastName = currentUser ? currentUser.lastName : "";
     const emojis: { [index: string]: string } = {
@@ -260,7 +260,7 @@ class Messages {
     const addText = (text_: string) => parsedText.push(utils.textToHTML(text_));
     for (let i = 0; i < splitText.length; i++) {
       const part = splitText[i];
-      if (part === firstName || part === lastName || part[0] === "@" && ( part.substr(1) === firstName || part.substr(1) === lastName )) {
+      if (part === firstName || part === lastName || part[0] === "@" && (part.substr(1) === firstName || part.substr(1) === lastName)) {
         parsedText.push("<span class=\"message-at\">");
         addText(part);
         parsedText.push("</span>");

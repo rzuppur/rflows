@@ -10,7 +10,6 @@ import { mapChatUser } from "@/js/model/ChatUser";
 import { mapWorkspace } from "@/js/model/Workspace";
 import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
 import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
-import { performanceLog } from "@/js/flows/utils";
 import { FrameAction } from "@/js/flows/connection";
 
 class Chats {
@@ -27,8 +26,6 @@ class Chats {
   }
 
   get favChatIds(): number[] {
-    // todo: cache
-
     const favs = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "favorites");
     if (favs && favs.value.length) {
       return favs.value
@@ -39,8 +36,6 @@ class Chats {
   }
 
   get recentChatIds(): number[] {
-    // todo: cache
-
     const recents = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "recentTools");
     if (recents && recents.value.length) {
       return recents.value

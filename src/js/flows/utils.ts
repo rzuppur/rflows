@@ -66,7 +66,7 @@ const utils = {
       "'": '&#39',
     };
 
-    return ( text && reHasUnescapedHtml.test(text) ) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text;
+    return (text && reHasUnescapedHtml.test(text)) ? text.replace(reUnescapedHtml, (chr) => htmlEscapes[chr]) : text;
   },
 
   textToHTML(text: string): string {

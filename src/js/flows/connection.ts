@@ -39,7 +39,7 @@ class Connection {
     if (!this.canMessageAuth) return Promise.reject(new Error("Not connected / signed in"));
     // @ts-ignore
     const currentUserId = this.store.currentUser.id;
-    return await this.messageWithResponse(`/app/${topic}.findByUser`, { id: currentUserId });
+    return await this.messageWithResponse(`/app/${topic}.findByUser`, {id: currentUserId});
   }
 
   public async findByChat(topic: ChatTopic, id: number, filter?: any) {
@@ -173,7 +173,7 @@ class Connection {
   }
 
   private socketClose(closeEvent: any): void {
-    this.connectionFailure(closeEvent ? closeEvent : { errorMsg: "Socket closed" });
+    this.connectionFailure(closeEvent ? closeEvent : {errorMsg: "Socket closed"});
   }
 
   private connectionFailure(closeEvent: any) {
@@ -197,6 +197,7 @@ class Connection {
       this.store.connection.errorMsg = "Connection lost";
     }
   }
+
   private connectionSuccess() {
     this.store.connection.error = false;
     this.store.connection.connecting = false;
@@ -285,11 +286,11 @@ class Connection {
     if (false && this.store.debugMode) {
       const timespan = window.performance.now() - STARTTIME;
       if (timespan < 6) {
-        console.log(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
+        console.log(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "." + action : ''}[${filteredBody.length}]`);
       } else if (timespan < 15) {
-        console.warn(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
+        console.warn(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "." + action : ''}[${filteredBody.length}]`);
       } else {
-        console.error(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "."+action : ''}[${filteredBody.length}]`);
+        console.error(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "." + action : ''}[${filteredBody.length}]`);
       }
     }
   }
