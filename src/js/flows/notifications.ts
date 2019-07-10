@@ -54,10 +54,9 @@ class Notifications {
         event.preventDefault();
         window.focus();
         if (this.store.currentChatId !== message.chatId) {
-          //this.openChat(message.topicId);
-          // TODO:
+          this.store.currentChatId = message.chatId;
         } else {
-          //this.eventBus.$emit("scrollToMessage", message.id);
+          this.events.$emit("scrollToMessage", message.id);
         }
       };
 

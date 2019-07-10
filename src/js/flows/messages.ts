@@ -191,10 +191,6 @@ class Messages {
       return;
     }
 
-    if (!this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId)) {
-      return;
-    }
-
     if (!this.flows.chats.currentUserMemberOfChat(chatId)) {
       this.store.flows.messages[chatId].d.map((message) => {
         message.unread = false;
@@ -205,17 +201,24 @@ class Messages {
 
     let lastUnread = null;
 
-    this.store.flows.messages[chatId].d.map((message) => {
-      message.unread = false;
-      if (message.shadow) {
-        return;
-      }
-      const inReadRange = this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId && readRange.messageFrom <= message.id && readRange.messageTo >= message.id);
-      if (!inReadRange) {
+    if (!this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId)) {
+      this.store.flows.messages[chatId].d.map((message) => {
         message.unread = true;
         lastUnread = message;
-      }
-    });
+      });
+    } else {
+      this.store.flows.messages[chatId].d.map((message) => {
+        message.unread = false;
+        if (message.shadow) {
+          return;
+        }
+        const inReadRange = this.store.flows.messagesRead.d.find(readRange => readRange.chatId === chatId && readRange.messageFrom <= message.id && readRange.messageTo >= message.id);
+        if (!inReadRange) {
+          message.unread = true;
+          lastUnread = message;
+        }
+      });
+    }
     this.store.flows.messages[chatId].v += 1;
     if (lastUnread) this.flows.notifications.messageNotification(lastUnread);
   }

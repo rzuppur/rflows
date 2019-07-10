@@ -26,29 +26,6 @@ class Chats {
     autoBind(this);
   }
 
-  async getChats(): Promise<void> {
-    this.flows.connection.subscribeUserTopic("Topic");
-    this.flows.connection.subscribeUserTopic("TopicUser");
-    this.flows.connection.subscribeUserTopic("Organization");
-    this.flows.connection.subscribeUserTopic("TopicLocation");
-    await Promise.all([
-      this.flows.connection.findByUser("Topic"),
-      this.flows.connection.findByUser("TopicUser"),
-      this.flows.connection.findByUser("Organization"),
-      this.flows.connection.findByUser("TopicLocation"),
-    ]);
-  }
-
-  async getChatUsers(chatId: number): Promise<void> {
-    await Promise.all([
-      this.flows.connection.findByChat("TopicUser", chatId),
-    ]);
-  }
-
-  setChatOpen(chatId: number, open: boolean): void {
-    this.flows.connection.message("/app/Topic.setMyStatus", { topicId: chatId, status: open ? "OPEN" : "NONE" });
-  }
-
   get favChatIds(): number[] {
     // todo: cache
 
@@ -84,6 +61,14 @@ class Chats {
     .map(workspaceAccess => workspaceAccess.workspaceId);
   }
 
+  get userChatIds(): number[] {
+    const currentUserId = this.store.currentUser && this.store.currentUser.id;
+    if (!currentUserId) {
+      return [];
+    }
+    return this.store.flows.chatUsers.d.filter(chatUser => chatUser.userId === currentUserId).map(chatUser => chatUser.chatId);
+  }
+
   set favChatIds(chatIds: number[]) {
     chatIds = utils.uniqueNonZeroNumberArray(chatIds);
     const prop = this.store.flows.userProperties.d.find(userProperty => userProperty.name === "favorites");
@@ -109,12 +94,31 @@ class Chats {
     }
   }
 
+  public async getChats(): Promise<void> {
+    this.flows.connection.subscribeUserTopic("Topic");
+    this.flows.connection.subscribeUserTopic("TopicUser");
+    this.flows.connection.subscribeUserTopic("Organization");
+    this.flows.connection.subscribeUserTopic("TopicLocation");
+    await Promise.all([
+      this.flows.connection.findByUser("Topic"),
+      this.flows.connection.findByUser("TopicUser"),
+      this.flows.connection.findByUser("Organization"),
+      this.flows.connection.findByUser("TopicLocation"),
+    ]);
+  }
+
+  public async getChatUsers(chatId: number): Promise<void> {
+    await Promise.all([
+      this.flows.connection.findByChat("TopicUser", chatId),
+    ]);
+  }
+
+  public setChatOpen(chatId: number, open: boolean): void {
+    this.flows.connection.message("/app/Topic.setMyStatus", {topicId: chatId, status: open ? "OPEN" : "NONE"});
+  }
+
   public currentUserMemberOfChat(chatId: number): boolean {
-    const currentUserId = this.store.currentUser && this.store.currentUser.id;
-    if (!currentUserId) {
-      throw new Error("No currentUser");
-    }
-    return !!this.store.flows.chatUsers.d.find(chatUser => chatUser.chatId === chatId && chatUser.userId === currentUserId);
+    return this.userChatIds.includes(chatId);
   }
 
   public setTypingStatus(typing: boolean, chatId: number): void {
@@ -128,6 +132,12 @@ class Chats {
     const chat = this.store.flows.chats.d.find(chat => chat.id === chatId);
     if (!chat || !chat.name) return "?";
     return chat.name;
+  }
+
+  public subAll() {
+    this.userChatIds.forEach((chatId) => {
+      this.flows.connection.subscribeChatTopic("TopicItem", chatId);
+    });
   }
 
   parseChats(chats: any[], action: FrameAction): void {
@@ -147,7 +157,9 @@ class Chats {
     const mapped = chatUsers.map(mapChatUser);
     this.flows.updateStoreArray("chatUsers", mapped);
     this.updateChatData();
-    const chatId: number = mapped.map(chatUser => chatUser.chatId).reduce((a, b) => (a === b) ? a : NaN );
+    const chatId: number = mapped.map(chatUser => chatUser.chatId).reduce((a, b) => (a === b) ? a : NaN);
+
+    this.subAll();
 
     // todo: this is called every time someone's status changes, should only be updated if user leaves a chat
     this.flows.messages.updateMessagesRead(chatId);
@@ -220,7 +232,7 @@ class Chats {
     });
 
     if (changed) {
-      this.store.flows.chats.d.sort((a, b) => ( a.name ? a.name : "" ).localeCompare(b.name ? b.name : ""));
+      this.store.flows.chats.d.sort((a, b) => (a.name ? a.name : "").localeCompare(b.name ? b.name : ""));
       this.flows.storeUpdate("chats");
 
       const totalUnread: number = this.store.flows.chats.d.reduce((a, b) => (a + (b.unread || 0)), 0);
