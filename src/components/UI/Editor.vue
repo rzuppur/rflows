@@ -165,7 +165,7 @@
             },
             onUpdate: () => {
               this.multiline = this.$refs.editor ? this.$refs.editor.$el.clientHeight > 40 : false;
-              this.$emit("update");
+              this.$emit("update", this.editor ? this.editor.getHTML() : "");
             },
             onFocus: () => {
               this.$emit("focus");
@@ -185,7 +185,7 @@
       },
       empty() {
         this._initOrSetContent("", false);
-        this.$emit("update");
+        setTimeout(() => { this.$emit("update", ""); }, 0);
       },
       setContent(text) {
         this._initOrSetContent(text, false);

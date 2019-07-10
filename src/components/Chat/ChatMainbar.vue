@@ -50,7 +50,7 @@
                 :placeholder="messageInputPlaceholder"
                 :initEmpty="true"
                 @submit="sendChatMessage()"
-                @update="checkTypingStatus()"
+                @update="editorUpdate"
                 @focus="editorFocused = true"
                 @blur="editorFocused = false"
                 @keydown.38.native.exact.capture="editLastMessage")
@@ -187,8 +187,7 @@
       _getEditorContent() {
         return this.$refs.editor ? this.$refs.editor.getHTML() : "";
       },
-      checkTypingStatus() {
-        const text = this._getEditorContent();
+      editorUpdate(text) {
         const isTyping = this.utils.editorTextNotEmpty(text);
 
         if (isTyping !== this.isTyping) {
