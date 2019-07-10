@@ -172,6 +172,9 @@
       },
       replyStart(messageId) {
         this.$store.currentChatReplyToId = messageId;
+        if (this.$refs.editor) {
+          this.$refs.editor.focus();
+        }
       },
       // eslint-disable-next-line no-unused-vars
       replyCancel(messageId) {

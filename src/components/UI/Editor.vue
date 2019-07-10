@@ -203,7 +203,6 @@
       focus() {
         if (this.editor) {
           this.editor.focus();
-          this.$events.$emit("messagesScrollUpdate");
         }
       },
       cursorToEnd() {
