@@ -153,6 +153,9 @@
       firstUnreadMessageId() {
         if (!this.chatId) return -1;
 
+        this.$store.flows.messagesRead.v;
+        if (!this.$store.flows.messagesRead.d.find(messagesRead => messagesRead.chatId === this.chatId)) return -1;
+
         if (this.firstUnread[this.chatId] && this.autoReadEnabled) {
           if (this.messages.find(message => message.id === this.firstUnread[this.chatId])) {
             return this.firstUnread[this.chatId];
@@ -169,6 +172,8 @@
       showNewShortcut: {
         async get() {
           if (this.firstUnreadMessageId <= 0) return false;
+          if (this.autoReadEnabled) return false;
+
           this.top;
           await this.$nextTick();
 
@@ -206,7 +211,7 @@
       },
       messages: {
         handler() {
-          if (this.autoReadEnabled && this.messages.find(message => message.unread)) {
+          if (this.autoReadEnabled && this.messages.find(message => message.unread) && this.$store.flows.messagesRead.d.find(messagesRead => messagesRead.chatId === this.chatId)) {
             this.$flows.messages.markMessagesAsRead(
               this.messages.filter(message => message.unread).map(message => message.id),
               this.chatId,
