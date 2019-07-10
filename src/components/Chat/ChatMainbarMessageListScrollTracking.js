@@ -26,6 +26,13 @@ function scrollTracking(props, context) {
     unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+
+  const scrollToBottomInstant = () => {
+    const messagesEl = context.refs.messages;
+    if (messagesEl) messagesEl.scrollTop = height.value;
+  };
+  context.root.$events.$on("MESSAGELIST_scrollToBottomInstant", scrollToBottomInstant);
+
   const scrollToNewOrBottomInstant = () => {
     const unreadSepEl = context.refs.unread?.[0];
     if (unreadSepEl) {

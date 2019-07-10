@@ -194,6 +194,9 @@
         const isTyping = this.utils.editorTextNotEmpty(text);
 
         if (isTyping !== this.isTyping) {
+          if (isTyping) {
+            this.$events.$emit("MESSAGELIST_scrollToBottomInstant");
+          }
           try {
             this.$flows.chats.setTypingStatus(isTyping, this.chatId);
           } catch (e) {
