@@ -329,7 +329,6 @@
       margin-bottom 5px
 
       b
-        font-weight 600
         color #4a4a4a
 
     .email-plain

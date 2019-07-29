@@ -88,7 +88,7 @@
 
     .chat-flagged
       font-size 13px
-      font-weight 600
+      font-weight $font-weight-sans-bold
       color alpha($color-blue, 0.6)
       margin-left 5px
       white-space nowrap

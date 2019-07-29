@@ -79,8 +79,13 @@
 
   export default {
     name: "ChatSidebar",
-    components: { SlideInOut, ConnectionStatus, UserDisplay,
-      ChatSidebarChatDisplay, PopupMenu },
+    components: {
+      SlideInOut,
+      ConnectionStatus,
+      UserDisplay,
+      ChatSidebarChatDisplay,
+      PopupMenu,
+    },
     data() {
       return {
         showAllChats: false,
@@ -110,16 +115,21 @@
         return [{
           id: null,
           name: "All workspaces",
-        }].concat(this.$flows.chats.userWorkspaceIds
-          .map(id => this.$store.flows.workspaces.d.find(workspace => workspace.id === id))
-          .filter(workspace => workspace)
-          .sort((a, b) => a.name.localeCompare(b.name)));
+        }].concat(
+          this.$flows.chats.userWorkspaceIds
+            .map(id => this.$store.flows.workspaces.d.find(workspace => workspace.id === id))
+            .filter(workspace => workspace)
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        );
       },
       workspaceMenu() {
         const active = this.workspaces.find(workspace => workspace.id === this.filterWorkspaceId);
         const list = [{
           // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-          func: () => { this.filterWorkspaceId = active.id; },
+          func: () => {
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            this.filterWorkspaceId = active.id;
+          },
           text: active.name,
           image: active.id ? this.$flows.utils.getLogoFromWorkspace(active) : null,
         }];
@@ -131,7 +141,10 @@
             .filter(workspace => workspace.id !== this.filterWorkspaceId)
             .map(workspace => ( {
               // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-              func: () => { this.filterWorkspaceId = workspace.id; },
+              func: () => {
+                // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+                this.filterWorkspaceId = workspace.id;
+              },
               text: workspace.name,
               image: workspace.id ? this.$flows.utils.getLogoFromWorkspace(workspace) : BLANK_DATA_SVG_IMAGE,
             } )),
@@ -218,6 +231,8 @@
   .sidebar-content
     overflow-y scroll
     height 100%
+    margin-right -50px
+    padding-right 50px
 
     @media (max-width $media-mobile-width)
       padding-top 56px
@@ -228,8 +243,9 @@
       right 0
       top 0
       bottom 0
-      margin-right -50px
-      padding-right 50px
+      margin-right
+    -50px
+    padding-right 50px
 
     & /deep/ .connection-status
       width $sidebar-width
@@ -340,6 +356,7 @@
       &:focus
         background #fff
         color $color-text
+
         &::placeholder
           color $color-
 

@@ -2,7 +2,11 @@
 
   #app(v-cloak @click="documentClick")
 
+    //- NO RENDER
+
     controller
+
+    //- ROUTES
 
     .body-content(
       :tabindex="modalsOpen ? -1 : null"
@@ -13,7 +17,10 @@
 
       login(v-if="$store.route === 'login'")
 
-      chat(v-if="$store.route === 'chat'")
+      chat(v-else-if="$store.route === 'chat'")
+
+
+    //- MODALS
 
     email-display
 

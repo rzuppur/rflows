@@ -49,7 +49,7 @@
     z-index 100
 
     .flex1
-      font-weight 600
+      font-weight $font-weight-sans-bold
       padding-right 10px
 
     .text-small

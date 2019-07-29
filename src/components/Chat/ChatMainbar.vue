@@ -82,12 +82,15 @@
                 span.icon(v-if="mqMobile")
                   i.fas.fa-paper-plane
 
+    chat-mainbar-side(:chatId="chatId")
+
 </template>
 
 <script>
 
   import { DEVCHAT_ID } from "@/js/consts";
   import ChatMainbarMessageList from "@/components/Chat/ChatMainbarMessageList.vue";
+  import ChatMainbarSide from "@/components/Chat/ChatMainbarSide.vue";
   import Editor from "@/components/UI/Editor.vue";
   import FileUpload from "@/components/FileUpload.vue";
   import UserList from "@/components/Chat/UserList.vue";
@@ -99,7 +102,7 @@
 
   export default {
     name: "ChatMainbar",
-    components: { ConnectionStatus, ChatMainbarMessageList, Editor, FileUpload, UserList },
+    components: { ChatMainbarSide, ConnectionStatus, ChatMainbarMessageList, Editor, FileUpload, UserList },
     data() {
       return {
         showEditorToolbar: false,
