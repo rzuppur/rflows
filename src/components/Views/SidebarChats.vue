@@ -18,14 +18,14 @@
       h4.chats-section #[i.far.fa-comment] RFlows
 
       .chat(v-if="devChat" :class="{ unread: !!devChat.unread, active: devChat.id === $store.currentChatId }" @click="changeChat(devChat.id)")
-        .chat-title.ellipsis Features & support
+        .chat-title.ellipsis Updates & support
           span.icon.is-small.chat-flagged(v-if="devChat.flagged > 0")
             i.fas.fa-thumbtack
         .chat-unread(:class="{ important: !!devChat.unreadImportant, atme: !!devChat.unreadAtme }")
           | {{ (!!devChat.unreadAtme ? '@' : '') + devChat.unread }}
 
       .chat(v-else @click="changeChat(DEVCHAT_ID)")
-        .chat-title.ellipsis Features & support
+        .chat-title.ellipsis Updates & support
         .chat-unread
 
     template(v-if="!searchText && favouriteChats.length")

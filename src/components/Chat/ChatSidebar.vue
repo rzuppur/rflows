@@ -175,7 +175,7 @@
         const devChat = this.$store.flows.chats.d.find(chat => chat.id === DEVCHAT_ID);
         return devChat || {
           id: DEVCHAT_ID,
-          name: "Features & support",
+          name: "Updates & support",
         };
       },
       ignoreIds() {
