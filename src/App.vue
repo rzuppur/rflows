@@ -41,62 +41,15 @@
       Settings,
       Overlays,
     },
-    data() {
-      return {
-        openLastChat: true,
-
-        showAllChats: false,
-        favouriteIds: [],
-        recentIds: [],
-        userWorkspaces: [],
-        searchText: "",
-        openSection: "CHAT",
-        workspaceMenuOpen: false,
-        workspaceFilter: null,
-      };
-    },
     computed: {
-      allChats() {
-        if (!this.topics.User || !this.topics.TopicUser || !this.currentUser || !this.topics.Topic) return [];
-        if (this.flows) this.flows.enrichChats();
-        if (this.flows.showWorkspaceSwitcher && this.workspaceFilter && this.userWorkspaces) {
-          const workspaceChats = this.flows.getWorkspaceChats(this.workspaceFilter.id);
-          return this.topics.Topic.filter(chat => workspaceChats.indexOf(chat.id) > -1);
-        }
-        return this.topics.Topic;
-      },
-      lastOpenChatCanBeOpened() {
-        return !!(this.openLastChat && this.allChats && this.recentIds.length && this.currentUser);
-      },
       modalsOpen() {
         return this.$store.modalsOpen.length;
       },
     },
-    created() {
-      this.$events.$on("logout", () => {
-        this.openLastChat = true;
-
-        this.showAllChats = false;
-        this.favouriteIds = [];
-        this.recentIds = [];
-        this.searchText = "";
-      });
-      this.$events.$on("currentChatChange", () => {
-        this.searchText = "";
-      });
-    },
-    beforeDestroy() {
-      this.flows.socket.close({type: "clientClose"});
-    },
     methods: {
-      reloadPage() {
-        location.reload();
-      },
       documentClick() {
         this.$store.openMenu = null;
       },
     },
   };
 </script>
-
-<style lang="stylus" scoped src="./App.styl"></style>
