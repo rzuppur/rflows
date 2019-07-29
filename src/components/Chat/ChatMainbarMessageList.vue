@@ -422,7 +422,7 @@
     &.message-highlight
       padding $verticalPadding 17px !important
 
-    @media (max-width $media-sidebar-hide)
+    @media (max-width $media-mobile-width)
       padding $verticalPadding 20px !important
 
     p
