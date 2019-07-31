@@ -43,11 +43,11 @@
               v-tooltip="'Scroll to message'"
             )
               span.icon.is-small
-                i.fas.fa-search
+                i.fas.fa-arrow-left
 
-          //-.control
-            button.button.is-outlined.has-text-grey-light(
-              @click.stop="flows.setFlag(message.id, false)"
+          .control
+            button.button.is-outlined.has-text-grey(
+              @click.stop="$flows.messages.setMessageFlagged(message.id, false)"
               v-tooltip="'Remove from saved'"
             )
               span.icon.is-small
@@ -257,7 +257,10 @@
             height auto
 
         .text-clamped,
-        .file-content
+        .event-content,
+        .file-content,
+        .email-meta,
+        .view-email-button
           margin-left -23px
           margin-top 3px
 

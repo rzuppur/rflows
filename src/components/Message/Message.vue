@@ -54,7 +54,7 @@
 
         .control
           button.button.is-outlined(
-          @click.stop="flagToggle()"
+          @click.stop="flagToggle"
           :class="message.flagged ? 'has-text-grey-light' : 'has-text-info'"
           v-tooltip="message.flagged ? 'Remove from saved' : 'Save for later'")
             span.icon.is-small
@@ -215,10 +215,8 @@
         });
       },
       flagToggle() {
-        const isFlagged = this.message.flagged;
-        if (isFlagged !== undefined) {
-          this.flows.setFlag(this.message.id, !isFlagged);
-        }
+        const isFlagged = !!this.message.flagged;
+        this.$flows.messages.setMessageFlagged(this.message.id, !isFlagged);
       },
       markRead(id) {
         this.$flows.messages.markMessagesAsRead([id], this.message.chatId);

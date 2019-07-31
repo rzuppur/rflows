@@ -73,6 +73,13 @@ class Messages {
     });
   }
 
+  async setMessageFlagged(messageId: number, flagged: boolean): Promise<void> {
+    this.flows.connection.message("/app/TopicItemUserProperty.save", {
+      itemId: messageId,
+      flag: +flagged,
+    });
+  }
+
   deleteMessage(message: Message): Promise<SocketResult> {
     if (message.type === "FILE" && message.url) this.flows.files.deleteFile(message.url);
 
@@ -183,6 +190,9 @@ class Messages {
     const currentUserId = this.store.currentUser.id;
     this.flows.updateStoreArray("messagesFlagged", messagesFlagged.filter(flagged => flagged.flag).map(mapMessageFlagged).filter(x => x.userId === currentUserId));
 
+    const deleted = messagesFlagged.filter(flagged => !flagged.flag).map(mapMessageFlagged);
+    this.flows.deleteStoreArrayItems("messagesFlagged", deleted);
+
     this.updateMessagesFlagged();
   }
 
@@ -241,16 +251,11 @@ class Messages {
 
     const savedMessageIds = this.store.flows.messagesFlagged.d.filter(flagged => flagged.chatId === chatId).map(flagged => flagged.messageId);
     if (savedMessageIds.length) {
-      let updated = false;
-      savedMessageIds.forEach((messageId) => {
-        const message = this.store.flows.messages[chatId].d.find(message => message.id === messageId);
-        if (message) {
-          message.flagged = true;
-          updated = true;
-        }
+      this.store.flows.messages[chatId].d.forEach(message => {
+        message.flagged = savedMessageIds.includes(message.id);
       });
 
-      if (updated) this.store.flows.messages[chatId].v += 1;
+      this.store.flows.messages[chatId].v += 1;
     }
   }
 

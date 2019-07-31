@@ -35,20 +35,22 @@
         b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
         .ellipsis
+          span.icon.is-small.has-text-grey-light(v-if="message.replyTo && !showReplyMessage")
+            i.fas.fa-reply
+          | &nbsp;
+
           .name {{ compact ? authorNameShort : authorName }}
             span.icon.is-small.has-text-info.saved-icon(v-if="!compact && message.flagged" v-tooltip="'Message is in saved messages'")
               i.fas.fa-thumbtack
 
-          .date(v-if="dateShort && !compact" v-tooltip="dateMedium") {{ dateShort }}
-          .date(v-if="dateShort && compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
+          template(v-if="dateShort")
+            .date(v-if="compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
+            .date(v-else v-tooltip="dateMedium") {{ dateShort }}
 
           //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
         template(v-if="message.replyTo")
           message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId")
-          p.text-muted.text-small(v-else) Reply to #{""}
-            //span(v-if="flows.getChatMessage(message.referenceFromTopicItemId)") {{ flows.getFullName(flows.getChatMessage(message.referenceFromTopicItemId).creatorUserId) }}
-            //span(v-else) ?
 
         slot(name="content")
 
@@ -84,7 +86,7 @@
 
               p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
 
-              button.button(v-else type="button" @click="$events.$emit('openEmail', message)") View email
+              button.button.view-email-button(v-else type="button" @click="$events.$emit('openEmail', message)") View email
 
           p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 
@@ -264,8 +266,7 @@
             display none
 
       .sticky-avatar,
-      .content-container > .name,
-      .content-container > .date
+      .content-container > .ellipsis
         display none
 
       .avatar-container .saved-icon
