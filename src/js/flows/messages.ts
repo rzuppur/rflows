@@ -234,8 +234,35 @@ class Messages {
     }
   }
 
+  private _updateMessagesFlagged(chatId: number): void {
+    if (!this.store.flows.messages[chatId].d.length) {
+      return;
+    }
+
+    const savedMessageIds = this.store.flows.messagesFlagged.d.filter(flagged => flagged.chatId === chatId).map(flagged => flagged.messageId);
+    if (savedMessageIds.length) {
+      let updated = false;
+      savedMessageIds.forEach((messageId) => {
+        const message = this.store.flows.messages[chatId].d.find(message => message.id === messageId);
+        if (message) {
+          message.flagged = true;
+          updated = true;
+        }
+      });
+
+      if (updated) this.store.flows.messages[chatId].v += 1;
+    }
+  }
+
   updateMessagesFlagged(chatId?: number): void {
-    //todo
+    if (chatId) {
+      this._updateMessagesFlagged(chatId);
+    } else {
+      // @ts-ignore
+      this.store.flows.messages.keys.map((chatId) => {
+        this._updateMessagesFlagged(+chatId);
+      })
+    }
   }
 
   public chatTextParse(text: string) {

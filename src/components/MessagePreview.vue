@@ -1,7 +1,7 @@
 <template lang="pug">
 
   .message-preview(
-    @click="scrollToMessage()"
+    @click="scrollToMessage"
     @keyup.enter="e => e.target.click()"
     :class="{ clickable, superCompact }"
     :tabindex="clickable ? 0 : -1"

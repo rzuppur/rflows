@@ -2,7 +2,7 @@
 
   .chat-message-container
 
-    message-display(:message="message" :key="message.id" :class="classList")
+    message-display(:message="message" :key="message.id" :class="classListWithHighlight")
 
       template(v-if="editMode" v-slot:content)
 
@@ -100,6 +100,13 @@
       };
     },
     computed: {
+      classListWithHighlight() {
+        const add = [];
+        if (this.highlighted) {
+          add.push("message-softhighlight");
+        }
+        return this.classList.concat(add);
+      },
       autoReadEnabled() {
         this.$store.flows.userProperties.v;
 
@@ -226,14 +233,6 @@
 </script>
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
-
-  @keyframes highlight-soft
-    0%
-      background alpha($color-gold, 0.2)
-    20%
-      background alpha($color-gold, 0.2)
-    100%
-      background alpha($color-gold, 0.05)
 
   .chat-message
     /*

@@ -28,6 +28,7 @@ module.exports = {
     "lines-between-class-members": 0,
     "no-plusplus": 0,
     "no-await-in-loop": 0,
+    "padded-blocks": 0,
   },
 
   overrides: [

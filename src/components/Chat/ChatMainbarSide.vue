@@ -2,6 +2,8 @@
 
   .side.scrollbar-style(:class="{ collapsed: sideCollapsed }")
 
+    //-h4.space-bottom-tiny.show-wide #[i.fas.fa-home.text-muted] Workspace
+
     template(v-if="chatWorkspaces.length")
       .workspace(v-for="workspace in chatWorkspaces")
         .text.show-wide
@@ -20,15 +22,49 @@
         i.fas.has-text-grey(:class="'fa-chevron-' + (sideCollapsed ? 'left' : 'right')")
       span(v-if="!sideCollapsed") #{""} Collapse side
 
+    hr
+
+    .show-wide
+      h4.space-bottom-small(v-if="flaggedMessages.length") #[i.fas.fa-thumbtack.has-text-info] Saved messages
+
+      message-display.sidebar-saved(
+        v-for="message in flaggedMessages"
+        :key="message.id + '_flagged_preview'"
+        :message="message"
+        :compact="true"
+        :showReplyMessage="false"
+      )
+
+        template(v-slot:buttons)
+
+          .control
+            button.button.is-outlined.has-text-info(
+              @click.stop="$events.$emit('scrollToMessage', message.id)"
+              v-tooltip="'Scroll to message'"
+            )
+              span.icon.is-small
+                i.fas.fa-search
+
+          //-.control
+            button.button.is-outlined.has-text-grey-light(
+              @click.stop="flows.setFlag(message.id, false)"
+              v-tooltip="'Remove from saved'"
+            )
+              span.icon.is-small
+                i.fas.fa-times
+
 </template>
 
 <script>
 
   import { computed, onCreated, value, watch } from "vue-function-api";
+  import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
   // eslint-disable-next-line no-unused-vars
   const main = (props, context) => {
     const sideCollapsed = value(false);
+
+    // const leavingOrJoining = value(false);
 
     watch(sideCollapsed, (newVal, oldVal) => {
       if (typeof oldVal === "undefined") return;
@@ -47,6 +83,27 @@
 
     return {
       sideCollapsed,
+    };
+  };
+
+  const flagged = (props, context) => {
+    const flaggedMessages = computed(() => {
+      context.root.$store.flows.messagesFlagged.v;
+      context.root.$store.flows.messages[props.chatId].v;
+
+      const currentUserId = context.root.$store.currentUser?.id;
+
+      const flaggedMessageIds = context.root.$store.flows.messagesFlagged.d
+        .filter(flaggedMessage => flaggedMessage.chatId === props.chatId && flaggedMessage.userId === currentUserId)
+        .map(flaggedMessage => flaggedMessage.messageId);
+
+      return flaggedMessageIds.map((messageId) => {
+        return context.root.$store.flows.messages[props.chatId].d.find(message => message.id === messageId);
+      }).filter(message => message).sort((a, b) => a.id - b.id);
+    });
+
+    return {
+      flaggedMessages,
     };
   };
 
@@ -69,8 +126,8 @@
 
     const chatWorkspaces = computed(() => {
       context.root.$store.flows.workspaces.v;
-      if (!chatUserWorkspaces.value.length) return [];
 
+      if (!chatUserWorkspaces.value.length) return [];
       return chatUserWorkspaces.value.map((workspaceAccess) => {
         // eslint-disable-next-line no-shadow
         const workspace = context.root.$store.flows.workspaces.d.find(workspace => workspace.id === workspaceAccess.workspaceId);
@@ -86,16 +143,17 @@
     };
   };
 
-  //const leavingOrJoining = value(false);
 
   export default {
     name: "ChatMainbarSide",
+    components: { MessageDisplay },
     props: {
       chatId: Number,
     },
     setup(props, context) {
       return {
         ...main(props, context),
+        ...flagged(props, context),
         ...workspace(props, context),
       };
     },
@@ -110,7 +168,7 @@
     overflow-y auto
     height 100%
     min-width 260px
-    padding 20px
+    padding 15px 20px
     flex 0
     box-shadow inset 3px 0 3px -3px rgba(0, 0, 0, 0.1)
     position relative
@@ -144,7 +202,7 @@
       margin 0 0 10px
 
     hr
-      margin 10px 0
+      margin 15px -20px
 
     .side-button
       text-uppercase-13()
@@ -171,14 +229,40 @@
         background none
         pointer-events none
 
-    /deep/ .chat-message.side-saved
+    .sidebar-saved
       margin-bottom 8px
       padding 2px 10px 6px
       background alpha($color-light-blue-background, 0.6)
       border-radius $border-radius
 
-      .avatar-container
-        display none
+      $_avatar_size = 18px
+
+      & /deep/
+        .avatar-container
+          width $_avatar_size
+          min-width @width
+          max-width @width
+          margin-right 5px
+          padding-top 5px
+
+          .sticky-avatar
+            height $_avatar_size
+            overflow hidden
+            border-radius 10px
+
+          img
+            position relative
+            top -3px
+            width $_avatar_size
+            height auto
+
+        .text-clamped,
+        .file-content
+          margin-left -23px
+          margin-top 3px
+
+        .file-content a
+          margin-bottom 3px
 
 
 </style>

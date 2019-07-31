@@ -52,6 +52,14 @@ const utils = {
     return "?";
   },
 
+  getShortNameFromUser(user?: User) {
+    if (user) {
+      if (user.firstName || user.lastName) return `${user.firstName || "?"} ${user.lastName.charAt(0) + "." || "?"}`;
+      if (user.email) return user.email;
+    }
+    return "?";
+  },
+
   uniqueNonZeroNumberArray(array: any[]): number[] {
     return Array.from(new Set(array.map(x => +x).filter(Boolean)));
   },

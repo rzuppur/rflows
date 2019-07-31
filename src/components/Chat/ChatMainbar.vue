@@ -27,6 +27,9 @@
         .name.ellipsis {{ $store.currentChatName }}
           .placeholder(v-if="!$store.currentChatName")
 
+        .flex0
+          portal-target(name="scrollToUnread")
+
         user-list(:users="chatMembers")
 
       connection-status(v-if="mqMobile")
@@ -281,7 +284,7 @@
       text-title-20()
       margin-left 1px
       margin-right 10px
-      min-width 150px
+      min-width 125px
       flex 1 1 auto
 
       .placeholder

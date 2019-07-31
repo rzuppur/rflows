@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .chat-message(:style="message ? '' : 'pointer-events: none;'")
+  .chat-message(:style="message ? '' : 'pointer-events: none;'" :class="{ buttonsHoverOnly }")
 
     template(v-if="!message || writingUser")
 
@@ -34,13 +34,15 @@
       .content-container
         b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
-        .name {{ authorName }}
-          span.icon.is-small.has-text-info.saved-icon(v-if="message.flagged" v-tooltip="'Message is in saved messages'")
-            i.fas.fa-thumbtack
+        .ellipsis
+          .name {{ compact ? authorNameShort : authorName }}
+            span.icon.is-small.has-text-info.saved-icon(v-if="!compact && message.flagged" v-tooltip="'Message is in saved messages'")
+              i.fas.fa-thumbtack
 
-        .date(v-if="dateShort" v-tooltip="dateMedium") {{ dateShort }}
+          .date(v-if="dateShort && !compact" v-tooltip="dateMedium") {{ dateShort }}
+          .date(v-if="dateShort && compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
 
-        //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
+          //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
         template(v-if="message.replyTo")
           message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId")
@@ -118,6 +120,9 @@
       },
     },
     computed: {
+      buttonsHoverOnly() {
+        return this.compact || this.mqMobile;
+      },
       author() {
         this.$store.flows.users.v;
 
@@ -125,6 +130,9 @@
       },
       authorName() {
         return this.$flows.utils.getFullNameFromUser(this.author);
+      },
+      authorNameShort() {
+        return this.$flows.utils.getShortNameFromUser(this.author);
       },
       avatarUrl() {
         this.$store.flows.chatUsers.v;
@@ -152,6 +160,15 @@
 <style lang="stylus" scoped>
 
   @import "~@/shared.styl"
+
+  @keyframes highlight-soft
+    0%
+      background alpha($color-gold, 0.2)
+    20%
+      background alpha($color-gold, 0.2)
+    100%
+      background alpha($color-gold, 0.05)
+
 
   .chat-message
     padding 5px 20px
@@ -216,14 +233,14 @@
       margin-top -3px
       margin-bottom -3px
       margin-left 10px
-      display block // @stylint ignore
+      display block
 
       @media (max-width $buttons-switch-to-mobile)
         top -29px
         right 15px
         position absolute
         z-index 20
-        display none // @stylint ignore
+        display none
         box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
 
       .field

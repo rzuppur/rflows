@@ -27,12 +27,6 @@
     @scroll="onMessagesScroll"
   )
 
-    slide-in-out(:outDuration="0")
-      btn.button-reset.new-shortcut(v-if="showNewShortcut" :action="scrollToNew")
-        span.icon.is-small(style="position: relative; left: -3px;")
-          i.fas.fa-arrow-up
-        | UNREAD
-
     .messages(ref="messagesInner")
 
       .day(v-for="day, key in messagesByDay[0]")
@@ -48,6 +42,11 @@
 
       template(v-if="messages.length === 0")
         message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
+
+    portal(to="scrollToUnread")
+      btn.button.is-text(v-if="showNewShortcut" tip="Scroll to new" :action="scrollToNew" label="Scroll to new")
+        span.icon.red.is-small
+          i.fas.fa-envelope-open-text.has-text-danger
 
 </template>
 
@@ -230,8 +229,16 @@
           message.openEdit();
         }
       });
+      this.$events.$on("scrollToMessage", messageId => this.scrollToMessage(messageId));
     },
     methods: {
+      scrollToMessage(messageId) {
+        const message = this.$refs[`message-${messageId}`]?.[0];
+        if (!message?.$el) return;
+
+        message.$el.scrollIntoView({ behavior: "smooth", block: "start" });
+        message.highlight();
+      },
       async loadMessages(chatId) {
         try {
           this.$set(this.messagesLoading, chatId, true);
@@ -360,6 +367,7 @@
     position relative
     z-index 10
     margin 10px 0
+    pointer-events none
 
     .text
       display inline-block
