@@ -43,10 +43,15 @@
       template(v-if="messages.length === 0")
         message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
 
-    portal(to="scrollToUnread")
-      btn.button.is-text(v-if="showNewShortcut" tip="Scroll to new" :action="scrollToNew" label="Scroll to new")
-        span.icon.red.is-small
+    portal(to="scrollToShortcuts")
+
+      btn.button.is-text(v-if="!mqMobile && showNewShortcut" tip="Scroll to new" :action="scrollToNew" label="Scroll to new")
+        span.icon.is-small
           i.fas.fa-envelope-open-text.has-text-danger
+
+      btn.button.is-text(:disabled="scrolledToBottom" tip="Scroll to bottom" :action="() => { $events.$emit('MESSAGELIST_scrollToBottomInstant'); }" label="Scroll to bottom")
+        span.icon.is-small
+          i.fas.fa-arrow-down.has-text-info
 
 </template>
 
@@ -165,6 +170,9 @@
         if (!firstUnreadMessage) return -1;
 
         return firstUnreadMessage.id;
+      },
+      scrolledToBottom() {
+        return this.top >= this.height;
       },
     },
     asyncComputed: {
@@ -404,22 +412,15 @@
       top -1px
       box-shadow none
 
-  .new-shortcut
-    width auto
-    box-shadow 0 0 0 2px alpha(#000, .05)
-    position fixed
-    top 56px
-    right 28px
-    z-index 23
-    text-bold-13()
-    color $color-red
-    background #fff
-    padding 7px 10px
-    border-bottom-left-radius $border-radius
-    border-bottom-right-radius $border-radius
+  .button.is-text
+    text-decoration none
+    transition opacity .1s
 
-    &:hover
-      box-shadow 0 0 0 2px alpha(#000, .15)
+    &[disabled]
+      pointer-events none
+
+      .icon i
+        color $color-gray-text-light !important
 
 </style>
 

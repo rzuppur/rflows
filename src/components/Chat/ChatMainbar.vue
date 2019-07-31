@@ -28,7 +28,7 @@
           .placeholder(v-if="!$store.currentChatName")
 
         .flex0
-          portal-target(name="scrollToUnread")
+          portal-target(name="scrollToShortcuts")
 
         user-list(:users="chatMembers")
 

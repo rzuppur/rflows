@@ -120,6 +120,7 @@ function scrollTracking(props, context) {
 
   return {
     viewportHeight,
+    height,
     top,
     onMessagesScroll,
     markChatAsNew,
