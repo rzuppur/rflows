@@ -174,11 +174,14 @@
           if (this.autoReadEnabled) return false;
 
           this.top;
+          this.viewportHeight;
           await this.$nextTick();
 
           const unread = this.$refs.unread && this.$refs.unread[0];
-          if (unread) return (this.top - unread.offsetTop) > 100;
-          return false;
+          if (!unread) return false;
+
+          const offset = this.top - unread.offsetTop;
+          return offset > 100 || offset < -this.viewportHeight;
         },
         default: false,
       },

@@ -4,6 +4,7 @@ import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
 function scrollTracking(props, context) {
   const height = value(0);
+  const viewportHeight = value(0);
   const top = value(0);
   const lastScrollTop = {};
   const chatFirstScrollDone = {};
@@ -85,6 +86,7 @@ function scrollTracking(props, context) {
     if (messagesEl) {
       top.value = Math.round(messagesEl.scrollTop);
       height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
+      viewportHeight.value = Math.round(messagesEl.clientHeight);
     }
     if (!chatFirstScrollDone[props.chatId] && height.value > 0) {
       setTimeout(scrollToNewOrBottomInstant, 0);
@@ -117,6 +119,7 @@ function scrollTracking(props, context) {
    */
 
   return {
+    viewportHeight,
     top,
     onMessagesScroll,
     markChatAsNew,
