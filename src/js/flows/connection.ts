@@ -286,7 +286,7 @@ class Connection {
         console.log(frame);
       }
     }
-    if (false && this.store.debugMode) {
+    /* if (this.store.debugMode) {
       const timespan = window.performance.now() - STARTTIME;
       if (timespan < 6) {
         console.log(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "." + action : ''}[${filteredBody.length}]`);
@@ -295,7 +295,7 @@ class Connection {
       } else {
         console.error(`${Math.round(timespan * 10) / 10}ms ${type}${action ? "." + action : ''}[${filteredBody.length}]`);
       }
-    }
+    } */
   }
 
   private static makeArrayIfNotArray(x: any): any[] {
