@@ -35,9 +35,11 @@
         b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
         .ellipsis
-          span.icon.is-small.has-text-grey-light(v-if="message.replyTo && !showReplyMessage")
-            i.fas.fa-reply
-          | &nbsp;
+
+          template(v-if="message.replyTo && !showReplyMessage")
+            span.icon.is-small.has-text-grey-light
+              i.fas.fa-reply
+            | &nbsp;
 
           .name {{ compact ? authorNameShort : authorName }}
             span.icon.is-small.has-text-info.saved-icon(v-if="!compact && message.flagged" v-tooltip="'Message is in saved messages'")
