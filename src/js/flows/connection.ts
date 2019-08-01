@@ -94,7 +94,8 @@ class Connection {
         await this.messageWithResponse("/app/Login.login", loginData);
         return true;
       } catch (error) {
-        console.log("loginError", error);
+        console.error("loginError");
+        console.error(error);
         if (error.body.description !== "You are already logged in. Please logoff or disconnect first (refreshing the page helps)!") {
           this.logout();
         }
@@ -114,7 +115,8 @@ class Connection {
         this.socket.unsubscribeAll();
       }
     } catch (error) {
-      console.log("logout error", error);
+      console.error("logout error");
+      console.error(error);
     } finally {
       localstorage.clearSession();
       this.store.currentUser = null;
@@ -157,7 +159,8 @@ class Connection {
     try {
       const result: OpenResult = await this.socket.open();
       if (result.error) {
-        console.log("Error opening socket", result.error);
+        console.error("Error opening socket");
+        console.error(result.error);
         this.connectionFailure({errorMsg: "Error opening socket"});
         return result;
       }
@@ -205,7 +208,7 @@ class Connection {
   }
 
   private socketFrameHandler(frame: any): void {
-    const STARTTIME = window.performance.now();
+    //const STARTTIME = window.performance.now();
 
     const frameType = frame.headers.cl;
     const type = frameType.replace("[]", "");
@@ -279,7 +282,7 @@ class Connection {
         break;
       }
       default: {
-        console.log("Unknown frame type " + type);
+        console.warn("Unknown frame type " + type);
         console.log(frame);
       }
     }

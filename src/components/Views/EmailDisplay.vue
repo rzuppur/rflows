@@ -34,7 +34,6 @@
         const childs = this.$store.flows.messages[this.message.chatId].d.filter(message => message.parentTopicItemId === this.message.id);
         if (childs.length) {
           childs.sort((a, b) => a.id - b.id);
-          console.log(childs);
           return childs;
         }
         return [];

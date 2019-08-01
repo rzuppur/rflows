@@ -149,7 +149,7 @@
             if (response.status !== 200) {
               this.currentStatus = "ERROR";
               this.$events.$emit("notify", "Error uploading file");
-              console.log(response);
+              console.error(response);
               return;
             }
             this.currentStatus = "SUCCESS";

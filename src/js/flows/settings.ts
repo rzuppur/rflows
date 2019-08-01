@@ -48,7 +48,7 @@ class Settings {
     try {
       this.flows.connection.message("/app/UserProperty.save", prop);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.events.$emit("notify", `Error saving ${property}`);
     }
   }

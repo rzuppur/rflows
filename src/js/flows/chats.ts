@@ -85,7 +85,8 @@ class Chats {
     try {
       this.flows.connection.message("/app/UserProperty.save", prop);
     } catch (error) {
-      console.log("Could not save recent chats");
+      console.error("Could not save recent chats");
+      console.error(error);
     }
   }
 

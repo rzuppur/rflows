@@ -33,7 +33,6 @@ class Notifications {
     const hidden = !document.hasFocus();
 
     if (hidden || message.chatId !== this.store.currentChatId) {
-      console.log(message);
       this.flows.settings.setNumberUserProp("lastNotifiedMessageId", message.id);
       const chatName = this.flows.chats.getChatName(message.chatId);
       const creatorName = this.flows.users.getUserName(message.userId);

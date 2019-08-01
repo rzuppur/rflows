@@ -64,7 +64,6 @@ function scrollTracking(props, context) {
       top.value = Math.round(messagesEl.scrollTop);
       height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
       if (!resizeThrottle) keepScrollBottom[props.chatId] = top.value >= (height.value - keepScrollBottomThreshold);
-      // console.log(`%cBOTTOM ${keepScrollBottom[props.chatId]}`, "color: green; font-size: 20px;");
     }
   };
 
@@ -95,7 +94,6 @@ function scrollTracking(props, context) {
     if (keepScrollBottom[props.chatId]) {
       messagesEl.scrollTop = height.value;
       top.value = height.value;
-      // console.log("%cKEEPING BOTTOM", "color: red; font-size: 20px;");
     }
   };
 
