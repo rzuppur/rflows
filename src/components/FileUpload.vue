@@ -20,14 +20,14 @@
 
       .control(v-show="!expanded || !mqMobile")
 
-        label.button.is-outlined(
-          tabindex="0"
-          for="fileInput"
-          @keyup.enter="e => e.target.click()"
+
+        r-button(
+          borderless
+          :action="() => { $refs.fileInput && $refs.fileInput.click(); }"
           v-tooltip="expanded ? 'Change file' :  'Upload file'"
+          :label="expanded ? 'Change file' :  'Upload file'"
+          icon="file"
         )
-          span.icon.is-small
-            i.fas.fa-paperclip
 
         input#fileInput(
           type="file"
@@ -38,16 +38,12 @@
           style="display: none")
 
       .control(v-if="expanded && formData")
-        button.button(type="button" @click="_reset()")
-          span(v-if="!mqMobile") Cancel
-          span.icon(v-if="mqMobile")
-            i.fas.fa-times
+        r-button(:action="_reset" icon="close")
+          template(v-if="!mqMobile") Cancel
 
       .control(v-show="expanded")
-        button.button.is-primary(@click="upload()" :class="{ 'is-loading': currentStatus === 'UPLOADING' }")
-          span(v-if="!mqMobile") Upload
-          span.icon(v-if="mqMobile")
-            i.fas.fa-upload
+        r-button(primary :action="upload" :loading="currentStatus === 'UPLOADING'" icon="upload")
+          template(v-if="!mqMobile") Upload
 
 </template>
 
@@ -149,6 +145,7 @@
             if (response.status !== 200) {
               this.currentStatus = "ERROR";
               this.$events.$emit("notify", "Error uploading file");
+              // eslint-disable-next-line no-console
               console.error(response);
               return;
             }
@@ -176,6 +173,7 @@
         this.previewUrl = null;
         this.expanded = false;
         if (!keepQueue) this.fileQueue = [];
+        if (this.$refs.fileInput) this.$refs.fileInput.value = "";
       },
       _pasteFromClipboard(event) {
         if (event.clipboardData.files?.length === 1) {
@@ -200,7 +198,10 @@
         } */
       },
       _filesChange(fileList) {
-        if (fileList.length !== 1) return this._reset();
+        if (fileList.length !== 1) {
+          this._reset();
+          return;
+        }
         this._setFile(fileList[0]);
       },
       _setFile(file) {

@@ -35,7 +35,7 @@
 
         .field
           .control
-            btn.button.is-info.is-fullwidth(submit :loading="loginLoading") Sign in
+            r-button(submit fullwidth primary :loading="loginLoading") Sign in
 
       .text-error(v-if="$store.connection.error") {{ $store.connection.errorMsg }}
 

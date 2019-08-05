@@ -3,6 +3,7 @@ import VTooltip from "v-tooltip";
 import PortalVue from "portal-vue";
 import AsyncComputed from "vue-async-computed";
 import { plugin } from "vue-function-api";
+import rvc from "@rzuppur/rvc";
 
 import STORE from "@/js/store";
 import utils from "@/js/utils";
@@ -19,6 +20,7 @@ Vue.use(VTooltip);
 Vue.use(PortalVue);
 Vue.use(AsyncComputed);
 Vue.use(plugin);
+Vue.use(rvc);
 Vue.config.productionTip = false;
 
 Vue.component("btn", Button);

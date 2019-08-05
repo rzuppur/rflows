@@ -9,14 +9,6 @@
 
     modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
 
-      h4
-        span Profile
-
-      user-display(:user="currentUser" :withName="true")
-        btn.button(:action="$flows.connection.logout" tip="Log out" tloc="right" icon)
-          span.icon
-            i.fas.fa-sign-out-alt
-
       template(v-if="settingsLoaded")
         h4
           span Messages
@@ -37,6 +29,14 @@
             .description {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
 
       p.text-muted.space-top-medium(v-else) Settings not available
+
+      h4
+        span Profile
+
+      user-display.space-bottom-medium(:user="currentUser" :withName="true")
+
+        r-button(borderless :action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
+
       .space-top-small
 
       template(v-slot:buttons)
@@ -89,6 +89,11 @@
         return !!this.$store.flows.userProperties.d.length;
       },
     },
+    watch: {
+      "$store.flows.userProperties.v": function () {
+        this.updateProps();
+      },
+    },
     mounted() {
       this.$events.$on("openSettings", () => {
         this.$refs.settingsModal?.open();
@@ -119,11 +124,6 @@
         }
       },
     },
-    watch: {
-      "$store.flows.userProperties.v": function () {
-        this.updateProps();
-      },
-    },
   };
 </script>
 
@@ -133,9 +133,7 @@
   h4
     margin-bottom 10px
     position relative
-
-    &:not(:first-of-type)
-      margin-top 30px
+    margin-top 30px
 
     &:before
       content ""

@@ -73,17 +73,15 @@
               @expandChange="uploadExpanded = $event"
               @fileUploaded="replyCancel()")
 
-            .control(v-if="replyToId" v-show="!uploadExpanded")
-              btn.button.is-outlined(:action="replyCancel")
-                span(v-if="!mqMobile") Cancel
-                span.icon(v-if="mqMobile")
-                  i.fas.fa-times
+            template(v-if="!uploadExpanded")
 
-            .control(v-show="!uploadExpanded")
-              btn.button(:class="{ 'is-primary': replyToId }" :action="sendChatMessage")
-                span(v-if="!mqMobile") Send
-                span.icon(v-if="mqMobile")
-                  i.fas.fa-paper-plane
+              .control(v-if="replyToId")
+                r-button(:action="replyCancel" :icon="mqMobile ? 'close' : null")
+                  template(v-if="!mqMobile") Cancel
+
+              .control
+                r-button(:primary="!!replyToId" :action="sendChatMessage" :icon="mqMobile ? 'send' : null")
+                  template(v-if="!mqMobile") Send
 
     chat-mainbar-side(:chatId="chatId")
 
