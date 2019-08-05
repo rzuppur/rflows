@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .chat-message(:style="message ? '' : 'pointer-events: none;'" :class="{ buttonsHoverOnly }")
+  .chat-message(:style="message ? '' : 'pointer-events: none;'" :class="{ buttonsHoverOnly, isEmail }")
 
     template(v-if="!message || writingUser")
 
@@ -20,9 +20,9 @@
 
     template(v-else)
 
-      .avatar-container
+      .avatar-container(v-if="!(isEmail && compact)")
 
-        .sticky-avatar
+        .sticky-avatar(v-if="!isEmail")
           img.avatar.avatar-small(:src="avatarUrl")
 
         .date(v-if="dateShort" v-tooltip="dateMedium")
@@ -34,7 +34,7 @@
       .content-container
         b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
-        .ellipsis
+        .ellipsis(v-if="message.type !== 'EMAIL'")
 
           template(v-if="message.replyTo && !showReplyMessage")
             span.icon.is-small.has-text-grey-light
@@ -70,11 +70,11 @@
 
             file-display(:text="message.text" :url="$flows.utils.relativeToFullPath(message.url)" :preview="$flows.messages.fileMessagePreviewable(message)")
 
-          template(v-else-if="message.type === 'EMAIL'")
+          template(v-else-if="isEmail")
 
-            p.event-content(v-if="message.type === 'EMAIL' && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
+            p.event-content(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
 
-            template(v-else-if="message.type === 'EMAIL' && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
+            template(v-else-if="isEmail && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
               p.event-content #[i.fas.fa-plus] New commits in branch {{ utils.commitEmailBranch(message.text) }}
               .commit(v-for="commit in utils.commitEmailParse(message.text)")
                 a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
@@ -82,8 +82,8 @@
 
             template(v-else)
               .email-meta
-                | From: {{ message.from.address }}<br>
-                | To: {{ message.to.map(to => to.address).join(", ") }}<br>
+                .text-small From: {{ message.from.address }}
+                .text-small To: {{ message.to.map(to => to.address).join(", ") }}
                 | #[b {{ message.subject }}]
 
               p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
@@ -126,6 +126,10 @@
     computed: {
       buttonsHoverOnly() {
         return this.compact || this.mqMobile;
+      },
+      isEmail() {
+        if (!this.message) return false;
+        return this.message.type === "EMAIL";
       },
       author() {
         this.$store.flows.users.v;
@@ -327,6 +331,21 @@
 
     .date
       color $color-gray-text
+
+    /*
+    EMAIL
+    */
+
+    &.isEmail
+      .avatar-container
+
+        .date,
+        .saved-icon
+          display block !important
+
+        .saved-icon
+          margin-top 7px
+          margin-left 3px
 
      /*
      CONTENT

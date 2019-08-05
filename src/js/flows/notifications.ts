@@ -34,41 +34,64 @@ class Notifications {
 
     if (hidden || message.chatId !== this.store.currentChatId) {
       this.flows.settings.setNumberUserProp("lastNotifiedMessageId", message.id);
-      const chatName = this.flows.chats.getChatName(message.chatId);
-      const creatorName = this.flows.users.getUserName(message.userId);
-      const title = creatorName + (chatName !== creatorName ? ` - ${chatName}` : "");
-      const options: NotificationOptions = {
-        body: message.type === "CHAT"
-          ? this.flows.messages.getMessageTextRepresentation(this.flows.messages.chatTextParse(message.text))
-          : this.flows.messages.getMessageTextRepresentation(message.text),
-        timestamp: message.createDate,
-        renotify: true,
-        tag: `${message.chatId}-${this.store.currentUser && this.store.currentUser.id}`,
-        // requireInteraction: true,
-        // actions: [{action: "mark_as_read", title: "Mark as read" }],
-      };
+      this.showMessageNotification(message);
+    }
+  }
 
-      let notification: Notification;
-      const onclick = (event: Event) => {
-        event.preventDefault();
-        window.focus();
-        if (this.store.currentChatId !== message.chatId) {
-          this.store.currentChatId = message.chatId;
-        } else {
-          this.events.$emit("scrollToMessage", message.id);
-        }
-      };
+  showMessageNotification(message: Message) {
+    const chatName = this.flows.chats.getChatName(message.chatId);
+    const creatorName = this.flows.users.getUserName(message.userId);
+    let title = creatorName + (chatName !== creatorName ? ` - ${chatName}` : "");
 
-      if (message.type === "FILE" && message.url) {
-        let ext: any = message.url.split(".");
-        ext = `${ext[ext.length - 1]}`;
-        if (["png", "jpg", "jpeg"].indexOf(ext.toLowerCase()) > -1) {
-          options.image = this.flows.utils.relativeToFullPath(message.url);
-        }
+    let body = "";
+    if (message.type === "CHAT") {
+      body = this.flows.messages.getMessageTextRepresentation(this.flows.messages.chatTextParse(message.text));
+    } else if (message.type === "EMAIL") {
+      body = `${chatName}\n\nFrom: ${message.from && message.from.address}`;
+      title = `✉ ${message.subject}`;
+    } else {
+      body = this.flows.messages.getMessageTextRepresentation(message.text);
+    }
+
+    if (message.type === "FILE") {
+      body = `🔗 ${body}`;
+    }
+
+    const options: NotificationOptions = {
+      body,
+      timestamp: message.createDate,
+      renotify: true,
+      tag: `${message.chatId}-${this.store.currentUser && this.store.currentUser.id}`,
+      // requireInteraction: true,
+      // actions: [{action: "mark_as_read", title: "Mark as read" }],
+    };
+
+    if (message.type === "FILE" && message.url) {
+      let ext: any = message.url.split(".");
+      ext = `${ext[ext.length - 1]}`;
+      if (["png", "jpg", "jpeg"].indexOf(ext.toLowerCase()) > -1) {
+        options.image = this.flows.utils.relativeToFullPath(message.url);
       }
+    }
 
-      const avatar = this.flows.users.getUserAvatar(message.userId);
+    let notification: Notification;
+    const onclick = (event: Event) => {
+      event.preventDefault();
+      window.focus();
+      if (this.store.currentChatId !== message.chatId) {
+        this.store.currentChatId = message.chatId;
+      } else {
+        this.events.$emit("scrollToMessage", message.id);
+      }
+    };
 
+    const avatar = this.flows.users.getUserAvatar(message.userId);
+
+    if (message.type === "EMAIL") {
+      options.icon = "/favicon.png";
+      notification = new Notification(title, options);
+      notification.onclick = onclick;
+    } else {
       if (avatar.indexOf("data:") === 0) {
         // For svg placeholder avatars, draw them to canvas to get a bitmap
         const canvas = this.flows.utils.createCanvas(42 * 3, 42 * 3);
@@ -89,12 +112,13 @@ class Notifications {
         notification = new Notification(title, options);
         notification.onclick = onclick;
       }
-
-      setTimeout(() => {
-        notification.close();
-      }, 30 * 1000);
     }
+
+    setTimeout(() => {
+      notification.close();
+    }, 30 * 1000);
   }
+
 }
 
 export default Notifications;

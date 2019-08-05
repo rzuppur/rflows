@@ -231,13 +231,17 @@
 
     .sidebar-saved
       margin-bottom 8px
-      padding 2px 10px 6px
+      padding 4px 10px 6px
       background alpha($color-light-blue-background, 0.6)
       border-radius $border-radius
+
+      &.isEmail
+        padding 10px
 
       $_avatar_size = 18px
 
       & /deep/
+
         .avatar-container
           width $_avatar_size
           min-width @width
@@ -258,14 +262,13 @@
 
         .text-clamped,
         .event-content,
-        .file-content,
-        .email-meta,
-        .view-email-button
+        .file-content
           margin-left -23px
           margin-top 3px
 
         .file-content a
           margin-bottom 3px
+
 
 
 </style>

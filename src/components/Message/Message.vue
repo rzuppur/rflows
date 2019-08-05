@@ -30,6 +30,14 @@
               span Cancel
 
       template(v-if="showButtons" v-slot:buttons)
+
+        .control(v-if="$store.debugMode")
+          button.button.is-outlined.has-text-grey(
+          @click.stop="$flows.notifications.showMessageNotification(message)"
+          v-tooltip="'Notify'")
+            span.icon.is-small
+              i.fas.fa-bell
+
         .control(v-if="!autoReadEnabled && message.unread")
           button.button.is-outlined.has-text-success(
           @click.stop="markRead(message.id)"
