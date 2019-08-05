@@ -205,7 +205,7 @@
     .name
       flex 1
       margin-right 20px
-      text-title-20()
+      font-sans($font-size-medium-1, $font-weight-sans-bold)
       margin-top -1px
 
   .settings

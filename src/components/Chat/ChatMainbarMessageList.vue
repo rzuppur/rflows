@@ -349,7 +349,7 @@
       border-radius 0
       border none
       height 40px
-      text-bold-16()
+      font-sans($font-size-normal, $font-weight-sans-bold)
       background $color-light-blue-background
 
       &:hover,
@@ -383,7 +383,7 @@
     .text
       display inline-block
       padding 2px 10px
-      text-bold-13()
+      font-sans($font-size-small, $font-weight-sans-bold)
       background #fff
       border-radius $border-radius
       z-index 1

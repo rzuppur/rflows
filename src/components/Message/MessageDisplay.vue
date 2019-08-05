@@ -315,10 +315,10 @@
     .name,
     .date
       display inline-block
-      text-regular-13()
+      font-sans($font-size-small)
 
     .name
-      text-bold-13()
+      font-sans($font-size-small, $font-weight-sans-bold)
       margin-right 5px
 
       .saved-icon

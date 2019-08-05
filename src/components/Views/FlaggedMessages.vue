@@ -152,7 +152,7 @@
     .name
       flex 1
       margin-right 20px
-      text-title-20()
+      font-sans($font-size-medium-1, $font-weight-sans-bold)
       margin-top -1px
 
   .messages
@@ -187,7 +187,7 @@
           margin-bottom 10px
 
         .chat-title
-          text-bold-24()
+          font-sans($font-size-medium-2, $font-weight-sans-bold)
           margin-bottom 8px
           margin-left 20px
           cursor pointer

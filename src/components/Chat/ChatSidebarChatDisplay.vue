@@ -28,7 +28,7 @@
     $chat-height = 28px
     display flex
     height $chat-height
-    text-regular-16()
+    font-sans($font-size-normal)
     padding 0 10px
     color $color-gray-text-light
     align-items center
@@ -36,14 +36,14 @@
 
     @media (max-width $media-mobile-width)
       height 40px
-      text-regular-20()
+      font-sans($font-size-medium-1)
 
     &.unread
       color #fff
-      text-bold-16()
+      font-sans($font-size-normal, $font-weight-sans-bold)
 
       @media (max-width $media-mobile-width)
-        text-bold-20()
+        font-sans($font-size-medium-1, $font-weight-sans-bold)
 
       .chat-unread
         display block
@@ -104,7 +104,7 @@
       padding 0 6px
       margin-left 8px
       border-radius $border-radius
-      text-bold-13()
+      font-sans($font-size-small, $font-weight-sans-bold)
       line-height 1.55
       height 20px
       align-self center

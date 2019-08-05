@@ -52,7 +52,7 @@
   @import "~@/shared.styl"
 
   .user
-    text-regular-13()
+    font-sans($font-size-small)
     min-width 40px
 
     &[status="OFFLINE"] .avatar
@@ -98,7 +98,7 @@
       bottom -2px
       right -4px
       padding 0 4px
-      text-bold-13()
+      font-sans($font-size-small, $font-weight-sans-bold)
       background $color-blue
       color #fff
       text-shadow 0 -1px rgba(0, 0, 0, 0.5)
@@ -112,6 +112,6 @@
 
     .details
       color $color-gray-text
-      text-regular-13()
+      font-sans($font-size-small)
 
 </style>

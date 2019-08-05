@@ -32,7 +32,7 @@
     margin-top 20px
 
   .sidebar-button
-    text-uppercase-13()
+    text-uppercase-small()
     display block
     width 100%
     padding 0 10px
@@ -140,12 +140,12 @@
         color $color-gold
 
     .name
-      text-title-20()
+      font-sans($font-size-medium-1, $font-weight-sans-bold)
       margin-right 20px
       flex 1
 
     .user
-      text-regular-13()
+      font-sans($font-size-small)
       position relative
       min-width 40px
       top 1px
@@ -185,7 +185,7 @@
         bottom 0
         right -4px
         padding 0 4px
-        text-bold-13()
+        font-sans($font-size-small, $font-weight-sans-bold)
         background $color-blue
         color #fff
         text-shadow 0 -1px rgba(0, 0, 0, 0.5)
@@ -270,7 +270,7 @@
   .text
     display inline-block
     padding 0 10px
-    text-bold-13()
+    font-sans($font-size-small, $font-weight-sans-bold)
     background #fff
     z-index 1
     position relative

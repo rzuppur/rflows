@@ -205,7 +205,7 @@
       margin 15px -20px
 
     .side-button
-      text-uppercase-13()
+      text-uppercase-small()
       display block
       width 100%
       padding 0 10px

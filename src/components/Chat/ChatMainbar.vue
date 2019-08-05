@@ -239,7 +239,7 @@
 
   .data
     white-space pre
-    text-regular-13()
+    font-sans($font-size-small)
     font-size 12px
     line-height 1.15
 
@@ -281,7 +281,7 @@
         color $color-gold
 
     .name
-      text-title-20()
+      font-sans($font-size-medium-1, $font-weight-sans-bold)
       margin-left 1px
       margin-right 10px
       min-width 125px
@@ -297,7 +297,7 @@
       background $color-blue
       border-radius $border-radius
       color #fff
-      text-bold-16()
+      font-sans($font-size-normal, $font-weight-sans-bold)
 
   .chat-bottom
     position relative

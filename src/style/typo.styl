@@ -18,48 +18,48 @@ a:hover
   color $color-red-error
 
 .text-small
-  text-regular-13()
+  font-sans($font-size-small)
 
 b.text-small
-  text-bold-13()
+  font-sans($font-size-small, $font-weight-sans-bold)
 
 .label
-  text-bold-16()
+  font-sans($font-size-normal, $font-weight-sans-bold)
   color $color-text
 
   &:not(:last-child)
     margin-bottom 4px
 
   .description
-    text-regular-13()
+    font-sans($font-size-small)
     color $color-gray-text
 
 h2
-  text-bold-30()
+  font-sans($font-size-large-1, $font-weight-sans-bold)
 
 h3
-  text-bold-24()
+  font-sans($font-size-medium-2, $font-weight-sans-bold)
 
 h4
-  text-uppercase-13()
+  text-uppercase-small()
 
 .note-content, .ProseMirror
-  text-regular-16()
+  font-sans($font-size-normal)
 
   h1, h2, h3
     margin-bottom 10px
 
   h1
-    text-bold-40()
+    font-sans($font-size-large-2, $font-weight-sans-bold)
 
   h2
-    text-bold-30()
+    font-sans($font-size-large-1, $font-weight-sans-bold)
 
   h3
-    text-bold-24()
+    font-sans($font-size-medium-2, $font-weight-sans-bold)
 
   p
-    text-regular-16()
+    font-sans($font-size-normal)
 
   p:not(:last-child)
     margin-bottom 0.5em
@@ -71,7 +71,7 @@ h4
       box-shadow 0 0 0 3px alpha($color-blue, 0.8)
 
   pre, code
-    text-regular-13()
+    font-sans($font-size-small)
     background  $color-light-blue-background
     border-radius $border-radius
     line-height 1.1

@@ -169,12 +169,12 @@
           fill #fff !important
 
       &.item-title
-        text-title-20()
+        font-sans($font-size-medium-1, $font-weight-sans-bold)
         font-weight $font-weight-sans-bold
         padding-bottom 0
 
       &.item-details
-        text-regular-13()
+        font-sans($font-size-small)
         color $color-gray-text
         padding-top 0
 
@@ -189,7 +189,7 @@
         margin-right 10px
 
       .name
-        text-bold-16()
+        font-sans($font-size-normal, $font-weight-sans-bold)
 
     hr
       margin 5px 0

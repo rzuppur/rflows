@@ -39,11 +39,25 @@ $message-item-max-width = 700px
 $buttons-switch-to-mobile = 1300px
 $media-mobile-width = 700px
 
-$font-weight-sans-bold = 600
-
 /*
 TYPOGRAPHY
  */
+
+$line-height-base = 1.5
+
+$font-sans = "Inter", BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+
+$font-weight-sans-regular = 400
+$font-weight-sans-bold = 500
+$font-weight-sans-black = 900
+
+$font-size-small = 13px
+$font-size-normal = 16px
+$font-size-medium-1 = 20px
+$font-size-medium-2 = 25px
+$font-size-large-1 = 31px
+$font-size-large-2 = 39px
+$font-size-large-3 = 48px
 
 tracking(fontSize)
   letter-spacing round(-0.017+(0.202*(2.71828**(-0.175*fontSize))), 3)em
@@ -52,59 +66,15 @@ lineHeightRounded(fontSize, lineHeight)
   line-height round(lineHeight*fontSize)px
 
 leading(fontSize)
-  lineHeightRounded(fontSize, 1.4)
+  lineHeightRounded(fontSize, $line-height-base - (fontSize - $font-size-normal) * .01)
 
-createTextStyle(size, weight=400)
+font-sans(size, weight=400)
   font-size size*1px
   tracking(size)
   leading(size)
   font-weight weight
 
-text-regular-13()
-  createTextStyle(13)
-
-text-bold-13()
-  createTextStyle(13, 600)
-
-text-uppercase-13()
-  createTextStyle(13, 600)
+text-uppercase-small()
+  font-sans($font-size-small, $font-weight-sans-bold)
   text-transform uppercase
   letter-spacing 0.08em
-
-text-regular-16()
-  createTextStyle(16)
-
-text-bold-16()
-  createTextStyle(16, 600)
-
-text-regular-20()
-  createTextStyle(20)
-
-text-bold-20()
-  createTextStyle(20, 600)
-
-text-title-20()
-  createTextStyle(20, 600)
-  lineHeightRounded(20, 1.2)
-
-text-regular-24()
-  createTextStyle(24)
-
-text-bold-24()
-  createTextStyle(24, 600)
-
-text-regular-30()
-  createTextStyle(30)
-  lineHeightRounded(30, 1.25)
-
-text-bold-30()
-  createTextStyle(30, 600)
-  lineHeightRounded(30, 1.25)
-
-text-regular-40()
-  createTextStyle(40)
-  lineHeightRounded(40, 1.15)
-
-text-bold-40()
-  createTextStyle(40, 600)
-  lineHeightRounded(40, 1.15)

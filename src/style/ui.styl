@@ -33,7 +33,8 @@ input[type="search"]::-webkit-search-results-decoration
     flex 1 1 auto
 
   .name
-    text-title-20()
+    font-sans($font-size-medium-1, $font-weight-sans-bold)
+    line-height 24px
 
   .button
     background transparent
@@ -134,11 +135,11 @@ input[type="search"]::-webkit-search-results-decoration
       text-overflow ellipsis
 
     .name
-      text-title-20()
+      font-sans($font-size-medium-1, $font-weight-sans-bold)
       margin-top -5px
 
     .desc
-      text-uppercase-13()
+      text-uppercase-small()
       color $color-gray-text
       margin-bottom -4px
 

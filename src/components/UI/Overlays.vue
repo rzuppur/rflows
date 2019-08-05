@@ -64,7 +64,7 @@
       opacity 1
 
     .drop-overlay-text
-      text-regular-30()
+      font-sans($font-size-large-1)
       color $color-text
 
       &:before

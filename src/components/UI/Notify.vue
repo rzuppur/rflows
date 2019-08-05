@@ -66,7 +66,7 @@
     text-align center
 
   .toast-notification
-    text-regular-16()
+    font-sans($font-size-normal)
     text-align center
     background alpha(#000, 0.85)
     color #fff
