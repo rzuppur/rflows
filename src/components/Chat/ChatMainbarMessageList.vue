@@ -45,7 +45,7 @@
 
     portal(to="scrollToShortcuts")
 
-      btn.button.is-text(v-if="!mqMobile && showNewShortcut" tip="Scroll to new" :action="scrollToNew" label="Scroll to new")
+      btn.button.is-text(v-if="showNewShortcut" tip="Scroll to new" :action="scrollToNew" label="Scroll to new")
         span.icon.is-small
           i.fas.fa-envelope-open-text.has-text-danger
 
