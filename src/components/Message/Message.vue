@@ -2,7 +2,7 @@
 
   .chat-message-container
 
-    message-display(:message="message" :key="message.id" :class="classListWithHighlight")
+    message-display(:message="message" :key="message.id" :class="classListWithHighlight" @dblclick.native="$events.$emit('replyStart', message.id)")
 
       template(v-if="editMode" v-slot:content)
 
@@ -58,7 +58,7 @@
           @click.stop.ctrl.exact="deleteChatMessage(true)"
           v-tooltip="'Delete'")
             span.icon.is-small
-              i.fas.fa-times
+              i.far.fa-trash-alt
 
         .control
           button.button.is-outlined(

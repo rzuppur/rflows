@@ -56,7 +56,9 @@
                 @update="editorUpdate"
                 @focus="editorFocused = true"
                 @blur="editorFocused = false"
-                @keydown.38.native.exact.capture="editLastMessage")
+                @keydown.native.capture.esc="replyCancel"
+                @keydown.38.native.exact.capture="editLastMessage"
+                @keydown.ctrl.38.native.exact.capture="replyLastMessage")
 
             .control(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
 
@@ -218,6 +220,14 @@
             const messageId = myMessages[myMessages.length - 1].id;
             this.$events.$emit("editMessage", messageId);
           }
+        }
+      },
+      replyLastMessage(event) {
+        event.stopPropagation();
+        const messages = this.$store.flows.messages[this.chatId].d;
+        if (messages.length) {
+          const messageId = messages[messages.length - 1].id;
+          this.replyStart(messageId);
         }
       },
     },
