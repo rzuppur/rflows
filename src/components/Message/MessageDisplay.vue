@@ -52,7 +52,7 @@
           //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
         template(v-if="message.replyTo")
-          message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId")
+          message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId" :key="`${message.chatId}-${message.replyTo}-preview`")
 
         slot(name="content")
 

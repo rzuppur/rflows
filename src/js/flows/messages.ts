@@ -340,4 +340,4 @@ class Messages {
 
 export default Messages;
 
-type chatFilter = { amount: number, from?: { id: number }, sticky: boolean };
+type chatFilter = { amount: number, from?: { id: number }, sticky?: boolean };

@@ -3,26 +3,17 @@
   .message-preview(
     @click="scrollToMessage"
     @keyup.enter="e => e.target.click()"
-    :class="{ clickable, superCompact }"
+    :class="{ clickable }"
     :tabindex="clickable ? 0 : -1"
-    v-tooltip.left="{ content: tooltipText, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
   )
 
-    template(v-if="superCompact")
-      .has-text-grey.text-small.has-text-centered
-        span.icon.small.has-text-info(style="margin-left: -5px; margin-right: -4px;")
-          i.fas.fa-thumbtack
-        | {{ initials }}
+    .date(v-if="!message") Message not loaded
 
     template(v-else)
 
-      .date(v-if="!message") Message not loaded
-
-      template(v-else)
-
-        .name {{ authorName }}
-        .date {{ utils.fullDateAddOtherYear(message.createDate) }}
-        .message-content.note-content.clamped(v-html="messageText")
+      .name {{ authorName }}
+      .date {{ utils.fullDateAddOtherYear(message.createDate) }}
+      .message-content.note-content.clamped(v-html="messageText")
 
 </template>
 
@@ -37,10 +28,11 @@
         type: Boolean,
         default: true,
       },
-      superCompact: {
-        type: Boolean,
-        default: false,
-      },
+    },
+    data() {
+      return {
+        messageLoading: null,
+      };
     },
     computed: {
       message() {
@@ -68,13 +60,17 @@
         }
         return "";
       },
-      tooltipText() {
-        if (!this.superCompact || !this.message) return null;
-        //return `${this.flows.getFullName(this.message.creatorUserId)}: ${this.messageText.substring(0, 30)}...`;
-      },
-      initials() {
-        //const name = this.flows.getFullName(this.message.creatorUserId);
-        //return name.charAt(0) + name.split(" ")[1].charAt(0);
+    },
+    watch: {
+      messageId: {
+        immediate: true,
+        async handler(newMessageId) {
+          if (newMessageId && !this.message && this.messageLoading !== newMessageId) {
+            this.messageLoading = newMessageId;
+            await this.$flows.messages.getChatMessages(+this.chatId, { amount: 1, from: { id: newMessageId } });
+            this.messageLoading = null;
+          }
+        },
       },
     },
     methods: {
@@ -96,8 +92,6 @@
     border-radius $border-radius
 
     &.clickable
-      cursor pointer
-
       &:hover,
       &:focus
         background darken($color-light-blue-background, 1)
@@ -113,9 +107,6 @@
         .name,
         .date
           text-decoration underline
-
-    &.superCompact
-      padding 5px 0
 
     .name,
     .date
