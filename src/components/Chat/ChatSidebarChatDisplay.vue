@@ -10,8 +10,9 @@
     .chat-title.ellipsis(v-if="props.chat && props.chat.name") {{ props.chat.name }}
     .chat-title.ellipsis.placeholder(v-else :style="{ maxWidth: `${120 + 50*(data.key*999999.8 % 2.4)}px` }")
 
-    .icon.is-small.chat-flagged(v-if="props.chat && props.chat.flagged > 0")
-      span {{ props.chat && props.chat.flagged }} #[i.fas.fa-thumbtack]
+    .chat-flagged(v-if="props.chat && props.chat.flagged > 0")
+      span {{ props.chat && props.chat.flagged }}
+      .icon.is-small #[i.fas.fa-thumbtack]
 
     .chat-removerecent(v-if="props.recentRemove && props.chat" @click.stop="props.recentRemove(props.chat.id)")
       i.fa.fa-times
@@ -102,7 +103,7 @@
       background rgba(0, 0, 0, 0.25)
       color #fff
       padding 0 6px
-      margin-left 8px
+      margin-left 5px
       border-radius $border-radius
       font-sans($font-size-small, $font-weight-sans-bold)
       line-height 1.55
