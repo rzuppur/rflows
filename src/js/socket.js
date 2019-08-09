@@ -2,7 +2,7 @@ import autoBind from "auto-bind";
 import sockjs from "sockjs-client";
 import webstomp from "webstomp-client";
 import utils from "@/js/utils";
-import { SOCKET_URL, DEBUG, SOCKET_TRAFFIC_DEBUG } from "@/js/consts";
+import { SOCKET_URL, SOCKET_TRAFFIC_DEBUG } from "@/js/consts";
 
 
 export class SocketResponse {
@@ -44,7 +44,7 @@ class Socket {
     this.frameHandler = frameHandler;
     this.closeCb = closeCb;
 
-    this.debug = DEBUG;
+    this.debug = false;
     autoBind(this);
   }
 

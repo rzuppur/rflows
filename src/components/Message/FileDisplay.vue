@@ -47,5 +47,5 @@
 
       img
         display block
-        max-height 280px
+        max-height 200px
 </style>
