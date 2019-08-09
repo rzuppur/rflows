@@ -154,6 +154,11 @@ class Messages {
 
     const mapped = messages.map(mapMessage);
 
+    // @ts-ignore
+    const childMessageIds: number[] = mapped.filter(message => message.parentTopicItemId).map(message => message.id);
+    // Child messages (like email attachments) are marked as read automatically
+    this.markMessagesAsRead(childMessageIds, chatId);
+
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.filter(message => ids.indexOf(message.id) === -1);
     this.store.flows.messages[chatId].d = this.store.flows.messages[chatId].d.concat(mapped);
     this.store.flows.messages[chatId].d.sort((a, b) => a.id - b.id);
