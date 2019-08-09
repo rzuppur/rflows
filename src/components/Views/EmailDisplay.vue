@@ -4,11 +4,19 @@
 
     modal(v-if="message" :title="message.subject" :sizeMedium="true" ref="emailModal" @close="message = null")
 
+      .details
+        p #[b Date:] {{ utils.fullDateTime(message.createDate) }}
+        p #[b From:] {{ message.from.name }} <{{ message.from.address }}>
+        p #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
+
+      .buttons
+        r-button(v-if="hasImages && imagesHidden" icon="images" :action="showImages") Show images
+
       .email-frame-container
 
-        iframe.email-frame(:srcdoc="utils.getEmailText(message.text)" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
+        iframe.email-frame(:srcdoc="messageSrcDoc" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
 
-      file-display(v-for="file in attachments" :url="file.url" :text="file.text")
+      file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text")
 
       template(v-slot:buttons)
         span
@@ -26,6 +34,7 @@
     data() {
       return {
         message: null,
+        imagesHidden: true,
       };
     },
     computed: {
@@ -38,9 +47,20 @@
         }
         return [];
       },
+      messageSrcDoc() {
+        this.message;
+
+        return this.utils.getEmailText(this.message.text, !this.imagesHidden);
+      },
+      hasImages() {
+        this.message;
+
+        return this.message.text.includes("<img ");
+      },
     },
     mounted() {
       this.$events.$on("openEmail", (message) => {
+        this.imagesHidden = true;
         if (message) {
           this.message = message;
           this.$nextTick(() => {
@@ -49,11 +69,19 @@
         }
       });
     },
+    methods: {
+      showImages() {
+        this.imagesHidden = false;
+      },
+    },
   };
 </script>
 
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
+
+  .details
+    margin-bottom $font-size-normal
 
   .email-frame
     width 100%

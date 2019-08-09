@@ -82,8 +82,8 @@
 
             template(v-else)
               .email-meta
-                .text-small From: {{ message.from.address }}
-                .text-small To: {{ message.to.map(to => to.address).join(", ") }}
+                .text-small From: {{ message.from.name }} <{{ message.from.address }}>
+                .text-small To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
                 | #[b {{ message.subject }}]
 
               p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
@@ -102,7 +102,7 @@
 
 <script>
   import FileDisplay from "@/components/Message/FileDisplay.vue";
-  import MessagePreview from "@/components/MessagePreview.vue";
+  import MessagePreview from "@/components/Message/MessagePreview.vue";
 
   export default {
     name: "MessageDisplay",

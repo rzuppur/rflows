@@ -51,7 +51,7 @@
       messageText() {
         if (this.message) {
           if (this.message.type === "EMAIL") {
-            return `✉ ${this.message.subject}\n${this.message.from.address}`;
+            return `✉ ${this.message.subject}\n👤 ${this.message.from.name} &lt;${this.message.from.address}&gt;`;
           }
           if (this.message.type === "NOTE") {
             return this.$flows.messages.getMessageTextRepresentation(this.message.text);
