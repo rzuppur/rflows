@@ -10,7 +10,7 @@
         p #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
 
       .buttons
-        r-button(v-if="hasImages && imagesHidden" icon="images" :action="showImages") Show images
+        r-button(borderless gray v-if="hasImages && imagesHidden" icon="images" :action="showImages") Show images
 
       .email-frame-container
 

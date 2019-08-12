@@ -84,11 +84,12 @@
               .email-meta
                 .text-small From: {{ message.from.name }} <{{ message.from.address }}>
                 .text-small To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
-                | #[b {{ message.subject }}]
 
-              p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+              template(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'")
+                b {{ message.subject }}
+                p.text-content.email-plain(v-html="utils.textToHTML(message.text)")
 
-              button.button.view-email-button(v-else type="button" @click="$events.$emit('openEmail', message)") View email
+              r-button.view-email-button(v-else borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") {{ message.subject }}
 
           p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 
