@@ -92,7 +92,7 @@
 
           p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 
-      .buttons-container
+      .buttons-container(@dblclick.native.stop)
 
         .field.has-addons
 

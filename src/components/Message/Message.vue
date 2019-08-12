@@ -2,7 +2,7 @@
 
   .chat-message-container
 
-    message-display(:message="message" :key="message.id" :class="classListWithHighlight" @dblclick.native="$events.$emit('replyStart', message.id)")
+    message-display(:message="message" :key="message.id" :class="classListWithHighlight" @dblclick.native="!editMode && $events.$emit('replyStart', message.id)")
 
       template(v-if="editMode" v-slot:content)
 
