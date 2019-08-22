@@ -17,8 +17,9 @@
           span.icon.unread-total(v-else) {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
         btn.button.fav-toggle.is-white(
-          v-if="!isDevChat"
+          v-if="!isDevChat && !mqMobile"
           :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'"
+          tloc="right"
           :action="toggleFavourite"
         )
           span.icon

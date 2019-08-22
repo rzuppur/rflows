@@ -7,13 +7,9 @@
     user-display(:user="currentUserDisplay" :withName="true")
 
       template(v-if="mqMobile" v-slot:avatar)
-        btn.button.chat(tip="Chat" tloc="right" :action="() => { $events.$emit('hideSidebar') }")
-          span.icon
-            i.fas.fa-arrow-right
+        r-button(borderless v-rtip.right="'Chat'" :action="() => { $events.$emit('hideSidebar') }" icon="arrow right" icon-color="white")
 
-      btn.button.settings(tip="Settings" tloc="right" :action="() => { $events.$emit('openSettings') }")
-        span.icon
-          i.fas.fa-cog
+      r-button(borderless v-rtip.left="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
     .search
       .control.has-icons-right
@@ -243,9 +239,6 @@
       right 0
       top 0
       bottom 0
-      margin-right
-    -50px
-    padding-right 50px
 
     & /deep/ .connection-status
       width $sidebar-width
@@ -266,8 +259,8 @@
       & /deep/ .details
         color $color-gray-text-light
 
-      .button
-        color alpha(#fff, 0.5)
+      .r-button
+        opacity .5
 
         &:hover
           background alpha(#fff, 0.1)

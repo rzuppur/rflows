@@ -45,13 +45,9 @@
 
     portal(to="scrollToShortcuts")
 
-      btn.button.is-text(v-if="showNewShortcut" tip="Scroll to new" :action="scrollToNew" label="Scroll to new")
-        span.icon.is-small
-          i.fas.fa-envelope-open-text.has-text-danger
+      r-button(v-if="showNewShortcut" ref="newbutton" borderless v-rtip.bottom="'Scroll to new'" :action="scrollToNewInstant" label="Scroll to new" icon="new message" icon-color="red")
 
-      btn.button.is-text(:disabled="scrolledToBottom" tip="Scroll to bottom" :action="() => { $events.$emit('MESSAGELIST_scrollToBottomInstant'); }" label="Scroll to bottom")
-        span.icon.is-small
-          i.fas.fa-arrow-down.has-text-info
+      r-button(v-if="!scrolledToBottom" ref="bottombutton" borderless v-rtip.bottom="'Scroll to bottom'" :action="() => { $events.$emit('MESSAGELIST_scrollToBottomInstant'); }" label="Scroll to bottom" icon="arrow down" icon-color="blue")
 
 </template>
 

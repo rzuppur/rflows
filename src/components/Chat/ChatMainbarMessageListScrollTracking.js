@@ -27,6 +27,10 @@ function scrollTracking(props, context) {
     unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const scrollToNewInstant = () => {
+    const unreadSepEl = context.refs.unread?.[0];
+    unreadSepEl?.scrollIntoView({ block: "start" });
+  };
 
   const scrollToBottomInstant = () => {
     const messagesEl = context.refs.messages;
@@ -125,6 +129,7 @@ function scrollTracking(props, context) {
     saveScrollPosition,
     restoreScrollPosition,
     scrollToNew,
+    scrollToNewInstant,
   };
 }
 
