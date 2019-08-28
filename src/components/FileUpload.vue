@@ -14,12 +14,12 @@
         input.input(
           type="text"
           ref="fileName"
+          :class="{ 'text-error': currentStatus === 'ERROR' }"
           v-model="fileName"
           placeholder="File name"
           @keydown.enter.prevent="upload")
 
       .control(v-show="!expanded || !mqMobile")
-
 
         r-button(
           borderless
@@ -136,38 +136,38 @@
           }
         }
       },
-      upload() {
+      async upload() {
         if (!this.formData) return;
         this.currentStatus = "UPLOADING";
         this._debug("Starting file upload");
-        this.$flows.files.uploadFile(this.formData, this.fileName, this.chatId, this.replyToId)
-          .then((response) => {
-            if (response.status !== 200) {
-              this.currentStatus = "ERROR";
-              this.$events.$emit("notify", "Error uploading file");
-              // eslint-disable-next-line no-console
-              console.error(response);
-              return;
-            }
-            this.currentStatus = "SUCCESS";
-            this._reset(true);
-            this.$events.$emit("notify", "File uploaded");
-            this.$emit("fileUploaded");
-            this._processQueue();
-          })
-          .catch((error) => {
-            if (error.message) {
-              this.uploadError = error.message;
-              this.currentStatus = "ERROR";
-              this.$events.$emit("notify", error.message);
-              return;
-            }
-            this.uploadError = error.response;
+        try {
+          const response = await this.$flows.files.uploadFile(this.formData, this.fileName, this.chatId, this.replyToId);
+          if (response.status !== 200) {
             this.currentStatus = "ERROR";
             this.$events.$emit("notify", "Error uploading file");
-          });
+            // eslint-disable-next-line no-console
+            console.error(response);
+            return;
+          }
+          this.currentStatus = "SUCCESS";
+          this._reset(true);
+          this.$events.$emit("notify", "File uploaded");
+          this.$emit("fileUploaded");
+          this._processQueue();
+        } catch (error) {
+          if (error.message) {
+            this.uploadError = error.message;
+            this.currentStatus = "ERROR";
+            this.$events.$emit("notify", error.message);
+            return;
+          }
+          this.uploadError = error.response;
+          this.currentStatus = "ERROR";
+          this.$events.$emit("notify", "Error uploading file");
+        }
       },
       _reset(keepQueue) {
+        this.currentStatus = "INITIAL";
         this.formData = null;
         this.fileName = "";
         this.previewUrl = null;
@@ -205,6 +205,8 @@
         this._setFile(fileList[0]);
       },
       _setFile(file) {
+        this.currentStatus = "INITIAL";
+
         const { type } = file;
         const formData = new FormData();
         formData.append("file", file, file.name);
