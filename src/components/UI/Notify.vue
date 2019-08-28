@@ -18,7 +18,7 @@
       };
     },
     created() {
-      this.$events.$on("notify", this.notify);
+      this.$events.$on("notify", this.$notifyToast);
       this.index = 0;
     },
     methods: {
