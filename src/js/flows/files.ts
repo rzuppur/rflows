@@ -28,7 +28,7 @@ class Files {
       throw new Error("No file");
     }
     if (file.size > 5242880) {
-      throw new Error("File too large");
+      throw new Error("File too large, maximum 5MB");
     }
 
     formData.append("topicId", chatId.toString());

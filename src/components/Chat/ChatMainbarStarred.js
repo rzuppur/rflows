@@ -1,4 +1,4 @@
-import { computed } from "vue-function-api";
+import { computed } from "@vue/composition-api";
 
 function starred(props, context) {
   const chatId = computed(() => context.root.$store.currentChatId);

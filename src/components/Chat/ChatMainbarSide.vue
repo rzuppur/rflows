@@ -57,28 +57,26 @@
 
 <script>
 
-  import { computed, onCreated, value, watch } from "vue-function-api";
+  import { computed, ref, watch } from "@vue/composition-api";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
   // eslint-disable-next-line no-unused-vars
   const main = (props, context) => {
-    const sideCollapsed = value(false);
+    const sideCollapsed = ref(false);
+
+    try {
+      const sideIsCollapsed = localStorage.getItem("sidebarCollapsed");
+      if (sideIsCollapsed && JSON.parse(sideIsCollapsed)) sideCollapsed.value = true;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn(error);
+    }
 
     // const leavingOrJoining = value(false);
 
     watch(sideCollapsed, (newVal, oldVal) => {
       if (typeof oldVal === "undefined") return;
       localStorage.setItem("sidebarCollapsed", JSON.stringify(newVal));
-    });
-
-    onCreated(() => {
-      try {
-        const sideIsCollapsed = localStorage.getItem("sidebarCollapsed");
-        if (sideIsCollapsed && JSON.parse(sideIsCollapsed)) sideCollapsed.value = true;
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.warn(error);
-      }
     });
 
     return {

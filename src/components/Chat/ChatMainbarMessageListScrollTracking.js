@@ -1,11 +1,11 @@
 import ResizeObserver from "resize-observer-polyfill";
-import { value, onMounted, onUnmounted } from "vue-function-api";
+import { ref, onMounted, onUnmounted } from "@vue/composition-api";
 import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
 function scrollTracking(props, context) {
-  const height = value(0);
-  const viewportHeight = value(0);
-  const top = value(0);
+  const height = ref(0);
+  const viewportHeight = ref(0);
+  const top = ref(0);
   const lastScrollTop = {};
   const chatFirstScrollDone = {};
   const keepScrollBottom = {};

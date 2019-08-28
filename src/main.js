@@ -1,8 +1,9 @@
 import Vue from "vue";
+import VueCompositionApi from "@vue/composition-api";
+
 import VTooltip from "v-tooltip";
 import PortalVue from "portal-vue";
 import AsyncComputed from "vue-async-computed";
-import { plugin } from "vue-function-api";
 import rvc from "@rzuppur/rvc";
 
 import STORE from "@/js/store";
@@ -16,10 +17,10 @@ import Button from "@/components/UI/global/Button.vue";
 // import "intersection-observer";
 import "@/assets/main.css";
 
+Vue.use(VueCompositionApi);
 Vue.use(VTooltip);
 Vue.use(PortalVue);
 Vue.use(AsyncComputed);
-Vue.use(plugin);
 Vue.use(rvc);
 Vue.config.productionTip = false;
 

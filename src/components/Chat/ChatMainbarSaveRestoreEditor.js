@@ -1,4 +1,4 @@
-import { computed, watch } from "vue-function-api";
+import { computed, watch } from "@vue/composition-api";
 import utils from "@/js/utils";
 
 function saveRestore(props, context) {

@@ -156,10 +156,10 @@
             this._processQueue();
           })
           .catch((error) => {
-            if (error.message === "File too large") {
+            if (error.message) {
               this.uploadError = error.message;
               this.currentStatus = "ERROR";
-              this.$events.$emit("notify", "File too large, maximum 5MB");
+              this.$events.$emit("notify", error.message);
               return;
             }
             this.uploadError = error.response;
