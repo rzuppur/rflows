@@ -24,7 +24,7 @@
 
                   h3.title(:id="`dialog-title-${_id}`") {{ title }}
 
-                  r-button(small borderless :action="close" label="Close dialog" icon="close")
+                  r-button(borderless :action="close" label="Close dialog" icon="close")
 
                 slot
 

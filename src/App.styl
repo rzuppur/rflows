@@ -19,37 +19,11 @@
     @media (max-width $media-sidebar-hide)
       flex 0 0 40px
 
-    .sidebar-content
-      position absolute
-      left 0
-      right 0
-      top 0
-      bottom 0
-      margin-right -50px
-      padding-right 50px
-      overflow-y scroll
-      height 100%
-
-      .user
-        .details
-          color $color-gray-text-light
-          font-sans($font-size-small)
-
-        .button
-          color alpha(#fff, 0.5)
-
-          &:hover
-            background alpha(#fff, 0.1)
-
     .connection-error, .user
       padding 10px 10px 0
 
-    .user-links
-      padding 20px 10px 10px
-
     .connection-error,
     .user,
-    .user-links,
     .search
       width $sidebar-width
 

@@ -425,13 +425,9 @@
   $verticalPadding = 12px
 
   .limitContainerWidth .chat-message
-    padding $verticalPadding 30px !important
 
     &.message-highlight
       padding $verticalPadding 17px !important
-
-    @media (max-width $media-mobile-width)
-      padding $verticalPadding 20px !important
 
     p
       line-height 1.6

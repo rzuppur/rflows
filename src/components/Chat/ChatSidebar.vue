@@ -1,13 +1,13 @@
 <template lang="pug">
 
-  .sidebar-content.scrollbar-style.scrollbar-style-light
+  .sidebar-content
 
     connection-status
 
     user-display(:user="currentUserDisplay" :withName="true")
 
       template(v-if="mqMobile" v-slot:avatar)
-        r-button(borderless v-rtip.right="'Chat'" :action="() => { $events.$emit('hideSidebar') }" icon="arrow right" icon-color="white")
+        span
 
       r-button(borderless v-rtip.left="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
@@ -29,12 +29,9 @@
             span.icon.is-small
               i.fas.fa-angle-down
 
-    .sidebar-chats
+    .sidebar-chats.scrollbar-style.scrollbar-style-light
 
-
-      div(v-if="searchText.length" style="height: 10px;")
-
-      template(v-else)
+      template(v-if="!searchText.length")
 
         h4.chats-section #[i.far.fa-comment] RFlows
         chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store" :action="() => { chatClick(devChat.id); }" :key="devChat.id")
@@ -94,7 +91,7 @@
         return {
           avatar: this.$flows.utils.getAvatarFromUser(this.$store.currentUser),
           name: this.$flows.utils.getFullNameFromUser(this.$store.currentUser),
-          email: this.mqMobile ? null : this.$store.currentUser?.email,
+          email: this.$store.currentUser?.email,
         };
       },
       showWorkspaceFilter() {
@@ -225,20 +222,9 @@
   @import "~@/shared.styl"
 
   .sidebar-content
-    overflow-y scroll
     height 100%
-    margin-right -50px
-    padding-right 50px
-
-    @media (max-width $media-mobile-width)
-      padding-top 56px
-
-    @media (min-width $media-mobile-width + 1px)
-      position absolute
-      left 0
-      right 0
-      top 0
-      bottom 0
+    display flex
+    flex-direction column
 
     & /deep/ .connection-status
       width $sidebar-width
@@ -247,15 +233,6 @@
         width 100%
 
     .user
-      @media (max-width $media-mobile-width)
-        position fixed
-        top 0
-        left 0
-        right 0
-        z-index 10
-        padding-bottom 10px
-        background alpha($color-sidebar-background, .95)
-
       & /deep/ .details
         color $color-gray-text-light
 
@@ -265,12 +242,8 @@
         &:hover
           background alpha(#fff, 0.1)
 
-      .button.chat
-        margin-left 0
-        margin-right 4px
-
     .workspace-filter
-      padding 10px 10px 0
+      margin 10px
 
       .button
         width 100%
@@ -318,20 +291,19 @@
 
   @media (min-width $media-mobile-width + 1px)
     .user,
-    .search
+    .search,
+    .sidebar-chats
       width $sidebar-width
 
   .search
-    padding 10px 10px 0
+    margin 10px
 
-    @media (max-width $media-mobile-width)
-      padding-top 0
+    input
+      height 48px
 
-      input
-        height 48px
-
-      .control.has-icons-right .icon
-        top 6px
+    .control.has-icons-right .icon
+      top 6px
+      right 5px
 
     .input
       background transparent
@@ -353,10 +325,9 @@
         &::placeholder
           color $color-
 
-  @media (min-width $media-mobile-width + 1px)
-    .sidebar-chats
-      width $sidebar-width
-      overflow hidden
+  .sidebar-chats
+    overflow-y scroll
+    flex 1 1 0
 
   .chats-section
     padding 20px 10px 5px

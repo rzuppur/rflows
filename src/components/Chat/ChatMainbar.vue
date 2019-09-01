@@ -6,15 +6,14 @@
 
       .chat-title
 
-        btn.button.is-white(
+        r-button(
+          borderless
           v-if="mqMobile"
-          tip="Change chat"
-          tloc="right"
+          v-rtip.right="'Change chat'"
           :action="() => { $events.$emit('showSidebar') }"
+          :icon="!$store.unreadMessagesTotal ? null : 'arrow left'"
         )
-          span.icon.text-muted(v-if="!$store.unreadMessagesTotal")
-            i.fas.fa-bars
-          span.icon.unread-total(v-else) {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
+          //span.icon.unread-total(v-else) {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
         btn.button.fav-toggle.is-white(
           v-if="!isDevChat && !mqMobile"
@@ -279,7 +278,8 @@
     @media (max-width $media-mobile-width)
       padding 0 10px
 
-    .button
+    .button,
+    .r-button
       margin-right 10px
 
     .fav-toggle
