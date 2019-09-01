@@ -11,17 +11,14 @@
     .drop-overlay(:class="{ dropping }")
       .drop-overlay-text #[span.icon #[i.fas.fa-upload]]
 
-    notify
-
 </template>
 
 <script>
   import ConfirmModal from "@/components/UI/ConfirmModal.vue";
-  import Notify from "@/components/UI/Notify.vue";
 
   export default {
     name: "Overlays",
-    components: { ConfirmModal, Notify },
+    components: { ConfirmModal },
     data() {
       return {
         dropping: false,

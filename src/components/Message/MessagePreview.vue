@@ -7,7 +7,7 @@
     :tabindex="clickable ? 0 : -1"
   )
 
-    .date(v-if="!message") Message not loaded
+    .date(v-if="!message") Message not available
 
     template(v-else)
 
