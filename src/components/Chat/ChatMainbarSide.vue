@@ -17,10 +17,15 @@
 
     hr
 
-    button.side-button(@click="sideCollapsed = !sideCollapsed" v-tooltip.left="{ content: sideCollapsed ? 'Expand side' : null, popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }")
+    button.side-button(@click="sideCollapsed = !sideCollapsed" v-rtip.left="sideCollapsed ? 'Expand side' : null")
       span.icon.is-small
         i.fas.has-text-grey(:class="'fa-chevron-' + (sideCollapsed ? 'left' : 'right')")
       span(v-if="!sideCollapsed") #{""} Collapse side
+
+    button.side-button(:disabled="!flowsEmail" @click="flowsEmailCopy" v-rtip.left="sideCollapsed ? 'Copy forward email' : null")
+      span.icon.is-small
+        i.fas.fa-envelope.has-text-grey
+      span(v-if="!sideCollapsed") #{""} Copy forward email
 
     hr
 
@@ -141,6 +146,34 @@
     };
   };
 
+  const guidEmail = (props, context) => {
+    const flowsEmail = computed(() => {
+      context.root.$store.flows.chats.v;
+
+      const guid = context.root.$store.flows.chats.d.find(chat => chat.id === props.chatId)?.guid;
+
+      if (guid) return `${guid}@flow.contriber.com`;
+      return false;
+    });
+
+    const flowsEmailCopy = async () => {
+      console.log(context.root.$events);
+      if (flowsEmail.value) {
+        try {
+          await navigator.clipboard.writeText(flowsEmail.value);
+          context.root.$events.$emit("notify", `Copied chat email to clipboard (${flowsEmail.value})`);
+        } catch (error) {
+          context.root.$events.$emit("notify", "Copying failed");
+        }
+      }
+    };
+
+    return {
+      flowsEmail,
+      flowsEmailCopy,
+    };
+  };
+
 
   export default {
     name: "ChatMainbarSide",
@@ -153,6 +186,7 @@
         ...main(props, context),
         ...flagged(props, context),
         ...workspace(props, context),
+        ...guidEmail(props, context),
       };
     },
   };
@@ -271,7 +305,6 @@
 
         .file-content a
           margin-bottom 3px
-
 
 
 </style>
