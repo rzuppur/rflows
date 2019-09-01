@@ -207,12 +207,12 @@
       z-index 20
 
       .buttons-container
+        right 2px
+        display block
+
         .field
           opacity 1
 
-        @media (max-width $buttons-switch-to-mobile)
-          right 2px
-          display block
 
      &.message-shadow
       .text-content,
@@ -244,14 +244,15 @@
       margin-left 10px
       display block
 
-      @media (max-width $buttons-switch-to-mobile)
-        top -29px
-        right 15px
-        position absolute
-        z-index 20
-        display none
-        box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
+      // -
+      top -29px
+      right 15px
+      position absolute
+      z-index 20
+      display none
+      box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
 
+      /*
       .field
         @media (min-width $buttons-switch-to-mobile+1px)
           position sticky
@@ -261,6 +262,7 @@
 
         .button span:not(.icon)
           color $color-text
+      */
 
     &.noauthor
       &:hover,
@@ -278,11 +280,6 @@
 
       .avatar-container .saved-icon
         display block
-
-      .buttons-container .field
-        @media (min-width $buttons-switch-to-mobile+1px)
-          margin-top 0
-          margin-bottom 0
 
     /*
     AVATAR
