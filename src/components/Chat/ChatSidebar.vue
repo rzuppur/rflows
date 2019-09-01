@@ -243,8 +243,6 @@
           background alpha(#fff, 0.1)
 
     .workspace-filter
-      margin 10px
-
       .button
         width 100%
 
@@ -286,18 +284,7 @@
           width 24px
           height @width
 
-  .user
-    padding 10px 10px 0
-
-  @media (min-width $media-mobile-width + 1px)
-    .user,
-    .search,
-    .sidebar-chats
-      width $sidebar-width
-
   .search
-    margin 10px
-
     input
       height 48px
 
@@ -324,6 +311,17 @@
 
         &::placeholder
           color $color-
+
+  .user,
+  .search,
+  .workspace-filter
+    margin 10px
+
+  @media (min-width $media-mobile-width + 1px)
+    .user,
+    .search,
+    .sidebar-chats
+      width $sidebar-width - 20px
 
   .sidebar-chats
     overflow-y scroll
