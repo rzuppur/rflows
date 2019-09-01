@@ -236,6 +236,11 @@
       &.isEmail
         padding 10px
 
+        & /deep/ .event-content
+          margin-left 0
+          margin-top 0
+          margin-bottom 3px
+
       $_avatar_size = 18px
 
       & /deep/

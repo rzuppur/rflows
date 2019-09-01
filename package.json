@@ -9,7 +9,7 @@
     "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service build && cp _redirects ./dist/_redirects"
   },
   "dependencies": {
-    "@rzuppur/rvc": "^0.14.2",
+    "@rzuppur/rvc": "^0.14.4",
     "auto-bind": "^2.1.0",
     "dayjs": "^1.8.16",
     "fuse.js": "^3.4.5",
