@@ -53,6 +53,9 @@
         return this.$store.modalsOpen.length;
       },
     },
+    mounted() {
+      this.$events.$on("notify", this.$notifyToast);
+    },
     methods: {
       documentClick() {
         this.$store.openMenu = null;
