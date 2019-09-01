@@ -6,14 +6,14 @@
 
       .chat-title
 
-        r-button(
+        r-button.icon-only(
           borderless
           v-if="mqMobile"
           v-rtip.right="'Change chat'"
           :action="() => { $events.$emit('showSidebar') }"
-          :icon="!$store.unreadMessagesTotal ? null : 'arrow left'"
+          :icon="$store.unreadMessagesTotal ? null : 'arrow left'"
         )
-          //span.icon.unread-total(v-else) {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
+          span.icon.unread-total(v-if="$store.unreadMessagesTotal") {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
         btn.button.fav-toggle.is-white(
           v-if="!isDevChat && !mqMobile"

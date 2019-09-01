@@ -4,30 +4,32 @@
 
     connection-status
 
-    user-display(:user="currentUserDisplay" :withName="true")
+    .sidebar-fixed
 
-      template(v-if="mqMobile" v-slot:avatar)
-        span
+      user-display(:user="currentUserDisplay" :withName="true")
 
-      r-button(borderless v-rtip.left="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
+        template(v-if="mqMobile" v-slot:avatar)
+          span
 
-    .search
-      .control.has-icons-right
-        input.input(type="search" placeholder="Search chats" v-model="searchText")
-        span.icon.is-small.is-right
-          i.fas.fa-search
+        r-button(borderless v-rtip.left="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
-    h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding-top: 15px; padding-bottom: 0; color: #fd0;" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+      .search
+        .control.has-icons-right
+          input.input(type="search" placeholder="Search chats" v-model="searchText")
+          span.icon.is-small.is-right
+            i.fas.fa-search
 
-    .workspace-filter(v-if="showWorkspaceFilter")
-      popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
-        template(v-slot:trigger="open")
-          button.button(type="button" @pointerdown.prevent @click.stop="open.menuOpenClickStop")
-            .workspace
-              img.logo(v-if="activeWorkspace.id" :src="$flows.utils.getLogoFromWorkspace(activeWorkspace)" :alt="activeWorkspace.name")
-              .name {{ activeWorkspace.name }}
-            span.icon.is-small
-              i.fas.fa-angle-down
+      h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding-top: 15px; padding-bottom: 0; color: #fd0;" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+
+      .workspace-filter(v-if="showWorkspaceFilter")
+        popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
+          template(v-slot:trigger="open")
+            button.button(type="button" @pointerdown.prevent @click.stop="open.menuOpenClickStop")
+              .workspace
+                img.logo(v-if="activeWorkspace.id" :src="$flows.utils.getLogoFromWorkspace(activeWorkspace)" :alt="activeWorkspace.name")
+                .name {{ activeWorkspace.name }}
+              span.icon.is-small
+                i.fas.fa-angle-down
 
     .sidebar-chats.scrollbar-style.scrollbar-style-light
 
@@ -317,11 +319,8 @@
   .workspace-filter
     margin 10px
 
-  @media (min-width $media-mobile-width + 1px)
-    .user,
-    .search,
-    .sidebar-chats
-      width $sidebar-width - 20px
+  .sidebar-fixed
+    background alpha(#fff,.05)
 
   .sidebar-chats
     overflow-y scroll
