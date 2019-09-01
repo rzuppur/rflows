@@ -113,7 +113,8 @@
             if (index > 0) {
               const prevMessage = array[index - 1];
               const sameUser = prevMessage.userId === message.userId;
-              if (sameUser) {
+              const prevNotEmail = prevMessage.type !== "EMAIL";
+              if (sameUser && prevNotEmail) {
                 const sameDay = this.utils.datesAreSameDay(message.createDate, prevMessage.createDate);
                 if (sameDay) message.classList.push("noauthor");
               }
