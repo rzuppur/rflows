@@ -3,13 +3,12 @@
   .user(
     v-if="user"
     :class="{ 'user-with-name': withName, outside: user.role === 'NOTIFICATION_RECEIVER' }"
-    v-tooltip="tooltip"
     :status="user.userStatus"
   )
 
     slot(name="avatar")
       .avatar-container(v-if="user.avatar")
-        img.avatar.avatar-small(:src="user.avatar" :status="user.status")
+        img.avatar.avatar-small(:src="user.avatar" :status="user.status" v-rtip.bottom="tooltip")
         .online-status
         .unreads(v-if="user.unreadItemsCount") {{ user.role === 'NOTIFICATION_RECEIVER' ? '@' : user.unreadItemsCount }}
 
@@ -38,7 +37,10 @@
     computed: {
       tooltip() {
         if (!this.withName && this.user.name) {
-          if (this.user.role) return `${this.user.name} (${this.user.role.toLowerCase()})`;
+          if (this.user.role) {
+            if (this.user.userStatus) return `${this.user.name} · ${this.user.role === "ADMIN" ? "Admin · " : ""}${this.user.userStatus.charAt(0) + this.user.userStatus.toLowerCase().substr(1)}`;
+            return `${this.user.name} (${this.user.role.toLowerCase()})`;
+          }
           return this.user.name;
         }
         return null;
