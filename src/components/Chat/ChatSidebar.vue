@@ -13,13 +13,13 @@
 
         r-button(borderless v-rtip.left="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
+      h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+
       .search
         .control.has-icons-right
           input.input(type="search" placeholder="Search chats" v-model="searchText")
           span.icon.is-small.is-right
             i.fas.fa-search
-
-      h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
 
       .workspace-filter(v-if="showWorkspaceFilter")
         popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
@@ -34,9 +34,6 @@
     .sidebar-chats.scrollbar-style.scrollbar-style-light
 
       template(v-if="!searchText.length")
-
-        h4.chats-section #[i.far.fa-comment] RFlows
-        chat-sidebar-chat-display(v-if="devChat" :chat="devChat" :store="$store" :action="() => { chatClick(devChat.id); }" :key="devChat.id")
 
         template(v-if="allChats.length === 0")
           h4.chats-section
