@@ -15,8 +15,9 @@
     .text(v-if="withName")
       .name.ellipsis {{ user.name }}
       .details.ellipsis(v-if="user.email") {{ user.email }}
-      .details.ellipsis(v-else-if="user.role") {{ user.role.toLowerCase() | capitalize }}
-        span(v-if="user.userStatus") &nbsp;· {{ user.userStatus.toLowerCase() }}
+      .details.ellipsis(v-else-if="user.role")
+        span(v-if="userStatus") {{ userStatus ? userStatus : "" }}
+        span(v-if="user.role === 'ADMIN'") &nbsp;· Admin
 
     slot
 
@@ -35,10 +36,14 @@
       },
     },
     computed: {
+      userStatus() {
+        if (this.user.userStatus) return this.user.userStatus.charAt(0) + this.user.userStatus.toLowerCase().substr(1);
+        return false;
+      },
       tooltip() {
         if (!this.withName && this.user.name) {
           if (this.user.role) {
-            if (this.user.userStatus) return `${this.user.name} · ${this.user.role === "ADMIN" ? "Admin · " : ""}${this.user.userStatus.charAt(0) + this.user.userStatus.toLowerCase().substr(1)}`;
+            if (this.userStatus) return `${this.user.name} · ${this.userStatus}${this.user.role === "ADMIN" ? " · Admin" : ""}`;
             return `${this.user.name} (${this.user.role.toLowerCase()})`;
           }
           return this.user.name;

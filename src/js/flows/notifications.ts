@@ -21,6 +21,7 @@ class Notifications {
 
   public messageNotification(message: Message) {
     if (!this.flows.settings.getBooleanUserProp("desktopNotifications")) return;
+    if (this.store.currentUser && message.userId === this.store.currentUser.id && message.type !== "EMAIL") return;
     const lastNotifiedMessageId = this.flows.settings.getNumberUserProp("lastNotifiedMessageId");
     if (message.id <= lastNotifiedMessageId) return;
 

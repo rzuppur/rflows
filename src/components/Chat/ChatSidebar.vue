@@ -19,7 +19,7 @@
           span.icon.is-small.is-right
             i.fas.fa-search
 
-      h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding-top: 15px; padding-bottom: 0; color: #fd0;" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+      h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
 
       .workspace-filter(v-if="showWorkspaceFilter")
         popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
