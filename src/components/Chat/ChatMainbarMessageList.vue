@@ -40,8 +40,10 @@
 
       message-display(v-for="user in chatMembersWriting" :writing-user="user")
 
-      template(v-if="messages.length === 0")
+      template(v-if="!chatId || isLoadingMessages && messages.length === 0")
         message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
+      .title-4.text-muted.text-center.space-top-large(v-else-if="chatId && messages.length === 0") 📭 🐢
+        .space-top-tiny No messages.
 
     portal(to="scrollToShortcuts")
 
