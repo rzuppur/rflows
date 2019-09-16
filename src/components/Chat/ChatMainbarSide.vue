@@ -2,8 +2,6 @@
 
   .side.scrollbar-style(:class="{ collapsed: sideCollapsed }")
 
-    //-h4.space-bottom-tiny.show-wide #[i.fas.fa-home.text-muted] Workspace
-
     template(v-if="chatWorkspaces.length")
       .workspace(v-for="workspace in chatWorkspaces")
         .text.show-wide
@@ -26,6 +24,16 @@
       span.icon.is-small
         i.fas.fa-envelope.has-text-grey
       span(v-if="!sideCollapsed") #{""} Copy forward email
+
+    button.side-button(v-if="isMemberOfCurrentChat" :disabled="leavingOrJoining || !chatId" @click="leaveChat" v-rtip.left="sideCollapsed ? 'Leave chat' : null")
+      span.icon.is-small
+        i.fas.fa-user-alt-slash.has-text-grey
+      span(v-if="!sideCollapsed") #{""} Leave chat
+
+    button.side-button(v-else :disabled="leavingOrJoining || !chatId" @click="joinChat" v-rtip.left="sideCollapsed ? 'Join chat' : null")
+      span.icon.is-small
+        i.fas.fa-user-alt.has-text-info
+      span(v-if="!sideCollapsed") #{""} Join chat
 
     hr
 
@@ -67,6 +75,8 @@
 
   // eslint-disable-next-line no-unused-vars
   const main = (props, context) => {
+    const currentUserId = computed(() => context.root.$store.currentUser?.id);
+
     const sideCollapsed = ref(false);
 
     try {
@@ -77,15 +87,54 @@
       console.warn(error);
     }
 
-    // const leavingOrJoining = value(false);
+    const leavingOrJoining = ref(false);
 
     watch(sideCollapsed, (newVal, oldVal) => {
       if (typeof oldVal === "undefined") return;
       localStorage.setItem("sidebarCollapsed", JSON.stringify(newVal));
     });
 
+    const isMemberOfCurrentChat = computed(() => {
+      context.root.$store.flows.chatUsers.v;
+
+      return !!context.root.$store.flows.chatUsers.d.find(chatUser => chatUser.chatId === props.chatId && chatUser.userId === currentUserId.value);
+    });
+
+    const leaveChat = async () => {
+      const confirm = await context.root.confirm("Leave chat?", "Leave", "Cancel", `You won't get new notifications from ${context.root.$store.currentChatName}.`);
+      if (confirm) {
+        leavingOrJoining.value = true;
+        try {
+          await context.root.$flows.chats.leaveChat(props.chatId);
+          context.root.$events.$emit("notify", `Left '${context.root.$store.currentChatName}'`);
+        } catch (error) {
+          context.root.$events.$emit("notify", `Could not leave '${context.root.$store.currentChatName}'`);
+          // eslint-disable-next-line no-console
+          console.error(error);
+        }
+        leavingOrJoining.value = false;
+      }
+    };
+
+    const joinChat = async () => {
+      leavingOrJoining.value = true;
+      try {
+        await context.root.$flows.chats.joinChat(props.chatId);
+        context.root.$events.$emit("notify", `Joined '${context.root.$store.currentChatName}'`);
+      } catch (error) {
+        context.root.$events.$emit("notify", `Could not join '${context.root.$store.currentChatName}'`);
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
+      leavingOrJoining.value = false;
+    };
+
     return {
       sideCollapsed,
+      leaveChat,
+      joinChat,
+      leavingOrJoining,
+      isMemberOfCurrentChat,
     };
   };
 
@@ -100,9 +149,11 @@
         .filter(flaggedMessage => flaggedMessage.chatId === props.chatId && flaggedMessage.userId === currentUserId)
         .map(flaggedMessage => flaggedMessage.messageId);
 
-      return flaggedMessageIds.map((messageId) => {
-        return context.root.$store.flows.messages[props.chatId].d.find(message => message.id === messageId);
-      }).filter(message => message).sort((a, b) => a.id - b.id);
+      const chatMessages = context.root.$store.flows.messages[props.chatId].d;
+
+      return flaggedMessageIds.map(
+        messageId => chatMessages.find(message => message.id === messageId),
+      ).filter(message => message).sort((a, b) => a.id - b.id);
     });
 
     return {
@@ -157,7 +208,6 @@
     });
 
     const flowsEmailCopy = async () => {
-      console.log(context.root.$events);
       if (flowsEmail.value) {
         try {
           await navigator.clipboard.writeText(flowsEmail.value);

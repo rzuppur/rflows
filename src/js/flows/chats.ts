@@ -11,6 +11,7 @@ import { mapWorkspace } from "@/js/model/Workspace";
 import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
 import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
 import { FrameAction } from "@/js/flows/connection";
+import { SocketResult } from "@/js/socket";
 
 class Chats {
   flows: Flows2;
@@ -134,6 +135,29 @@ class Chats {
     this.userChatIds.forEach((chatId) => {
       this.flows.connection.subscribeChatTopic("TopicItem", chatId);
     });
+  }
+
+  public joinChat(chatId: number): Promise<SocketResult> {
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+    const currentUserId = this.store.currentUser.id;
+
+    return this.flows.connection.messageWithResponse("/app/TopicUser.save", {
+      topicId: chatId,
+      userId: currentUserId,
+    });
+  }
+
+  public leaveChat(chatId: number): Promise<SocketResult> {
+    if (!this.store.currentUser) throw new Error("No currentUser in store");
+    const currentUserId = this.store.currentUser.id;
+
+    const chatUser = this.store.flows.chatUsers.d.find(chatUser => chatUser.chatId === chatId && chatUser.userId === currentUserId);
+    if (!chatUser) throw new Error("No chatUser found");
+
+    const chat = this.store.flows.chats.d.find(chat => chat.id === chatId);
+    if (!chat) throw new Error("No chat found");
+
+    return this.flows.connection.messageWithResponse("/app/TopicUser.delete", { id: chatUser.id });
   }
 
   parseChats(chats: any[], action: FrameAction): void {
