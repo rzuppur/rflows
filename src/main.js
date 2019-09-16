@@ -62,6 +62,9 @@ Vue.mixin({
     mqMobile() {
       return this.$root.mqMobileMatches;
     },
+    mqSideCollapse() {
+      return this.$root.mqSideCollapse;
+    },
   },
   beforeCreate() {
     this.$store = store;
@@ -108,6 +111,7 @@ function alwaysFullHeightSetSize(fixAnchor) {
 new Vue({
   data: {
     mqMobileMatches: false,
+    mqSideCollapse: false,
   },
   created() {
     this.$flows = new Flows2(this.$store, events);
@@ -127,10 +131,15 @@ new Vue({
       resizeDebounceTimeout = setTimeout(resizeHandler, RESIZE_DEBOUNCE_TIME);
     });
 
-    this.mq = window.matchMedia("(max-width: 700px)");
+    this.mobileMediaQueryList = window.matchMedia("(max-width: 700px)");
     this.mqListener = (q) => { this.mqMobileMatches = q.matches; };
-    this.mq.addListener(this.mqListener);
-    this.mqMobileMatches = this.mq.matches;
+    this.mobileMediaQueryList.addListener(this.mqListener);
+    this.mqMobileMatches = this.mobileMediaQueryList.matches;
+
+    this.sideCollapseMediaQueryList = window.matchMedia("(max-width: 1000px)");
+    this.mqSideCollapseListener = (q) => { this.mqSideCollapse = q.matches; };
+    this.sideCollapseMediaQueryList.addListener(this.mqSideCollapseListener);
+    this.mqSideCollapse = this.sideCollapseMediaQueryList.matches;
   },
   destroyed() {
     this.mq.removeListener(this.mqListener);

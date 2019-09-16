@@ -39,7 +39,7 @@
     methods: {
       async confirm(question, yesText, noText, desc) {
         if (this.promiseResolve || this.promiseReject) {
-          this._debug("! Already confirming");
+          console.warn("! Already confirming");
           return Promise.reject();
         }
         this.question = question;
@@ -49,7 +49,7 @@
 
         setTimeout(() => {
           if (!this.$refs.confirmModal) {
-            this._debug("! No confirmModal");
+            console.warn("! No confirmModal");
             this.promiseReject();
           } else {
             this.$refs.confirmModal.open();
@@ -65,7 +65,7 @@
         if (this.promiseResolve) {
           this.promiseResolve(false);
         } else {
-          this._debug("! No promiseResolve");
+          console.warn("! No promiseResolve");
         }
         this._cleanup();
       },
@@ -73,7 +73,7 @@
         if (this.promiseResolve) {
           this.promiseResolve(true);
         } else {
-          this._debug("! No promiseResolve");
+          console.warn("! No promiseResolve");
         }
         this._cleanup();
       },

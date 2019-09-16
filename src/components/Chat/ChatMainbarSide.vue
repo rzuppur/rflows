@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .side.scrollbar-style(:class="{ collapsed: sideCollapsed }")
+  .side.scrollbar-style(:class="{ collapsed: showCollapsedSidebar }")
 
     template(v-if="chatWorkspaces.length")
       .workspace(v-for="workspace in chatWorkspaces")
@@ -15,30 +15,30 @@
 
     hr
 
-    button.side-button(@click="sideCollapsed = !sideCollapsed" v-rtip.left="sideCollapsed ? 'Expand side' : null")
+    button.side-button(v-if="!mqSideCollapse" @click="sideCollapsed = !sideCollapsed" v-rtip.left="showCollapsedSidebar ? 'Expand side' : null")
       span.icon.is-small
-        i.fas.has-text-grey(:class="'fa-chevron-' + (sideCollapsed ? 'left' : 'right')")
-      span(v-if="!sideCollapsed") #{""} Collapse side
+        i.fas.has-text-grey(:class="'fa-chevron-' + (showCollapsedSidebar ? 'left' : 'right')")
+      span(v-if="!showCollapsedSidebar") #{""} Collapse side
 
-    button.side-button(:disabled="!flowsEmail" @click="flowsEmailCopy" v-rtip.left="sideCollapsed ? 'Copy forward email' : null")
+    button.side-button(:disabled="!flowsEmail" @click="flowsEmailCopy" v-rtip.left="showCollapsedSidebar ? 'Copy forward email' : null")
       span.icon.is-small
         i.fas.fa-envelope.has-text-grey
-      span(v-if="!sideCollapsed") #{""} Copy forward email
+      span(v-if="!showCollapsedSidebar") #{""} Copy forward email
 
-    button.side-button(v-if="!autoReadEnabled" :disabled="unreadMessages.length === 0 || !chatId" @click="markAllMessagesAsRead" v-rtip.left="sideCollapsed ? 'Mark chat as read' : null")
+    button.side-button(v-if="!autoReadEnabled" :disabled="unreadMessages.length === 0 || !chatId" @click="markAllMessagesAsRead" v-rtip.left="showCollapsedSidebar ? 'Mark chat as read' : null")
       span.icon.is-small
         i.fas.fa-check.has-text-success
-      span(v-if="!sideCollapsed") #{""} Mark chat as read
+      span(v-if="!showCollapsedSidebar") #{""} Mark chat as read
 
-    button.side-button(v-if="isMemberOfCurrentChat" :disabled="leavingOrJoining || !chatId" @click="leaveChat" v-rtip.left="sideCollapsed ? 'Leave chat' : null")
+    button.side-button(v-if="isMemberOfCurrentChat" :disabled="leavingOrJoining || !chatId" @click="leaveChat" v-rtip.left="showCollapsedSidebar ? 'Leave chat' : null")
       span.icon.is-small
         i.fas.fa-user-alt-slash.has-text-grey
-      span(v-if="!sideCollapsed") #{""} Leave chat
+      span(v-if="!showCollapsedSidebar") #{""} Leave chat
 
-    button.side-button(v-else :disabled="leavingOrJoining || !chatId" @click="joinChat" v-rtip.left="sideCollapsed ? 'Join chat' : null")
+    button.side-button(v-else :disabled="leavingOrJoining || !chatId" @click="joinChat" v-rtip.left="showCollapsedSidebar ? 'Join chat' : null")
       span.icon.is-small
         i.fas.fa-user-alt.has-text-info
-      span(v-if="!sideCollapsed") #{""} Join chat
+      span(v-if="!showCollapsedSidebar") #{""} Join chat
 
     hr
 
@@ -99,6 +99,10 @@
       localStorage.setItem("sidebarCollapsed", JSON.stringify(newVal));
     });
 
+    const showCollapsedSidebar = computed(() => {
+      return context.root.mqSideCollapse || sideCollapsed.value;
+    });
+
     const isMemberOfCurrentChat = computed(() => {
       context.root.$store.flows.chatUsers.v;
 
@@ -155,6 +159,7 @@
 
     return {
       sideCollapsed,
+      showCollapsedSidebar,
       leaveChat,
       joinChat,
       leavingOrJoining,
@@ -277,18 +282,22 @@
     overflow-y auto
     height 100%
     min-width 260px
-    padding 15px 20px
     flex 0
     box-shadow inset 3px 0 3px -3px rgba(0, 0, 0, 0.1)
     position relative
     z-index 200
+    padding 15px 20px
 
-    @media (max-width $media-mobile-width)
-      display none
+    @media (max-width 1000px)
+      padding 10px 10px
 
     &.collapsed
-      max-width 76px
+      max-width 80px
       min-width @max-width
+
+      @media (max-width 1000px)
+        max-width 60px
+        min-width @max-width
 
       .show-wide
         display none
@@ -297,7 +306,7 @@
         text-align center
 
       .workspace .logo
-        width 36px
+        width 40px
         height @width
 
     .workspace .logo
@@ -313,13 +322,16 @@
     hr
       margin 15px -20px
 
+      @media (max-width 1000px)
+        margin 10px -10px
+
     .side-button
       text-uppercase-small()
       display block
       width 100%
       padding 0 10px
-      margin-bottom 7px
-      height 36px
+      margin-bottom 10px
+      height 40px
       background alpha($color-light-blue-background, 0.6)
       border-radius $border-radius
       border none
