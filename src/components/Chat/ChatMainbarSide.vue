@@ -25,6 +25,11 @@
         i.fas.fa-envelope.has-text-grey
       span(v-if="!sideCollapsed") #{""} Copy forward email
 
+    button.side-button(v-if="!autoReadEnabled" :disabled="unreadMessages.length === 0 || !chatId" @click="markAllMessagesAsRead" v-rtip.left="sideCollapsed ? 'Mark chat as read' : null")
+      span.icon.is-small
+        i.fas.fa-check.has-text-success
+      span(v-if="!sideCollapsed") #{""} Mark chat as read
+
     button.side-button(v-if="isMemberOfCurrentChat" :disabled="leavingOrJoining || !chatId" @click="leaveChat" v-rtip.left="sideCollapsed ? 'Leave chat' : null")
       span.icon.is-small
         i.fas.fa-user-alt-slash.has-text-grey
@@ -100,6 +105,15 @@
       return !!context.root.$store.flows.chatUsers.d.find(chatUser => chatUser.chatId === props.chatId && chatUser.userId === currentUserId.value);
     });
 
+    const unreadMessages = computed(() => {
+      if (!props.chatId) return [];
+
+      context.root.$store.flows.messagesRead.v;
+      context.root.$store.flows.messages[props.chatId].v;
+
+      return context.root.$store.flows.messages[props.chatId].d.filter(message => message.unread);
+    });
+
     const leaveChat = async () => {
       const confirm = await context.root.confirm("Leave chat?", "Leave", "Cancel", `You won't get new notifications from ${context.root.$store.currentChatName}.`);
       if (confirm) {
@@ -129,12 +143,25 @@
       leavingOrJoining.value = false;
     };
 
+    const autoReadEnabled = computed(() => {
+      context.root.$store.flows.userProperties.v;
+
+      return context.root.$flows.settings.getBooleanUserProp("autoMarkAsRead");
+    });
+
+    const markAllMessagesAsRead = () => {
+      context.root.$flows.messages.markMessagesAsRead(unreadMessages.value.map(message => message.id), props.chatId);
+    };
+
     return {
       sideCollapsed,
       leaveChat,
       joinChat,
       leavingOrJoining,
       isMemberOfCurrentChat,
+      autoReadEnabled,
+      unreadMessages,
+      markAllMessagesAsRead,
     };
   };
 
