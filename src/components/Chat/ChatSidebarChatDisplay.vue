@@ -1,8 +1,8 @@
 <template lang="pug" functional>
 
-  btn.button-reset.chat(
-    :action="props.action"
-    :label="props.chat && props.chat.name"
+  button.button-reset.chat(
+    @click="() => { props.action && props.action(); }"
+    :aria-label="props.chat && props.chat.name"
     :class="[data.staticClass, { unread: !!(props.chat && props.chat.unread), active: (props.chat && props.chat.id === props.store.currentChatId) }]"
     :style="[data.style, data.staticStyle]"
   )
@@ -11,8 +11,7 @@
     .chat-title.ellipsis.placeholder(v-else :style="{ maxWidth: `${120 + 50*(data.key*999999.8 % 2.4)}px` }")
 
     .chat-flagged(v-if="props.chat && props.chat.flagged > 0")
-      span {{ props.chat && props.chat.flagged }}
-      .icon.is-small #[i.fas.fa-thumbtack]
+      r-icon.icon-text.blue(icon="pin" style="opacity: 0.5;")
 
     .chat-removerecent(v-if="props.recentRemove && props.chat" @click.stop="props.recentRemove(props.chat.id)")
       i.fa.fa-times

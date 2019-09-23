@@ -86,7 +86,7 @@ const utils = {
    * @returns {string} Day, month and time
    */
   dateTime(date) {
-    return dayjs(date).format("MMM Do, HH:mm");
+    return dayjs(date).format("MMM D, HH:mm");
   },
 
   /**
@@ -94,7 +94,7 @@ const utils = {
    * @returns {string} Day and month
    */
   shortDate(date) {
-    return dayjs(date).format("MMM Do");
+    return dayjs(date).format("MMM D");
   },
 
   /**
@@ -102,7 +102,7 @@ const utils = {
    * @returns {string} Day, month and year
    */
   fullDate(date) {
-    return dayjs(date).format("MMM Do YYYY");
+    return dayjs(date).format("MMM D, YYYY");
   },
 
   /**
@@ -110,7 +110,7 @@ const utils = {
    * @returns {string} Day, month, year and time
    */
   fullDateTime(date) {
-    return dayjs(date).format("MMM Do YYYY, HH:mm");
+    return dayjs(date).format("MMM D, YYYY, HH:mm");
   },
 
   /**
@@ -119,7 +119,7 @@ const utils = {
    */
   dateTimeAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjs(date).format(( dayjsDate.year() === dayjs().year() ) ? "MMM Do, HH:mm" : "MMM Do YYYY, HH:mm");
+    return dayjs(date).format(( dayjsDate.year() === dayjs().year() ) ? "MMM D, HH:mm" : "MMM D, YYYY, HH:mm");
   },
 
   /**
@@ -128,7 +128,7 @@ const utils = {
    */
   fullDateAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? "MMM Do" : "MMM Do YYYY");
+    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? "MMM D" : "MMM D, YYYY");
   },
 
   /**
@@ -136,7 +136,7 @@ const utils = {
    * @returns {string} Weekday, day and month
    */
   weekdayDate(date) {
-    return dayjs(date).format("dddd MMM Do");
+    return dayjs(date).format("MMM D, dddd");
   },
 
   /**
@@ -145,7 +145,7 @@ const utils = {
    */
   weekdayDateAddOtherYear(date) {
     const dayjsDate = dayjs(date);
-    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? "dddd, MMM Do" : "dddd, MMM Do YYYY");
+    return dayjsDate.format(( dayjsDate.year() === dayjs().year() ) ? "MMM D, dddd" : "MMM Do YYYY, dddd");
   },
 
   /**

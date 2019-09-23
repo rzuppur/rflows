@@ -11,15 +11,17 @@
         template(v-if="mqMobile" v-slot:avatar)
           span
 
-        r-button(borderless v-rtip.left="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
+        r-button(borderless v-rtip.bottom="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
       h4.chats-section.has-text-centered(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+      h4.chats-section.has-text-centered(v-if="$store.debugMode && !this.$store.connection.error" style="padding: 10px; color: #ff4b4b;" @click="$flows.connection.socket.close()") Close socket
+      h4.chats-section.has-text-centered(v-if="$store.debugMode && this.$store.connection.error" style="padding: 10px; color: #4babff;" @click="$flows.connection.reconnect()") Reconnect
 
       .search
         .control.has-icons-right
           input.input(type="search" placeholder="Search chats" v-model="searchText")
-          span.icon.is-small.is-right
-            i.fas.fa-search
+          span.icon.is-right
+            r-icon.white(icon="search")
 
       .workspace-filter(v-if="showWorkspaceFilter")
         popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
@@ -28,8 +30,8 @@
               .workspace
                 img.logo(v-if="activeWorkspace.id" :src="$flows.utils.getLogoFromWorkspace(activeWorkspace)" :alt="activeWorkspace.name")
                 .name {{ activeWorkspace.name }}
-              span.icon.is-small
-                i.fas.fa-angle-down
+              span.icon
+                r-icon.white(icon="chevron down")
 
     .sidebar-chats.scrollbar-style.scrollbar-style-light
 
@@ -39,18 +41,18 @@
           h4.chats-section
           chat-sidebar-chat-display(v-for="i in 7" :style="{ opacity: 1 - (i*.11), pointerEvents: 'none' }" :key="i")
 
-        h4.chats-section(v-if="favChats.length") #[i.far.fa-star] Favorites
+        h4.chats-section(v-if="favChats.length") #[r-icon.icon-text.red(icon="star")] Favorites
         chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
-        h4.chats-section(v-if="unreadChats.length") #[i.far.fa-bell] Unread
+        h4.chats-section(v-if="unreadChats.length") #[r-icon.icon-text.red(icon="notification")] Unread
         chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
-        h4.chats-section(v-if="recentChats.length") #[i.far.fa-clock] Recent
+        h4.chats-section(v-if="recentChats.length") #[r-icon.icon-text.red(icon="history")] Recent
         chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
         h4.chats-section(v-if="allChats.length")
-          btn.button-reset(:action="toggleAllChats" label="Toggle all chats")
-            i.fas(:class="`fa-angle-${showAllChats ? 'up' : 'down'}`")
+          button.button-reset(@click="toggleAllChats" aria-label="Toggle all chats")
+            r-icon.icon-text.red(:icon="showAllChats ? 'chevron up' : 'chevron down'")
             | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
 
       slide-in-out(:inDuration="90" :outDuration="90")

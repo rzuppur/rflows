@@ -16,71 +16,59 @@
           @keydown.native.capture.esc="cancelEdit"
         )
 
-        .field.is-grouped.edit-buttons
-          .control
-            button.button.is-outlined(@click.stop="saveEdit")
-              span.icon.is-small.has-text-success
-                i.fas.fa-check
-              span Save
+        .buttons
 
-          .control
-            button.button.is-outlined(@click.stop="cancelEdit")
-              span.icon.is-small.has-text-grey
-                i.fas.fa-times
-              span Cancel
+          r-button(primary :action="saveEdit" icon="check") Save
+
+          r-button(borderless :action="cancelEdit") Cancel
 
       template(v-if="showButtons" v-slot:buttons)
 
-        .control(v-if="$store.debugMode")
-          button.button.is-outlined.has-text-grey(
-          @click.stop="$flows.notifications.showMessageNotification(message)"
-          v-tooltip="'Notify'")
-            span.icon.is-small
-              i.fas.fa-bell
+        r-button(
+          v-if="$store.debugMode"
+          :action="() => { $flows.notifications.showMessageNotification(message); }"
+          v-rtip="'Notify'"
+          icon="notification"
+        )
 
-        .control(v-if="!autoReadEnabled && message.unread")
-          button.button.is-outlined.has-text-success(
-          @click.stop="markRead(message.id)"
-          v-tooltip="'Mark as read'")
-            span.icon.is-small
-              i.fas.fa-check
+        r-button(
+          v-if="!autoReadEnabled && message.unread"
+          :action="() => { markRead(message.id); }"
+          v-rtip="'Mark as read'"
+          icon="check"
+          icon-color="green")
 
-        .control(v-if="canEdit")
-          button.button.is-outlined.has-text-link(
-          @click.stop="openEdit()"
-          v-tooltip="'Edit'")
-            span.icon.is-small
-              i.fas.fa-edit
+        r-button(
+          v-if="canEdit"
+          :action="openEdit"
+          v-rtip="'Edit'"
+          icon="edit")
 
-        .control(v-if="canDelete")
-          button.button.is-outlined.has-text-danger(
-          @click.stop.exact="deleteChatMessage(false)"
+        r-button(
+          v-if="canDelete"
+          :action="() => { deleteChatMessage(false); }"
           @click.stop.ctrl.exact="deleteChatMessage(true)"
-          v-tooltip="'Delete'")
-            span.icon.is-small
-              i.far.fa-trash-alt
+          v-rtip="'Delete'"
+          icon="delete"
+          icon-color="red")
 
-        .control
-          button.button.is-outlined(
-          @click.stop="flagToggle"
-          :class="message.flagged ? 'has-text-grey-light' : 'has-text-info'"
-          v-tooltip="message.flagged ? 'Remove from saved' : 'Save for later'")
-            span.icon.is-small
-              i.fas.fa-thumbtack
+        r-button(
+          :action="flagToggle"
+          v-rtip="message.flagged ? 'Remove from saved' : 'Save for later'"
+          :icon="message.flagged ? 'pin off' : 'pin'"
+          :icon-color="message.flagged ? '' : 'blue'")
 
-        .control(v-if="replyToId !== message.id")
-          button.button.is-outlined.has-text-primary(
-          @click.stop="$events.$emit('replyStart', message.id)"
-          v-tooltip="'Reply'")
-            span.icon.is-small
-              i.fas.fa-reply
+        r-button(
+          v-if="replyToId !== message.id"
+          :action="() => { $events.$emit('replyStart', message.id) }"
+          v-rtip="'Reply'"
+          icon="reply")
 
-        .control(v-if="replyToId === message.id")
-          button.button.is-outline(
-          @click.stop="$events.$emit('replyCancel', message.id)"
-          v-tooltip="'Cancel reply'")
-            span.icon.is-small
-              i.fas.fa-times
+        r-button(
+          v-if="replyToId === message.id"
+          :action="() => { $events.$emit('replyCancel', message.id) }"
+          v-rtip="'Cancel reply'"
+          icon="close")
 
 
 </template>

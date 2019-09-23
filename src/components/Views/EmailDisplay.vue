@@ -12,7 +12,7 @@
       .buttons
         r-button(borderless gray v-if="hasImages && imagesHidden" icon="images" :action="showImages") Show images
 
-      .email-frame-container
+      .email-frame-container.space-top-medium
 
         iframe.email-frame(:srcdoc="messageSrcDoc" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
 

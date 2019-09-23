@@ -15,14 +15,7 @@
         )
           span.icon.unread-total(v-if="$store.unreadMessagesTotal") {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
-        btn.button.fav-toggle.is-white(
-          v-if="!isDevChat && !mqMobile"
-          :tip="isStarred ? 'Remove from favorites' : 'Add to favorites'"
-          tloc="right"
-          :action="toggleFavourite"
-        )
-          span.icon
-            i.fa-star(:class="{ fas: isStarred, far: !isStarred }")
+        r-button(v-if="!isDevChat && !mqMobile" :disabled="!chatId" borderless v-rtip.bottom="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite" :icon="isStarred ? 'star' : 'star outline'" :icon-color="isStarred ? 'gold' : 'light-gray'")
 
         .name.ellipsis {{ $store.currentChatName }}
           .placeholder(v-if="!$store.currentChatName")
@@ -44,6 +37,15 @@
 
           .field.is-grouped.flex1
 
+            .control(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
+
+              r-button.expand-button(
+                borderless
+                :class="{ expanded: showEditorToolbar }"
+                :action="() => { showEditorToolbar = !showEditorToolbar; }"
+                :label="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'"
+                :icon="showEditorToolbar ? 'close' : 'add text'")
+
             .control.is-expanded(v-show="!uploadExpanded")
 
               editor(
@@ -59,13 +61,6 @@
                 @keydown.native.capture.esc="replyCancel"
                 @keydown.38.native.exact.capture="editLastMessage"
                 @keydown.ctrl.38.native.exact.capture="replyLastMessage")
-
-            .control(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
-
-              btn.expand-button(
-                :class="{ expanded: showEditorToolbar }"
-                :action="() => { showEditorToolbar = !showEditorToolbar; }"
-                :tip="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'")
 
             file-upload(
               ref="fileUpload"
@@ -129,7 +124,7 @@
 
         if (this.replyToId) {
           const replyingToMessage = this.$store.flows.messages[this.chatId].d.find(message => message.id === this.replyToId);
-          if (replyingToMessage?.userId) {
+          if (replyingToMessage?.userId && replyingToMessage.type !== "EMAIL") {
             const replyingToUser = this.$store.flows.users.d.find(user => user.id === replyingToMessage.userId);
             if (replyingToUser) return `Reply to ${this.$flows.utils.getFullNameFromUser(replyingToUser)}`;
           }
@@ -278,16 +273,11 @@
     @media (max-width $media-mobile-width)
       padding 0 10px
 
-    .button,
     .r-button
-      margin-right 10px
+      margin-right 7px
 
-    .fav-toggle
-      .far
-        color $color-gray-text-light
-
-      .fas
-        color $color-gold
+      @media (max-width $media-mobile-width)
+        margin-right 13px
 
     .name
       font-sans($font-size-medium-1, $font-weight-sans-bold)
@@ -344,9 +334,9 @@
 
     .editor
 
-      /deep/ .menubar .buttons
+      /deep/ .menubar .buttons-grouped
         overflow-y auto
-        flex-wrap nowrap
+        white-space nowrap
 
       /deep/ .ProseMirror // @stylint ignore
         max-height 250px

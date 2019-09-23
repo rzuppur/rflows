@@ -10,14 +10,7 @@
 
       .flex0
 
-        btn.button.transparent-white(
-          tip="Reconnect"
-          tloc="right"
-          :action="$flows.connection.reconnect"
-          :loading="$store.connection.connecting"
-        )
-          span.icon
-            i.fas.fa-sync
+        r-button(borderless label="'Reconnect'" :action="$flows.connection.reconnect" :loading="$store.connection.connecting" icon="sync" icon-color="white")
 
 </template>
 

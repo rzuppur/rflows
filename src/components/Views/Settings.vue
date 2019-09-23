@@ -35,7 +35,11 @@
 
       user-display.space-bottom-medium(:user="currentUser" :withName="true")
 
-        r-button(borderless :action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
+      .text-small
+        p #[b Last logged out:] {{ utils.fullDateTime($store.currentUser.lastLoggedOut) }}
+        p.space-top-tiny #[b Last logged in:]  {{ utils.fullDateTime($store.currentUser.lastLoggedIn) }}
+
+      r-button.space-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
 
       .space-top-small
 

@@ -28,10 +28,9 @@
 
                 slot
 
-                .buttons.space-top.align-right(v-if="!imageModal")
+                .buttons.align-right(v-if="!imageModal")
                   slot(name="buttons" :close="close")
-                    button.button(type="button" @click="close" tabindex="1")
-                      span Close
+                    r-button(:action="close") Close
 
 </template>
 
@@ -92,11 +91,6 @@
     },
   };
 
-  /*
-    template(v-slot:buttons="buttons")
-    button.button.borderless(@click="buttons.close") Close
-    button.button(@click="$refs.modalTest2 && $refs.modalTest2.open()") Open
-   */
 </script>
 
 <style lang="stylus" scoped>

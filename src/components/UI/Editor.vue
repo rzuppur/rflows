@@ -1,78 +1,52 @@
 <template lang="pug">
-  mixin editorButton(command, tooltip, hasActive=true)
 
-    button.button.is-small(
-    :class=(hasActive ? "{ 'is-active': isActive."+command+" }" : "")
-    @pointerdown.prevent
-    @click="commands."+command
-    v-tooltip.top="{ content: '"+tooltip+"', popperOptions: { modifiers: { preventOverflow: { escapeWithReference: true } } } }"
+  mixin editorButton(command, tooltip, icon)
+    r-button(
+      small
+      :gray="isActive."+command
+      :action="() => { commands."+command+"; }"
+      v-rtip="'"+tooltip+"'"
+      icon=icon
     )
       block
+
+  mixin editorButtonWithoutActive(command, tooltip, icon)
+    r-button(
+      small
+      :action="() => { commands."+command+"; }"
+      v-rtip="'"+tooltip+"'"
+      icon=icon
+    )
+      block
+
 
   .editor(v-if="editor")
 
     slide-in-out(:inDuration="60" :outDuration="60")
       editor-menu-bar(v-if="showMenuBar" :editor="editor")
         .menubar(slot-scope="{ commands, isActive }")
-          .buttons.has-addons
+          .buttons-grouped
+            .button-group
+              +editorButton("bold()", "Bold", "text bold")
+              +editorButton("italic()", "Italic", "text italic")
+              +editorButton("underline()", "Underline", "text underline")
+            .button-group
+              +editorButton("heading({ level: 1 })", "Heading 1", "text h1")
+              +editorButton("heading({ level: 2 })", "Heading 2", "text h2")
+              +editorButton("heading({ level: 3 })", "Heading 3", "text h3")
+            .button-group
+              +editorButton("blockquote()", "Quote", "text quote")
+              +editorButton("code()", "Inline code", "text code")
+              +editorButton("code_block()", "Code block", "text code block")
+            .button-group
+              +editorButtonWithoutActive("undo()", "Undo", "undo")
+              +editorButtonWithoutActive("redo()", "Redo", "redo")
 
-            +editorButton("bold()", "Bold")
-              i.fas.fa-bold
-            +editorButton("italic()", "Italic")
-              i.fas.fa-italic
-            +editorButton("underline()", "Underline")
-              i.fas.fa-underline
-
-            .button-spacer
-
-            +editorButton("heading({ level: 1 })", "Heading 1")
-              b H1
-            +editorButton("heading({ level: 2 })", "Heading 2")
-              b H2
-            +editorButton("heading({ level: 3 })", "Heading 3")
-              b H3
-
-            .button-spacer
-
-            //-+editorButton("blockquote()", "Quote")
-              i.fas.fa-quote-right
-            +editorButton("code()", "Inline code")
-              i.fas.fa-code
-            +editorButton("code_block()", "Code block")
-              i.fas.fa-file-code
-
-            //-.button-spacer
-
-            //- TODO: table icons
-              +editorButton("createTable({rowsCount: 2, colsCount: 2, withHeaderRow: false })", "Table", false)
-                i.fas.fa-table
-              template(v-if="isActive.table()")
-                +editorButton("deleteTable()", "Delete table", false)
-                  i.fas.fa-trash
-                +editorButton("addColumnBefore()", "Add column before", false)
-                  b +||
-                +editorButton("addColumnAfter()", "Add column after", false)
-                  b ||+
-                +editorButton("deleteColumn()", "Delete column", false)
-                  b |x|
-                +editorButton("addRowBefore()", "Add row before", false)
-                  b +==
-                +editorButton("addRowAfter()", "Add row after", false)
-                  b='==+'
-                +editorButton("deleteRow()", "Delete row", false)
-                  b='=x='
-
-            .button-spacer
-
-            +editorButton("undo()", "Undo", false)
-              i.fas.fa-undo
-            +editorButton("redo()", "Redo", false)
-              i.fas.fa-redo
-
-    editor-content(ref="editor"
-    :editor="editor"
-    :style="{ '--message-placeholder': '\"' + placeholder + '\"' }"
-    @keydown.enter.shift.capture.native.exact.prevent.stop="$emit('submit')")
+    editor-content(
+      ref="editor"
+      :editor="editor"
+      :style="{ '--message-placeholder': '\"' + placeholder + '\"' }"
+      @keydown.enter.shift.capture.native.exact.prevent.stop="$emit('submit')")
 
 </template>
 
@@ -136,7 +110,7 @@
       return {
         editor: null,
         multiline: false,
-      }
+      };
     },
     mounted() {
       if (this.initEmpty) this.empty();
@@ -222,16 +196,8 @@
 
   .menubar
 
-    .buttons
-      margin 0
-
-    .button.is-active
-      background lighten($color-light-blue-background, 2)
-      color darken($color-light-blue, 10)
-      border-color $color-light-blue
-
-    .button-spacer
-      width 10px
+    .buttons-grouped
+      margin-bottom 0
 
   .editor /deep/
     .ProseMirror

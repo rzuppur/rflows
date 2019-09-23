@@ -6,10 +6,8 @@
 
     template(v-slot:buttons)
 
-      button.button(type="button" @click="no")
-        span {{ noText }}
-      button.button.is-info(type="button" @click="yes")
-        span {{ yesText }}
+      r-button(:action="no") {{ noText }}
+      r-button(:action="yes" primary) {{ yesText }}
 
 </template>
 

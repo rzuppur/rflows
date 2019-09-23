@@ -21,9 +21,9 @@
         :ref="'message-' + message.id"
       )
 
-  .messages-container.scrollbar-style(
+  .messages-container(
     ref="messages"
-    :class="{ replyActive, limitContainerWidth }"
+    :class="{ replyActive, limitContainerWidth, 'scrollbar-style': !mqMobile }"
     @scroll="onMessagesScroll"
   )
 
@@ -33,7 +33,7 @@
         +chatMessagesList()
 
       .load-more-container
-        btn.button.load-more(v-if="hasOlderMessages" :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
+        r-button.load-more-button(v-if="hasOlderMessages" fullwidth primary :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
       .day(v-for="day, key in messagesByDay[1]")
         +chatMessagesList()
@@ -42,8 +42,8 @@
 
       template(v-if="!chatId || isLoadingMessages && messages.length === 0")
         message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
-      .title-4.text-muted.text-center.space-top-large(v-else-if="chatId && messages.length === 0") 📭 🐢
-        .space-top-tiny No messages.
+      .title-4.text-center.space-top-large(v-else-if="chatId && messages.length === 0") 📭 🐢
+        .space-top-tiny No messages
 
     portal(to="scrollToShortcuts")
 
@@ -271,10 +271,10 @@
       getDayText(day) {
         const date = +day;
         if (this.utils.datesAreSameDay(date, Date.now())) {
-          return `Today, ${this.utils.shortDate(date)}`;
+          return "Today";
         }
         if (this.utils.datesAreSameDay(date, this.utils.dayjsDate().subtract(1, "day"))) {
-          return `Yesterday, ${this.utils.shortDate(date)}`;
+          return "Yesterday";
         }
         return this.utils.weekdayDateAddOtherYear(date);
       },
@@ -341,19 +341,9 @@
       &:first-child
         margin-top -20px
 
-    .button.load-more
-      display block
-      width 100%
-      margin 0
+    .load-more-button
+      margin 20px 0
       border-radius 0
-      border none
-      height 40px
-      font-sans($font-size-normal, $font-weight-sans-bold)
-      background $color-light-blue-background
-
-      &:hover,
-      &:focus
-        background darken($color-light-blue-background, 2)
 
   .day-separator-line
     position relative

@@ -3,9 +3,7 @@
   .menu-container
 
     slot(name="trigger" :menuOpenClickStop="menuButton")
-      button.button.menu-open.borderless(@click.stop="menuButton")
-        span.icon.is-small.has-text-grey
-          i.fas.fa-caret-down
+      r-button.menu-open(borderless :action="menuButton" icon="more")
 
     .popup-menu-container(ref="container")
       portal(to="popupMenu")

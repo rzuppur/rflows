@@ -71,52 +71,6 @@ input[type="search"]::-webkit-search-results-decoration
   70%
     opacity .7
 
-.expand-button
-  $button-size = 34px
-  margin 1px
-  width $button-size
-  height $button-size
-  border 1px solid $color-gray-border
-  background none
-  outline none
-  border-radius ($button-size / 2)
-  vertical-align middle
-  position relative
-  cursor pointer
-
-  @media all and (hover)
-    &:hover
-      background $color-light-gray-background
-
-    &:focus
-      box-shadow 0 0 0 0.125em rgba(50,115,220,.25)
-      border-color #3273dc
-
-
-  &:before,
-  &:after
-    transition all 0.12s
-    content ""
-    width 2px
-    height 16px
-    background $color-gray-text
-    position absolute
-
-  &:before
-    left ($button-size / 2) - 2
-    top ($button-size / 2) - 8.5
-    transform rotate(90deg)
-
-  &:after
-    left ($button-size / 2) - 2
-    top ($button-size / 2) - 8.5
-
-  &.expanded
-    &:before
-      transform rotate(45deg)
-    &:after
-        transform rotate(-45deg)
-
 .workspace
   display flex
   align-items center
@@ -161,20 +115,36 @@ p.disabled
   background rgba(255, 31, 75, 0.05)
   color #c15d71
 
-.button
-  user-select none
+$_buttons_margin = 10px
 
-  &.transparent-white
-    background none
-    border 1px solid transparent
-    color #fff
+.buttons
+  margin-right -($_buttons_margin)
+  margin-bottom -($_buttons_margin)
 
-    &:focus,
-    &:hover
-      background alpha(#fff, .1)
+  &.align-right
+    text-align right
 
-.buttons.align-right
-  justify-content flex-end
+  .r-button
+    margin-right $_buttons_margin
+    margin-bottom $_buttons_margin
+
+.buttons-grouped
+  margin-right -($_buttons_margin)
+  margin-bottom -($_buttons_margin)
+
+  .button-group
+    display inline-block
+    margin-right $_buttons_margin
+    margin-bottom $_buttons_margin
+
+    .r-button + .r-button
+      border-top-left-radius 0
+      border-bottom-left-radius 0
+      border-left none
+
+    .r-button:not(:last-child)
+      border-top-right-radius 0
+      border-bottom-right-radius 0
 
 .button-reset
   display block
@@ -199,15 +169,3 @@ p.disabled
 
 .r-button.gray
   background #e9eaf0 !important
-
-.toast-list-inner
-  max-width 700px !important
-
-/*
-.r-tooltip,
-.toast-list-inner .toast-notification-wrap .toast-notification
-  background alpha(#000, .9) !important
-
-.r-tooltip-arrow
-  border-top-color alpha(#000, .9) !important
- */

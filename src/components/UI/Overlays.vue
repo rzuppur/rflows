@@ -9,7 +9,8 @@
     confirm-modal
 
     .drop-overlay(:class="{ dropping }")
-      .drop-overlay-text #[span.icon #[i.fas.fa-upload]]
+      .drop-overlay-text
+        r-icon.gray(icon="upload")
 
 </template>
 

@@ -25,11 +25,10 @@
         .sticky-avatar(v-if="!isEmail")
           img.avatar.avatar-small(:src="avatarUrl")
 
-        .date(v-if="dateShort" v-tooltip="dateMedium")
+        .date(v-if="dateShort" v-rtip="dateMedium")
           | {{ dateShort }}
 
-        .icon.is-small.has-text-info.saved-icon(v-if="message.flagged")
-          i.fas.fa-thumbtack
+        r-icon.blue.icon-text.saved-icon(v-if="message.flagged" icon="pin")
 
       .content-container
         b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
@@ -37,17 +36,15 @@
         .ellipsis(v-if="message.type !== 'EMAIL'")
 
           template(v-if="message.replyTo && !showReplyMessage")
-            span.icon.is-small.has-text-grey-light
-              i.fas.fa-reply
+            r-icon.icon-text.blue(icon="reply")
             | &nbsp;
 
           .name {{ compact ? authorNameShort : authorName }}
-            span.icon.is-small.has-text-info.saved-icon(v-if="!compact && message.flagged" v-tooltip="'Message is in saved messages'")
-              i.fas.fa-thumbtack
+            r-icon.blue.icon-text.saved-icon(v-if="!compact && message.flagged" icon="pin" v-rtip="'Message is in saved messages'")
 
           template(v-if="dateShort")
             .date(v-if="compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
-            .date(v-else v-tooltip="dateMedium") {{ dateShort }}
+            .date(v-else v-rtip="dateMedium") {{ dateShort }}
 
           //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
@@ -72,13 +69,13 @@
 
           template(v-else-if="isEmail")
 
-            p.event-content(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[i.fas.fa-check.has-text-success] Successfully deployed to Netlify
+            p.event-content(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
 
             template(v-else-if="isEmail && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
-              p.event-content #[i.fas.fa-plus] New commits in branch {{ utils.commitEmailBranch(message.text) }}
+              p.event-content #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
               .commit(v-for="commit in utils.commitEmailParse(message.text)")
                 a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
-                  .commit-title #[i.fab.fa-github] #[b  {{ commit.name }}]
+                  .commit-title #[b  {{ commit.name }}]
 
             template(v-else)
               .email-meta
@@ -94,10 +91,9 @@
           p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 
       .buttons-container(@dblclick.native.stop)
-
-        .field.has-addons
-
-          slot(name="buttons")
+        .buttons-grouped
+          .button-group
+            slot(name="buttons")
 
 </template>
 
@@ -159,7 +155,7 @@
         return this.utils.time(this.message.createDate) + (this.isEdited ? "*" : "");
       },
       dateMedium() {
-        return this.isEdited ? `Edited ${this.utils.dateTimeAddOtherYear(this.message.modifiedDate)}` : this.utils.weekdayDate(this.message.createDate);
+        return this.isEdited ? `Edited ${this.utils.dateTimeAddOtherYear(this.message.modifiedDate)}` : this.utils.dateTimeAddOtherYear(this.message.createDate);
       },
     },
   };
@@ -235,13 +231,11 @@
      BUTTONS
      */
 
-    .buttons-container .field
-      opacity 0
-
     .buttons-container
       margin-top -3px
       margin-bottom -3px
       margin-left 10px
+      border-radius $border-radius
       display block
 
       // -
@@ -251,18 +245,6 @@
       z-index 20
       display none
       box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
-
-      /*
-      .field
-        @media (min-width $buttons-switch-to-mobile+1px)
-          position sticky
-          top 20px
-          margin-top 10px
-          margin-bottom 10px
-
-        .button span:not(.icon)
-          color $color-text
-      */
 
     &.noauthor
       &:hover,
@@ -307,8 +289,7 @@
 
       .saved-icon
         display none
-        font-size 12px
-        margin-left 25px
+        margin-left 20px
 
     /*
      NAME
@@ -325,7 +306,6 @@
 
       .saved-icon
         margin-left 3px
-        font-size 12px
 
     .date
       color $color-gray-text

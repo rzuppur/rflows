@@ -15,35 +15,29 @@
 
     hr
 
-    button.side-button(v-if="!mqSideCollapse" @click="sideCollapsed = !sideCollapsed" v-rtip.left="showCollapsedSidebar ? 'Expand side' : null")
-      span.icon.is-small
-        i.fas.has-text-grey(:class="'fa-chevron-' + (showCollapsedSidebar ? 'left' : 'right')")
-      span(v-if="!showCollapsedSidebar") #{""} Collapse side
+    .buttons
 
-    button.side-button(:disabled="!flowsEmail" @click="flowsEmailCopy" v-rtip.left="showCollapsedSidebar ? 'Copy forward email' : null")
-      span.icon.is-small
-        i.fas.fa-envelope.has-text-grey
-      span(v-if="!showCollapsedSidebar") #{""} Copy forward email
+      r-button(v-if="!mqSideCollapse" fullwidth :action="() => { sideCollapsed = !sideCollapsed; }" v-rtip.left="showCollapsedSidebar ? 'Expand side' : null" :icon="showCollapsedSidebar ? 'chevron left' : 'chevron right'")
+        template(v-if="!showCollapsedSidebar") #{""} Collapse side
 
-    button.side-button(v-if="!autoReadEnabled" :disabled="unreadMessages.length === 0 || !chatId" @click="markAllMessagesAsRead" v-rtip.left="showCollapsedSidebar ? 'Mark chat as read' : null")
-      span.icon.is-small
-        i.fas.fa-check.has-text-success
-      span(v-if="!showCollapsedSidebar") #{""} Mark chat as read
+      r-button(:disabled="!flowsEmail" fullwidth :action="flowsEmailCopy" v-rtip.left="showCollapsedSidebar ? 'Copy forward email' : null" icon="mail")
+        template(v-if="!showCollapsedSidebar") #{""} Copy forward email
 
-    button.side-button(v-if="isMemberOfCurrentChat" :disabled="leavingOrJoining || !chatId" @click="leaveChat" v-rtip.left="showCollapsedSidebar ? 'Leave chat' : null")
-      span.icon.is-small
-        i.fas.fa-user-alt-slash.has-text-grey
-      span(v-if="!showCollapsedSidebar") #{""} Leave chat
+      r-button(v-if="!autoReadEnabled" fullwidth :disabled="unreadMessages.length === 0 || !chatId" :action="markAllMessagesAsRead" v-rtip.left="showCollapsedSidebar ? 'Mark chat as read' : null" icon="check" icon-color="green")
+        template(v-if="!showCollapsedSidebar") #{""} Mark chat as read
 
-    button.side-button(v-else :disabled="leavingOrJoining || !chatId" @click="joinChat" v-rtip.left="showCollapsedSidebar ? 'Join chat' : null")
-      span.icon.is-small
-        i.fas.fa-user-alt.has-text-info
-      span(v-if="!showCollapsedSidebar") #{""} Join chat
+      r-button(v-if="isMemberOfCurrentChat" fullwidth :disabled="leavingOrJoining || !chatId" :action="leaveChat" v-rtip.left="showCollapsedSidebar ? 'Leave chat' : null"  icon="user leave")
+        template(v-if="!showCollapsedSidebar") #{""} Leave chat
+
+      r-button(v-else :disabled="leavingOrJoining || !chatId" fullwidth :action="joinChat" v-rtip.left="showCollapsedSidebar ? 'Join chat' : null" icon="user join" icon-color="blue")
+        template(v-if="!showCollapsedSidebar") #{""} Join chat
 
     hr
 
     .show-wide
-      h4.space-bottom-small(v-if="flaggedMessages.length") #[i.fas.fa-thumbtack.has-text-info] Saved messages
+      h4.space-bottom-small(v-if="flaggedMessages.length")
+        r-icon.blue.icon-text(icon="pin")
+        | #{""} Saved messages
 
       message-display.sidebar-saved(
         v-for="message in flaggedMessages"
@@ -55,21 +49,16 @@
 
         template(v-slot:buttons)
 
-          .control
-            button.button.is-outlined.has-text-info(
-              @click.stop="$events.$emit('scrollToMessage', message.id)"
-              v-tooltip="'Scroll to message'"
-            )
-              span.icon.is-small
-                i.fas.fa-arrow-left
+          r-button(
+            :action="() => { $events.$emit('scrollToMessage', message.id); }"
+            v-rtip="'Scroll to message'"
+            icon="search file"
+            icon-color="blue")
 
-          .control
-            button.button.is-outlined.has-text-grey(
-              @click.stop="$flows.messages.setMessageFlagged(message.id, false)"
-              v-tooltip="'Remove from saved'"
-            )
-              span.icon.is-small
-                i.fas.fa-times
+          r-button(
+            :action="() => { $flows.messages.setMessageFlagged(message.id, false); }"
+            v-rtip="'Remove from saved'"
+            icon="close")
 
 </template>
 
@@ -119,7 +108,7 @@
     });
 
     const leaveChat = async () => {
-      const confirm = await context.root.confirm("Leave chat?", "Leave", "Cancel", `You won't get new notifications from ${context.root.$store.currentChatName}.`);
+      const confirm = await context.root.confirm("Leave chat?", "Leave", "Cancel", `You won't get new notifications from '${context.root.$store.currentChatName}'.`);
       if (confirm) {
         leavingOrJoining.value = true;
         try {
@@ -325,30 +314,12 @@
       @media (max-width 1000px)
         margin 10px -10px
 
-    .side-button
-      text-uppercase-small()
-      display block
-      width 100%
-      padding 0 10px
-      margin-bottom 10px
-      height 40px
-      background alpha($color-light-blue-background, 0.6)
-      border-radius $border-radius
-      border none
-      outline none
-      cursor pointer
-      transition all 0.1s
-      text-align left
 
-      &:hover,
-      &:focus
-        background darken($color-light-blue-background, 1)
-        outline none
+    .buttons
+      margin-bottom 0
 
-      &[disabled]
-        opacity 0.5
-        background none
-        pointer-events none
+    .r-button.fullwidth:not(.icon-only)
+      justify-content flex-start
 
     .sidebar-saved
       margin-bottom 8px
@@ -367,6 +338,9 @@
       $_avatar_size = 18px
 
       & /deep/
+
+        .buttons-container
+          right 0
 
         .avatar-container
           width $_avatar_size

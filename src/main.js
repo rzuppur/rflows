@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueCompositionApi from "@vue/composition-api";
 
-import VTooltip from "v-tooltip";
 import PortalVue from "portal-vue";
 import AsyncComputed from "vue-async-computed";
 import rvc from "@rzuppur/rvc";
@@ -12,19 +11,15 @@ import Flows2 from "@/js/flows/main";
 import { RESIZE_DEBOUNCE_TIME } from "@/js/consts";
 
 import App from "@/App.vue";
-import Button from "@/components/UI/global/Button.vue";
 
 // import "intersection-observer";
 import "@/assets/main.css";
 
 Vue.use(VueCompositionApi);
-Vue.use(VTooltip);
 Vue.use(PortalVue);
 Vue.use(AsyncComputed);
 Vue.use(rvc);
 Vue.config.productionTip = false;
-
-Vue.component("btn", Button);
 
 /*
  * STORE
@@ -63,7 +58,7 @@ Vue.mixin({
       return this.$root.mqMobileMatches;
     },
     mqSideCollapse() {
-      return this.$root.mqSideCollapse;
+      return this.$root.mqSideCollapseMatches;
     },
   },
   beforeCreate() {
@@ -111,7 +106,7 @@ function alwaysFullHeightSetSize(fixAnchor) {
 new Vue({
   data: {
     mqMobileMatches: false,
-    mqSideCollapse: false,
+    mqSideCollapseMatches: false,
   },
   created() {
     this.$flows = new Flows2(this.$store, events);
@@ -137,9 +132,9 @@ new Vue({
     this.mqMobileMatches = this.mobileMediaQueryList.matches;
 
     this.sideCollapseMediaQueryList = window.matchMedia("(max-width: 1000px)");
-    this.mqSideCollapseListener = (q) => { this.mqSideCollapse = q.matches; };
+    this.mqSideCollapseListener = (q) => { this.mqSideCollapseMatches = q.matches; };
     this.sideCollapseMediaQueryList.addListener(this.mqSideCollapseListener);
-    this.mqSideCollapse = this.sideCollapseMediaQueryList.matches;
+    this.mqSideCollapseMatches = this.sideCollapseMediaQueryList.matches;
   },
   destroyed() {
     this.mq.removeListener(this.mqListener);

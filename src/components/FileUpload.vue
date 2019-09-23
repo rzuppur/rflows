@@ -24,7 +24,6 @@
         r-button(
           borderless
           :action="() => { $refs.fileInput && $refs.fileInput.click(); }"
-          v-rtip="expanded ? 'Change file' :  'Upload file'"
           :label="expanded ? 'Change file' :  'Upload file'"
           icon="file"
         )

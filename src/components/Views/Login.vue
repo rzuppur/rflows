@@ -6,16 +6,16 @@
 
       template(v-if="$store.currentUser")
 
-        h4 Logged in as
-        .user.user-with-name.space-top-small
-          img.avatar.avatar-small(:src="$flows.utils.getAvatarFromUser($store.currentUser)")
-          .text
-            .name.ellipsis {{ $flows.utils.getFullNameFromUser($store.currentUser) }}
-            .details.ellipsis {{ $store.currentUser.email }}
+        user-display(:user="currentUserDisplay" :withName="true")
 
-        .buttons.space-top-medium
-          btn.button.is-fullwidth.is-info(:action="openChat") Continue
-          btn.button.is-fullwidth(:action="$flows.connection.logout") Log out
+        label.label.space-top-medium Last logged out
+        p {{ utils.fullDateTime($store.currentUser.lastLoggedOut) }}
+        label.label.space-top-medium Last logged in
+        p {{ utils.fullDateTime($store.currentUser.lastLoggedIn) }}
+
+        .buttons.space-top-large
+          r-button(fullwidth primary :action="openChat") Continue
+          r-button(fullwidth :action="$flows.connection.logout") Log out
 
       form(v-else @submit.prevent="login")
 
@@ -42,8 +42,11 @@
 </template>
 
 <script>
+  import UserDisplay from "@/components/UserDisplay.vue";
+
   export default {
     name: "Login",
+    components: { UserDisplay },
     data() {
       return {
         loginData: {},
@@ -52,6 +55,14 @@
     computed: {
       loginLoading() {
         return this.$store.loginLoading;
+      },
+      currentUserDisplay() {
+        if (!this.$store.currentUser) return {};
+        return {
+          avatar: this.$flows.utils.getAvatarFromUser(this.$store.currentUser),
+          name: this.$flows.utils.getFullNameFromUser(this.$store.currentUser),
+          email: this.$store.currentUser?.email,
+        };
       },
     },
     methods: {
