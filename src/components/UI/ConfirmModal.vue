@@ -96,7 +96,7 @@
     margin-bottom 30px
 
   @media (max-width 500px)
-    .button
-      flex 1 1 0
+    .r-button
+      width calc(50% - 10px)
 
 </style>

@@ -401,16 +401,6 @@
       top -1px
       box-shadow none
 
-  .button.is-text
-    text-decoration none
-    transition opacity .1s
-
-    &[disabled]
-      pointer-events none
-
-      .icon i
-        color $color-gray-text-light !important
-
 </style>
 
 <style lang="stylus">
