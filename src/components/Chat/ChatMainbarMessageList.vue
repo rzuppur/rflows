@@ -29,11 +29,16 @@
 
     .messages(ref="messagesInner")
 
+      .text-center.space-top-large.space-bottom-large(v-if="chatId && !isLoadingMessages && !hasOlderMessages && messages.length !== 0")
+        .title-4 🌴 ⛵
+          .space-top-tiny Chat created
+        .text-small.text-muted(v-if="chatWorkspaceLocation") {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
+
       .day(v-for="day, key in messagesByDay[0]")
         +chatMessagesList()
 
-      .load-more-container
-        r-button.load-more-button(v-if="hasOlderMessages" fullwidth primary :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
+      .load-more-container(v-if="hasOlderMessages")
+        r-button.load-more-button(fullwidth primary :action="() => { loadMessages(chatId); }" :loading="isLoadingMessages") Load older messages
 
       .day(v-for="day, key in messagesByDay[1]")
         +chatMessagesList()
@@ -42,8 +47,11 @@
 
       template(v-if="!chatId || isLoadingMessages && messages.length === 0")
         message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
-      .title-4.text-center.space-top-large(v-else-if="chatId && messages.length === 0") 📭 🐢
-        .space-top-tiny No messages
+
+      .text-center.space-top-large(v-else-if="chatId && messages.length === 0")
+        .title-4 📭 🐢
+          .space-top-tiny No messages
+        .text-small.text-muted(v-if="chatWorkspaceLocation") Created on {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
 
     portal(to="scrollToShortcuts")
 
@@ -172,6 +180,11 @@
       },
       scrolledToBottom() {
         return this.top >= this.height;
+      },
+      chatWorkspaceLocation() {
+        this.$store.flows.chatWorkspaces.v;
+
+        return this.$store.flows.chatWorkspaces.d.find(chatWorkspace => chatWorkspace.chatId === this.chatId);
       },
     },
     asyncComputed: {

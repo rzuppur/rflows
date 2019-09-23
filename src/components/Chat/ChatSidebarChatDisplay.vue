@@ -14,7 +14,7 @@
       r-icon.icon-text.blue(icon="pin" style="opacity: 0.5;")
 
     .chat-removerecent(v-if="props.recentRemove && props.chat" @click.stop="props.recentRemove(props.chat.id)")
-      i.fa.fa-times
+      r-icon.icon-text.white(icon="close")
 
     .chat-unread(v-if="props.chat" :class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
       | {{ (!!props.chat.unreadAtme ? '@' : '') + props.chat.unread }}
@@ -74,8 +74,9 @@
     .chat-removerecent
       display none
       align-self center
-      padding 0 10px 0
-      margin-right -4px
+      padding 0 5px 0
+      margin-right -10px
+      height $chat-height
 
       &:hover
         background rgba(255,255,255,0.1)
