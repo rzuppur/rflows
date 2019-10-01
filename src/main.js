@@ -8,7 +8,7 @@ import rvc from "@rzuppur/rvc";
 import STORE from "@/js/store";
 import utils from "@/js/utils";
 import Flows2 from "@/js/flows/main";
-import { RESIZE_DEBOUNCE_TIME } from "@/js/consts";
+import { RESIZE_DEBOUNCE_TIME, EMOJIFY } from "@/js/consts";
 
 import App from "@/App.vue";
 
@@ -39,6 +39,7 @@ const store = new Vue({
   },
 });
 Object.keys(storeModel.flows).forEach((key) => { store.flows[key].d = []; });
+store.EMOJIFY = EMOJIFY;
 
 /*
  * EVENT BUS

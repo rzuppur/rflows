@@ -45,3 +45,15 @@ export const SOCKET_TRAFFIC_DEBUG = false;
 export const DEVCHAT_ID = 37479;
 
 export const BLANK_DATA_SVG_IMAGE = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>";
+
+export const EMOJIFY = {
+  29986: "📐",
+  35486: "🛠",
+  35453: "📊",
+  36043: "📄️",
+  30371: "🔌",
+  34906: "✒️",
+  31109: "📧",
+  36676: "📢",
+  28824: "🙌",
+};

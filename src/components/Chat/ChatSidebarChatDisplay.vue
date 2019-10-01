@@ -7,7 +7,7 @@
     :style="[data.style, data.staticStyle]"
   )
 
-    .chat-title.ellipsis(v-if="props.chat && props.chat.name") {{ props.chat.name }}
+    .chat-title.ellipsis(v-if="props.chat && props.chat.name") {{ props.store.EMOJIFY[props.chat.id] }} {{ props.chat.name }}
     .chat-title.ellipsis.placeholder(v-else :style="{ maxWidth: `${120 + 50*(data.key*999999.8 % 2.4)}px` }")
 
     .chat-flagged(v-if="props.chat && props.chat.flagged > 0")
