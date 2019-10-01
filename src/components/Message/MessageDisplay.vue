@@ -25,7 +25,7 @@
         .sticky-avatar(v-if="!isEmail")
           img.avatar.avatar-small(:src="avatarUrl")
 
-        .date(v-if="dateShort" v-rtip="dateMedium")
+        .date(v-if="dateShort && !showFullDate" v-rtip="dateMedium")
           | {{ dateShort }}
 
         r-icon.blue.icon-text.saved-icon(v-if="message.flagged" icon="pin")
@@ -47,6 +47,17 @@
             .date(v-else v-rtip="dateMedium") {{ dateShort }}
 
           //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
+
+        .ellipsis(v-if="message.type === 'EMAIL'")
+
+          .name
+            template(v-if="!compact") {{ message.from.name }} <
+            | {{ message.from.address }}
+            template(v-if="!compact") >
+
+          template(v-if="dateShort")
+            .date(v-if="compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
+            .date(v-else v-rtip="dateMedium") {{ dateShort }}
 
         template(v-if="message.replyTo")
           message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId" :key="`${message.replyTo}-preview`")
@@ -79,7 +90,6 @@
 
             template(v-else)
               .email-meta
-                .text-small From: {{ message.from.name }} <{{ message.from.address }}>
                 .text-small To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
 
               template(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'")
@@ -119,6 +129,10 @@
       writingUser: {
         type: Object,
       },
+      showFullDate: {
+        type: Boolean,
+        default: false,
+      },
     },
     computed: {
       buttonsHoverOnly() {
@@ -152,6 +166,7 @@
       },
       dateShort() {
         if (this.message.shadow) return false;
+        if (this.showFullDate) return this.utils.fullDate(this.message.createDate) + (this.isEdited ? "*" : "");
         return this.utils.time(this.message.createDate) + (this.isEdited ? "*" : "");
       },
       dateMedium() {
@@ -319,7 +334,7 @@
 
         .date,
         .saved-icon
-          display block !important
+          display block
 
         .saved-icon
           margin-top 7px

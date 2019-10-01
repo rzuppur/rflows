@@ -33,6 +33,9 @@
               span.icon
                 r-icon.white(icon="chevron down")
 
+      .actions.darkMode(v-if="$store.debugMode")
+        r-button(v-if="savedMessagesCount > 0" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) All saved messages #[span.counter {{ savedMessagesCount }}]
+
     .sidebar-chats.scrollbar-style.scrollbar-style-light
 
       template(v-if="!searchText.length")
@@ -197,6 +200,11 @@
           .map(recentId => this.allChats.find(chat => chat.id === recentId))
           .filter(chat => chat && !chat.unread);
       },
+      savedMessagesCount() {
+        this.$store.flows.chats.v;
+
+        return this.$store.flows.chats.d.reduce((a, b) => (a + (b.flagged || 0)), 0);
+      },
     },
     created() {
       this.$events.$on("currentChatChange", () => {
@@ -311,11 +319,28 @@
         color $color-text
 
         &::placeholder
-          color $color-
+          color $color-text
+
+  .actions .r-button
+    width $sidebar-width - 20px
+
+    & > span
+      width 100%
+      display flex
+
+    .counter
+      margin-left auto
+
+    &:not(:last-child)
+      margin-bottom 10px
+
+    @media (max-width $media-mobile-width)
+      width 100%
 
   .user,
   .search,
-  .workspace-filter
+  .workspace-filter,
+  .actions
     margin 10px
 
   .sidebar-fixed

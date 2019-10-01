@@ -2,7 +2,8 @@
 
   .chat-message-container
 
-    message-display(:message="message" :key="message.id" :class="classListWithHighlight" @dblclick.native="!editMode && $events.$emit('replyStart', message.id)")
+    //- @dblclick.native="!editMode && $events.$emit('replyStart', message.id)"
+    message-display(:message="message" :key="message.id" :class="classListWithHighlight")
 
       template(v-if="editMode" v-slot:content)
 
@@ -47,7 +48,7 @@
         r-button(
           v-if="canDelete"
           :action="() => { deleteChatMessage(false); }"
-          @click.stop.ctrl.exact="deleteChatMessage(true)"
+          :actionWithModifier="() => { deleteChatMessage(true) }"
           v-rtip="'Delete'"
           icon="delete"
           icon-color="red")

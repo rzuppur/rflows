@@ -49,9 +49,9 @@ export const BLANK_DATA_SVG_IMAGE = "data:image/svg+xml,<svg xmlns='http://www.w
 export const EMOJIFY = {
   29986: "📐",
   35486: "🛠",
-  35453: "📊",
+  35453: "💸",
   36043: "📄️",
-  30371: "🔌",
+  30371: "🚩",
   34906: "✒️",
   31109: "📧",
   36676: "📢",

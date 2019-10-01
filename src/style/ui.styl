@@ -158,5 +158,20 @@ $_buttons_margin = 10px
 .r-button
   max-width 100%
 
-.r-button.gray
-  background #e9eaf0 !important
+#app .r-button.gray
+  background #e9eaf0
+
+#app .darkMode .r-button.gray
+  background alpha(#fff, 0.1)
+
+.counter
+  display inline-block
+  background rgba(0, 0, 0, 0.25)
+  color #fff
+  padding 0 6px
+  margin-left 5px
+  border-radius $border-radius
+  font-sans($font-size-small, $font-weight-sans-bold)
+  line-height 1.55
+  height 20px
+  align-self center

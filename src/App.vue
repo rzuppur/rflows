@@ -24,6 +24,8 @@
 
     email-display
 
+    saved-display
+
     settings
 
     overlays
@@ -35,12 +37,14 @@
   import Chat from "@/components/Views/Chat.vue";
   import Login from "@/components/Views/Login.vue";
   import EmailDisplay from "@/components/Views/EmailDisplay.vue";
+  import SavedDisplay from "@/components/Views/SavedDisplay.vue";
   import Settings from "@/components/Views/Settings.vue";
   import Overlays from "@/components/UI/Overlays.vue";
 
   export default {
     name: "App",
     components: {
+      SavedDisplay,
       Controller,
       Chat,
       Login,

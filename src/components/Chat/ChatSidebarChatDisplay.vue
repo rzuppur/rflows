@@ -16,7 +16,7 @@
     .chat-removerecent(v-if="props.recentRemove && props.chat" @click.stop="props.recentRemove(props.chat.id)")
       r-icon.icon-text.white(icon="close")
 
-    .chat-unread(v-if="props.chat" :class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
+    .chat-unread.counter(v-if="props.chat" :class="{ important: !!props.chat.unreadImportant, atme: !!props.chat.unreadAtme }")
       | {{ (!!props.chat.unreadAtme ? '@' : '') + props.chat.unread }}
 
 </template>
@@ -100,15 +100,6 @@
 
     .chat-unread
       display none
-      background rgba(0, 0, 0, 0.25)
-      color #fff
-      padding 0 6px
-      margin-left 5px
-      border-radius $border-radius
-      font-sans($font-size-small, $font-weight-sans-bold)
-      line-height 1.55
-      height 20px
-      align-self center
 
       &.important
         background alpha($color-red, 0.35)
