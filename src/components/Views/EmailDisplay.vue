@@ -5,9 +5,9 @@
     modal(v-if="message" :title="message.subject" :sizeMedium="true" ref="emailModal" @close="message = null")
 
       .details
-        p #[b Date:] {{ utils.fullDateTime(message.createDate) }}
         p #[b From:] {{ message.from.name }} <{{ message.from.address }}>
         p #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
+        p.text-muted.text-small.space-top-small {{ utils.fullDateTime(message.createDate) }}
 
       .buttons
         r-button(borderless gray v-if="hasImages && imagesHidden" icon="images" :action="showImages") Show images

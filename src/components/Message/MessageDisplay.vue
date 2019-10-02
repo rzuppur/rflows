@@ -1,6 +1,8 @@
 <template lang="pug">
 
-  .chat-message(:style="message ? '' : 'pointer-events: none;'" :class="{ buttonsHoverOnly, isEmail }")
+  .chat-message(:style="message ? '' : 'pointer-events: none;'" :class="{ buttonsHoverOnly, isEmail, compact, noauthor: message && message.noauthor }")
+
+    //- EMPTY MESSAGE
 
     template(v-if="!message || writingUser")
 
@@ -18,85 +20,103 @@
           .dot3
         p.placeholder(v-else)
 
+    //- REAL MESSAGE
+
     template(v-else)
 
-      .avatar-container(v-if="!(isEmail && compact)")
+      //- SIDE AVATAR
 
-        .sticky-avatar(v-if="!isEmail")
+      .avatar-container
+
+        .sticky-avatar(v-if="!message.noauthor || compact")
+
           img.avatar.avatar-small(:src="avatarUrl")
 
-        .date(v-if="dateShort && !showFullDate" v-rtip="dateMedium")
-          | {{ dateShort }}
+        template(v-if="message.noauthor && !compact")
 
-        r-icon.blue.icon-text.saved-icon(v-if="message.flagged" icon="pin")
+          .date(v-if="dateDisplay" v-rtip="dateTooltip") {{ dateDisplay }}
+
+          r-icon.blue.icon-text.saved-icon(v-if="message.flagged" icon="pin")
+
+      //- MAIN
 
       .content-container
+
+        //- NAME DATE
+
         b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
-        .ellipsis(v-if="message.type !== 'EMAIL'")
+        .name-date.flex(v-if="!message.noauthor || compact")
 
-          template(v-if="message.replyTo && !showReplyMessage")
+          .is-reply.flex0(v-if="message.replyTo && !showReplyMessage")
             r-icon.icon-text.blue(icon="reply")
             | &nbsp;
 
-          .name {{ compact ? authorNameShort : authorName }}
+          .email-from.flex0(v-if="message.type === 'EMAIL'") From:&nbsp;
+
+          .name.ellipsis.flex0 {{ authorName }}
             r-icon.blue.icon-text.saved-icon(v-if="!compact && message.flagged" icon="pin" v-rtip="'Message is in saved messages'")
 
-          template(v-if="dateShort")
-            .date(v-if="compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
-            .date(v-else v-rtip="dateMedium") {{ dateShort }}
+          .date.flex0(v-if="dateDisplay" v-rtip="dateTooltip") {{ dateDisplay }}
 
           //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
-        .ellipsis(v-if="message.type === 'EMAIL'")
+        //- REPLY TO
 
-          .name
-            template(v-if="!compact") {{ message.from.name }} <
-            | {{ message.from.address }}
-            template(v-if="!compact") >
+        template(v-if="message.replyTo && showReplyMessage")
+          message-preview.reply-original(:messageId="message.replyTo" :chatId="message.chatId" :key="`${message.replyTo}-preview`")
 
-          template(v-if="dateShort")
-            .date(v-if="compact") {{ utils.dayjsDate(message.createDate).format("MMM YYYY") }}
-            .date(v-else v-rtip="dateMedium") {{ dateShort }}
-
-        template(v-if="message.replyTo")
-          message-preview.reply-original(v-if="showReplyMessage" :messageId="message.replyTo" :chatId="message.chatId" :key="`${message.replyTo}-preview`")
+        //- MESSAGE CONTENT
 
         slot(name="content")
 
+          //- EVENT
+
           p.event-content(v-if="message.type === 'EVENT'") {{ message.text }}
 
+          //- CHAT
+
           template(v-else-if="message.type === 'CHAT'")
-            .text-clamped(v-if="compact" v-html="$flows.messages.chatTextParse(message.text)")
+            .text-clamped(v-if="textClamp" v-html="$flows.messages.chatTextParse(message.text)")
             p.text-content(v-else v-html="$flows.messages.chatTextParse(message.text)")
 
+          //- NOTE
+
           template(v-else-if="message.type === 'NOTE'")
-            .text-clamped(v-if="compact") {{ $flows.messages.getMessageTextRepresentation(message.text) }}
+            .text-clamped(v-if="textClamp") {{ $flows.messages.getMessageTextRepresentation(message.text) }}
             .note-content(v-else v-html="$flows.messages.noteTextParse(message.text)")
 
-          .file-content(v-else-if="message.type === 'FILE'")
+          //- FILE
 
+          .file-content(v-else-if="message.type === 'FILE'")
             file-display(:text="message.text" :url="$flows.utils.relativeToFullPath(message.url)" :preview="$flows.messages.fileMessagePreviewable(message)")
+
+          //- EMAIL
 
           template(v-else-if="isEmail")
 
             p.event-content(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
 
             template(v-else-if="isEmail && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
+
               p.event-content #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
               .commit(v-for="commit in utils.commitEmailParse(message.text)")
                 a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
                   .commit-title #[b  {{ commit.name }}]
 
             template(v-else)
-              .email-meta
-                .text-small To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
 
-              template(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'")
-                b {{ message.subject }}
-                p.text-content.email-plain(v-html="utils.textToHTML(message.text)")
+              .email-meta.text-small(v-if="!compact") To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
 
-              r-button.view-email-button(v-else borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") {{ message.subject }}
+              .email-content-wrapper
+
+                .text-bold.space-bottom-tiny(v-if="compact") {{ message.subject }}
+                .title-4.space-bottom-tiny(v-else) {{ message.subject }}
+
+                p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+                r-button.view-email-button.space-bottom-tiny(v-else small borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") View email
+
+          //- UNKNOWN
 
           p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
 
@@ -119,6 +139,10 @@
         type: Object,
       },
       compact: {
+        type: Boolean,
+        default: false,
+      },
+      textClamp: {
         type: Boolean,
         default: false,
       },
@@ -148,12 +172,20 @@
         return this.$store.flows.users.d.find(user => user.id === this.message.userId);
       },
       authorName() {
+        if (this.message.type === "EMAIL") {
+          return `${this.message.from.name} <${this.message.from.address}>`;
+        }
         return this.$flows.utils.getFullNameFromUser(this.author);
       },
       authorNameShort() {
+        if (this.message.type === "EMAIL") {
+          return `${this.message.from.address}`;
+        }
         return this.$flows.utils.getShortNameFromUser(this.author);
       },
       avatarUrl() {
+        if (this.message.type === "EMAIL") return "data:image/svg+xml,%3Csvg width='30' height='40' viewBox='0 0 30 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='30' height='40' fill='%23b0b8c0'/%3E%3Cpath d='M23 16L15 21L7 16V14L15 19L23 14V16ZM23 12H7C5.89 12 5 12.89 5 14V26C5 26.5304 5.21071 27.0391 5.58579 27.4142C5.96086 27.7893 6.46957 28 7 28H23C23.5304 28 24.0391 27.7893 24.4142 27.4142C24.7893 27.0391 25 26.5304 25 26V14C25 12.89 24.1 12 23 12Z' fill='white'/%3E%3C/svg%3E";
+
         this.$store.flows.chatUsers.v;
         this.$store.flows.users.v;
 
@@ -164,13 +196,14 @@
       isEdited() {
         return this.message.modifiedDate !== this.message.createDate;
       },
-      dateShort() {
+      dateDisplay() {
         if (this.message.shadow) return false;
         if (this.showFullDate) return this.utils.fullDate(this.message.createDate) + (this.isEdited ? "*" : "");
         return this.utils.time(this.message.createDate) + (this.isEdited ? "*" : "");
       },
-      dateMedium() {
-        return this.isEdited ? `Edited ${this.utils.dateTimeAddOtherYear(this.message.modifiedDate)}` : this.utils.dateTimeAddOtherYear(this.message.createDate);
+      dateTooltip() {
+        if (this.showFullDate) return null;
+        return this.isEdited ? `Edited ${this.utils.fullDateTime(this.message.modifiedDate)}` : this.utils.fullDateTime(this.message.createDate);
       },
     },
   };
@@ -261,23 +294,6 @@
       display none
       box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
 
-    &.noauthor
-      &:hover,
-      &:focus-within
-        .avatar-container
-          .date
-            display block
-
-          .saved-icon
-            display none
-
-      .sticky-avatar,
-      .content-container > .ellipsis
-        display none
-
-      .avatar-container .saved-icon
-        display block
-
     /*
     AVATAR
      */
@@ -294,36 +310,47 @@
         position sticky
         top 10px
         margin-bottom -4px
+        background-color $color-light-gray-background
 
       .date
+        font-sans($font-size-small)
+        color $color-gray-text-light
+        margin-top 2px
+        margin-left -2px
+        line-height 1
         display none
-        margin-top -1px
-        margin-bottom -3px
-        color #aaa
-        line-height 1.2
 
       .saved-icon
-        display none
-        margin-left 20px
+        margin-left 18px
+        position absolute
+        top 9px
+
+    &:hover,
+    &:focus-within
+      .avatar-container
+
+        .date
+          display block
+
+        .saved-icon
+          display none
 
     /*
-     NAME
+     NAME DATE
      */
 
-    .name,
-    .date
-      display inline-block
+    .name-date
       font-sans($font-size-small)
-
-    .name
-      font-sans($font-size-small, $font-weight-sans-bold)
-      margin-right 5px
-
-      .saved-icon
-        margin-left 3px
-
-    .date
       color $color-gray-text
+
+      .name
+        font-sans($font-size-small, $font-weight-sans-bold)
+        color $color-text
+        margin-right 5px
+        flex-shrink 1
+
+        .saved-icon
+          margin-left 3px
 
     /*
     EMAIL
@@ -448,5 +475,45 @@
 
       .dot3
         animation dotJump $duration ease-in-out $delay*2 infinite
+
+
+    /*
+    COMPACT MESSAGE DISPLAY
+     */
+
+    &.compact
+
+      $_avatar_size = 18px
+
+      .avatar-container
+        width $_avatar_size
+        min-width @width
+        max-width @width
+        margin-right 5px
+        padding-top 1px
+
+        .sticky-avatar
+          height $_avatar_size
+          overflow hidden
+          border-radius 10px
+
+        img
+          position relative
+          top -3px
+          width $_avatar_size
+          height auto
+
+      .text-clamped,
+      .event-content,
+      .file-content,
+      .email-meta,
+      .email-content-wrapper,
+      .text-content,
+      .note-content
+        margin-left -23px
+        margin-top 3px
+
+      .file-content a
+        margin-bottom 3px
 
 </style>

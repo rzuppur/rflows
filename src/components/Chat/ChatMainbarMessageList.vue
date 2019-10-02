@@ -126,7 +126,7 @@
               const prevNotEmail = prevMessage.type !== "EMAIL";
               if (sameUser && prevNotEmail) {
                 const sameDay = this.utils.datesAreSameDay(message.createDate, prevMessage.createDate);
-                if (sameDay) message.classList.push("noauthor");
+                if (sameDay) message.noauthor = true;
               }
             }
 

@@ -15,7 +15,16 @@
 
           .title-4.text-bold {{ chat.name }}
 
-          message-display(v-for="message in messages[chat.id]" :message="message" :showReplyMessage="false" :showFullDate="true")
+          message-display(v-for="message in messages[chat.id]" :message="message" :showReplyMessage="false" :showFullDate="true" :compact="true")
+
+            template(v-slot:buttons)
+
+              r-button(
+                :action="() => { $flows.messages.setMessageFlagged(message.id, false); }"
+                v-rtip="'Remove from saved'"
+                icon="close")
+
+          //-r-button.space-top-medium(small borderless gray) Open chat
 
           r-button.icon-only(v-if="messages[chat.id].length === 0" borderless small loading style="position: relative; top: -4px; left: -6px")
 
@@ -85,8 +94,6 @@
     .chat-message
       margin-left -20px
       margin-right -20px
-
-      & /deep/ .saved-icon
-        display none !important
+      padding-top 7px
 
 </style>
