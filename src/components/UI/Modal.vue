@@ -126,7 +126,7 @@
     -webkit-backdrop-filter blur(4px)
     //backdrop-filter blur(4px)
     position fixed
-    z-index 10000
+    z-index 900
     text-align center
     left 0
     top 0

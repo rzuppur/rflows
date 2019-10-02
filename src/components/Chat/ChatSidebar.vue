@@ -33,7 +33,7 @@
               span.icon
                 r-icon.white(icon="chevron down")
 
-      .actions.darkMode(v-if="$store.debugMode")
+      .actions.darkMode
         r-button(v-if="savedMessagesCount > 0" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) All saved messages #[span.counter {{ savedMessagesCount }}]
 
     .sidebar-chats.scrollbar-style.scrollbar-style-light

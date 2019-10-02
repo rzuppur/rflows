@@ -34,7 +34,6 @@
     data() {
       return {
         open: false,
-        loading: false,
       };
     },
     computed: {
@@ -46,19 +45,9 @@
       messages() {
         this.$store.flows.messagesFlagged.v;
 
-        if (this.loading) return null;
-
-        const currentUserId = this.$store.currentUser?.id;
-
-        const flaggedMessageIds = this.$store.flows.messagesFlagged.d
-          .filter(flaggedMessage => flaggedMessage.userId === currentUserId)
-          .map(flaggedMessage => flaggedMessage.messageId);
-
         const savedMessagesByChat = {};
-
         this.chatsWithSaved.forEach((chatWithSaved) => {
-          const savedMessages = this.$store.flows.messages[chatWithSaved.id].d.filter(message => message.flagged);
-          savedMessagesByChat[chatWithSaved.id] = savedMessages;
+          savedMessagesByChat[chatWithSaved.id] = this.$store.flows.messages[chatWithSaved.id].d.filter(message => message.flagged);
         });
 
         return savedMessagesByChat;
@@ -75,7 +64,10 @@
     },
     methods: {
       getSaved() {
-
+        this.chatsWithSaved.forEach((chat) => {
+          this.$flows.messages.getChatFlagged(chat.id);
+          this.$flows.messages.getChatMessages(chat.id, { sticky: true });
+        });
       },
     },
   };

@@ -60,6 +60,15 @@ class Messages {
     return await Promise.all(promises);
   }
 
+  async getChatFlagged(chatId: number): Promise<any> {
+    const subResponse = await this.flows.connection.subscribeChatTopic("TopicItemUserProperty", chatId);
+
+    if (!subResponse[0].alreadyExists || !subResponse[1].alreadyExists) {
+      return this.flows.connection.findByChat("TopicItemUserProperty", chatId);
+    }
+    return Promise.resolve();
+  }
+
   async getChatMessages(chatId: number, filter: chatFilter | null): Promise<Message[]> {
     this.flows.connection.subscribeChatTopic("TopicItem", chatId);
 
@@ -345,4 +354,4 @@ class Messages {
 
 export default Messages;
 
-type chatFilter = { amount: number, from?: { id: number }, sticky?: boolean };
+type chatFilter = { amount?: number, from?: { id: number }, sticky?: boolean };
