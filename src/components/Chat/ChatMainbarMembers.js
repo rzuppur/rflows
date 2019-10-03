@@ -23,7 +23,7 @@ function members(props, context) {
         avatar: context.root.$flows.utils.getAvatarFromUser(user),
         userStatus: user.status,
       };
-    });
+    }).sort((a, b) => a.id - b.id);
   });
 
   const chatMembersWriting = computed(() => {
