@@ -12,8 +12,11 @@
           .avatar.avatar-small.placeholder(v-else)
 
       .content-container
-        .name(v-if="writingUser && writingUser.name") {{ writingUser.name }}
-        .name.placeholder(v-else)
+        .name-date.flex
+
+          .name.ellipsis.flex0(v-if="writingUser && writingUser.name") {{ writingUser.name }}
+          .name.placeholder.flex1(v-else)
+
         .writing-dots(v-if="writingUser")
           .dot1
           .dot2
