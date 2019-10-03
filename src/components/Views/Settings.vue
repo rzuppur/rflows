@@ -33,11 +33,7 @@
       h4
         span Profile
 
-      user-display.space-bottom-medium(:user="currentUser" :withName="true")
-
-      .text-small
-        p #[b Last logged out:] {{ utils.fullDateTime($store.currentUser.lastLoggedOut) }}
-        p.space-top-tiny #[b Last logged in:]  {{ utils.fullDateTime($store.currentUser.lastLoggedIn) }}
+      user-display(:user="currentUser" :withName="true")
 
       r-button.space-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
 

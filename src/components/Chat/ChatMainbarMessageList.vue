@@ -43,10 +43,10 @@
       .day(v-for="day, key in messagesByDay[1]")
         +chatMessagesList()
 
-      message-display(v-for="user in chatMembersWriting" :writing-user="user")
+      message-display(v-for="user in chatMembersWriting" :writing-user="user" :key="user.id")
 
       template(v-if="!chatId || isLoadingMessages && messages.length === 0")
-        message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }")
+        message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }" :key="'skeleton-message-' + i")
 
       .text-center.space-top-large(v-else-if="chatId && messages.length === 0")
         .title-4 📭 🐢

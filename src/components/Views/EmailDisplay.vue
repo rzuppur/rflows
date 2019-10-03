@@ -16,7 +16,7 @@
 
         iframe.email-frame(:srcdoc="messageSrcDoc" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
 
-      file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text")
+      file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text" :key="file.id")
 
       template(v-slot:buttons)
         span
