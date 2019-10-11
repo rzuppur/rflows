@@ -35,7 +35,7 @@
     hr
 
     .show-wide
-      h4.space-bottom-small(v-if="flaggedMessages.length")
+      h4.title-caps(v-if="flaggedMessages.length")
         r-icon.blue.icon-text(icon="pin")
         | #{""} Saved messages
 

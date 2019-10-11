@@ -5,8 +5,10 @@
     modal(v-if="message" :title="message.subject" :sizeMedium="true" ref="emailModal" @close="message = null")
 
       .details
-        p #[b From:] {{ message.from.name }} <{{ message.from.address }}>
-        p #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
+        p
+          | #[b From:] {{ message.from.name }} <{{ message.from.address }}>
+          br
+          | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
         p.text-muted.text-small.space-top-small {{ utils.fullDateTime(message.createDate) }}
 
       .buttons

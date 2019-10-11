@@ -19,9 +19,9 @@
                 @keydown.native.capture.esc="outsideClose"
               )
 
-                .modal-header(v-if="title !== false")
+                .modal-header.space-bottom-medium(v-if="title !== false")
 
-                  h3.title(:id="`dialog-title-${_id}`") {{ title }}
+                  h1.title.title-4(:id="`dialog-title-${_id}`") {{ title }}
 
                   r-button(v-if="!blocking" borderless :action="close" label="Close dialog" icon="close")
 
@@ -71,7 +71,7 @@
     computed: {
       modalContainerClass() {
         if (this.imageModal) return "container-image";
-        return `container-${this.sizeMedium ? "medium" : "small"}`;
+        return `r-container r-container-${this.sizeMedium ? "medium" : "small"}`;
       },
     },
     methods: {
@@ -148,6 +148,8 @@
 
   .modal-container
     text-align left
+    @media (min-width 501px)
+      padding 20px
 
   .container-image
     padding 20px
@@ -203,10 +205,10 @@
   .modal-header
     display flex
     align-items center
-    margin-bottom 10px
 
     .title
       flex 1 1 auto
+      margin 0
 
     .modal-close
       flex 0 0 auto

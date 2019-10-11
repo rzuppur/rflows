@@ -364,9 +364,10 @@
   hr.day,
   hr.unread
     position absolute
-    top -11px
+    top 13px
     left 0
     right 0
+    margin 0
 
   hr.unread
     background lighten($color-red, 20)

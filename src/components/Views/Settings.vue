@@ -10,7 +10,7 @@
     modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
 
       template(v-if="settingsLoaded")
-        h4
+        h4.title-caps
           span Messages
         +settings("autoMarkAsRead")
           .label Auto-read
@@ -19,7 +19,7 @@
           .label Browser notifications
             .description {{ notificationStatus }}
 
-        h4
+        h4.title-caps
           span Interface
         +settings("showWorkspaceSwitcher")
           .label Workspace filter
@@ -30,14 +30,27 @@
 
       p.text-muted.space-top-medium(v-else) Settings not available
 
-      h4
+      h4.title-caps
         span Profile
 
       user-display(:user="currentUser" :withName="true")
 
       r-button.space-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
 
-      .space-top-small
+      template(v-if="$store.currentUser && $store.currentUser.id === 2352")
+
+        h4.title-caps
+          span About
+
+        p
+          b Current build: #{""}
+          | {{ buildDate }}
+          br
+          b Latest build: #{""}
+          | {{ latestBuildDate }}
+          br
+          b Build status: #{""}
+          img(src="https://api.netlify.com/api/v1/badges/f1eec3f7-38ef-4a5a-946d-a5b00a4595e4/deploy-status" style="position: relative; top: 4px; display: inline-block;" alt="")
 
       template(v-slot:buttons)
         span
@@ -58,6 +71,9 @@
         desktopNotifications: null,
         showWorkspaceSwitcher: null,
         compactMode: null,
+
+        buildDate: "Unknown",
+        latestBuildDate: "Unknown",
       };
     },
     computed: {
@@ -99,6 +115,12 @@
         this.$refs.settingsModal?.open();
         this.updateProps();
       });
+
+      if (process?.env.NODE_ENV === "development") {
+        this.buildDate = "Development";
+      } else if (process?.env.BUILD_DATE) {
+        this.buildDate = process.env.BUILD_DATE.split(" - ")[0];
+      }
     },
     methods: {
       updateProps() {

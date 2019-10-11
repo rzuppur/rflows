@@ -29,6 +29,7 @@ module.exports = {
     "no-plusplus": 0,
     "no-await-in-loop": 0,
     "padded-blocks": 0,
+    "prefer-destructuring": 0,
   },
 
   overrides: [
