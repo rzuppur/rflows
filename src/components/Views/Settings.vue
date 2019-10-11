@@ -53,7 +53,7 @@
           img(src="https://api.netlify.com/api/v1/badges/f1eec3f7-38ef-4a5a-946d-a5b00a4595e4/deploy-status" style="position: relative; top: 4px; display: inline-block;" alt="")
 
       template(v-slot:buttons)
-        span
+        div(style="margin-bottom: 10px")
 
 </template>
 

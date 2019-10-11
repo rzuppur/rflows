@@ -8,7 +8,7 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         "process.env": {
-          BUILD_DATE: `"${dayjs().format("MMM D, YYYY, HH:mm")} - ${dayjs().unix()}"`,
+          BUILD_DATE: `"${dayjs().add(new Date().getTimezoneOffset(), "minutes").add(3, "hours").format("MMM D, YYYY, HH:mm")} - ${dayjs().unix()}"`,
         },
       }),
     ],
