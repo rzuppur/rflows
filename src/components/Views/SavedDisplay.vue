@@ -13,9 +13,9 @@
 
         .chat(v-for="chat in chatsWithSaved")
 
-          .title-4.text-bold {{ chat.name }}
+          h2.title-5.text-bold {{ chat.name }}
 
-          message-display(v-for="message in messages[chat.id]" :message="message" :showReplyMessage="false" :showFullDate="true" :compact="true")
+          message-display(v-for="message in messages[chat.id]" :message="message" :showReplyMessage="false" :showFullDate="true" :compact="true" :key="message.id")
 
             template(v-slot:buttons)
 

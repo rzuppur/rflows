@@ -8,11 +8,6 @@
 
         user-display(:user="currentUserDisplay" :withName="true")
 
-        label.label.space-top-medium Last logged out
-        p {{ utils.fullDateTime($store.currentUser.lastLoggedOut) }}
-        label.label.space-top-medium Last logged in
-        p {{ utils.fullDateTime($store.currentUser.lastLoggedIn) }}
-
         .buttons.space-top-large
           r-button(fullwidth primary :action="openChat") Continue
           r-button(fullwidth :action="$flows.connection.logout") Log out
