@@ -77,11 +77,10 @@
 <script>
   import Editor from "@/components/UI/Editor.vue";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
-  import Modal from "@/components/UI/Modal.vue";
 
   export default {
     name: "Message",
-    components: { Editor, MessageDisplay, Modal },
+    components: { Editor, MessageDisplay },
     props: {
       message: Object,
       replyToId: Number,
@@ -219,7 +218,7 @@
         this.$flows.messages.markMessagesAsRead([id], this.message.chatId);
       },
       async deleteChatMessage(instant) {
-        if (instant || await this.$root.confirm("Delete message?", "Delete", "Cancel", "You can ctrl+click for instant delete.")) {
+        if (instant || await this.$root.rModalConfirm("Delete message?", "Delete", "Cancel", "You can ctrl+click for instant delete.")) {
           this.$flows.messages.deleteMessage(this.message);
         }
       },

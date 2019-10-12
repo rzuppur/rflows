@@ -109,7 +109,7 @@
     });
 
     const leaveChat = async () => {
-      const confirm = await context.root.confirm("Leave chat?", "Leave", "Cancel", `You won't get new notifications from '${context.root.$store.currentChatName}'.`);
+      const confirm = await context.root.rModalConfirm("Leave chat?", "Leave", "Cancel", `You won't get new notifications from '${context.root.$store.currentChatName}'.`);
       if (confirm) {
         leavingOrJoining.value = true;
         try {

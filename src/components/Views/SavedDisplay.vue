@@ -2,7 +2,7 @@
 
   .saved-display
 
-    modal(v-if="open" title="Saved messages" :sizeMedium="true" ref="savedModal" @close="open = false")
+    r-modal(v-if="open" title="Saved messages" size="medium" ref="savedModal" @close="open = false")
 
       .text-muted.space-bottom-medium(v-if="!messages") Loading
         r-button.icon-only(borderless small loading style="position: relative; top: -4px;")
@@ -34,12 +34,11 @@
 </template>
 
 <script>
-  import Modal from "@/components/UI/Modal.vue";
   import MessageDisplay from "@/components/Message/MessageDisplay.vue";
 
   export default {
     name: "SavedDisplay",
-    components: { MessageDisplay, Modal },
+    components: { MessageDisplay },
     data() {
       return {
         open: false,

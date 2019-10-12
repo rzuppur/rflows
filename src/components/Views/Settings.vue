@@ -7,7 +7,7 @@
 
   .settings
 
-    modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
+    r-modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
 
       template(v-if="settingsLoaded")
         h4.title-caps
@@ -58,13 +58,12 @@
 </template>
 
 <script>
-  import Modal from "@/components/UI/Modal.vue";
   import CheckboxSwitch from "@/components/UI/CheckboxSwitch.vue";
   import UserDisplay from "@/components/UserDisplay.vue";
 
   export default {
     name: "Settings",
-    components: { UserDisplay, CheckboxSwitch, Modal },
+    components: { UserDisplay, CheckboxSwitch },
     data() {
       return {
         autoMarkAsRead: null,
@@ -153,9 +152,7 @@
   @import "~@/shared.styl"
 
   h4
-    margin-bottom 10px
     position relative
-    margin-top 30px
 
     &:before
       content ""

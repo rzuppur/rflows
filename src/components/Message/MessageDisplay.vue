@@ -114,7 +114,8 @@
               .email-content-wrapper
 
                 .text-bold.space-bottom-tiny(v-if="compact") {{ message.subject }}
-                .title-4.space-bottom-tiny(v-else) {{ message.subject }}
+
+                .title-5.space-bottom-tiny(v-else) {{ message.subject }}
 
                 p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
                 r-button.view-email-button.space-bottom-tiny(v-else small borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") View email

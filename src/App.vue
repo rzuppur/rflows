@@ -58,7 +58,7 @@
       },
     },
     mounted() {
-      this.$events.$on("notify", this.$notifyToast);
+      this.$events.$on("notify", this.$rNotifyToast);
     },
     methods: {
       documentClick() {

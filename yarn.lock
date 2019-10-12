@@ -754,12 +754,13 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@rzuppur/rvc@^0.27.1":
-  version "0.27.1"
-  resolved "https://registry.yarnpkg.com/@rzuppur/rvc/-/rvc-0.27.1.tgz#cd323d1910b2d905f4f48972426c71898ff82ac0"
-  integrity sha512-v4MAJKaQ1Bf/qjei2Vagq9OhvxDIYstthPIffJ/Xme1Wn5wI0GKfJ21cSVlWJ54rg3W+BEcH4+zEaAkvZbORTw==
+"@rzuppur/rvc@^0.35.0":
+  version "0.35.0"
+  resolved "https://registry.yarnpkg.com/@rzuppur/rvc/-/rvc-0.35.0.tgz#d8b40b61d3f9d9fef05d69c822a1219b7efbed96"
+  integrity sha512-XziW3YpZZmoCIXHir7hpv0g3cdxix5h3mJFfZ1fyLkDGXwon1cLnGbb9S/kgjKlUoWyPSobY/CVIs9ylkwxodA==
   dependencies:
     core-js "^2.6.5"
+    portal-vue "^2.1.6"
     resize-observer-polyfill "^1.5.1"
 
 "@soda/friendly-errors-webpack-plugin@^1.7.1":

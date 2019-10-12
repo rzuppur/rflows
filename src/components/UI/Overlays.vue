@@ -2,11 +2,7 @@
 
   .overlays
 
-    portal-target(name="modals" multiple)
-
     portal-target(name="popupMenu" multiple)
-
-    confirm-modal
 
     .drop-overlay(:class="{ dropping }")
       .drop-overlay-text
@@ -15,11 +11,8 @@
 </template>
 
 <script>
-  import ConfirmModal from "@/components/UI/ConfirmModal.vue";
-
   export default {
     name: "Overlays",
-    components: { ConfirmModal },
     data() {
       return {
         dropping: false,
