@@ -13,7 +13,7 @@
 
         .chat(v-for="chat in chatsWithSaved")
 
-          h2.title-5.text-bold {{ chat.name }}
+          h2.title-6 {{ chat.name }}
 
           message-display(v-for="message in messages[chat.id]" :message="message" :showReplyMessage="false" :showFullDate="true" :compact="true" :key="message.id")
 
