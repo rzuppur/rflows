@@ -63,7 +63,7 @@
           chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id + 10000000")
 
 
-      .space-top-medium
+      .margin-top-medium
 
 </template>
 

@@ -9,12 +9,12 @@
           | #[b From:] {{ message.from.name }} <{{ message.from.address }}>
           br
           | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
-        p.text-muted.text-small.space-top-small {{ utils.fullDateTime(message.createDate) }}
+        p.text-muted.text-small.margin-top-small {{ utils.fullDateTime(message.createDate) }}
 
-      .buttons.space-top-medium(v-if="hasImages && imagesHidden")
+      .buttons.margin-top-medium(v-if="hasImages && imagesHidden")
         r-button(borderless gray  icon="images" :action="showImages") Show images
 
-      .space-top-medium
+      .margin-top-medium
 
       .email-frame-container
 

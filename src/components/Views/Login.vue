@@ -8,7 +8,7 @@
 
         user-display(:user="currentUserDisplay" :withName="true")
 
-        .buttons.space-top-large
+        .buttons.margin-top-large
           r-button(fullwidth primary :action="openChat") Continue
           r-button(fullwidth :action="$flows.connection.logout") Log out
 

@@ -28,14 +28,14 @@
           .label Compact messages
             .description {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
 
-      p.text-muted.space-top-medium(v-else) Settings not available
+      p.text-muted.margin-top-medium(v-else) Settings not available
 
       h4.title-caps
         span Profile
 
       user-display(:user="currentUser" :withName="true")
 
-      r-button.space-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
+      r-button.margin-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
 
       template(v-if="$store.currentUser && $store.currentUser.id === 2352")
 
