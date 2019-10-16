@@ -370,7 +370,8 @@
     margin 0
 
   hr.unread
-    background lighten($color-red, 20)
+    #app &
+      background lighten($color-red, 20)
 
   .unread-container
     position relative
@@ -412,7 +413,6 @@
       background $color-red
       color #fff
       position relative
-      top -1px
       box-shadow none
 
 </style>
