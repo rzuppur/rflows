@@ -150,13 +150,13 @@
       },
       async checkLatestBuild() {
         try {
-          const latest = await fetch("/VERSION");
+          const latest = await fetch(`/VERSION?v=${Date.now()}`);
           const latestDate = await latest.text();
 
           if (latestDate) {
             this.latestBuildDate = this.utils.dayjsDate(+latestDate - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
 
-            if (process?.env.BUILD_DATE && +process.env.BUILD_DATE < +latestDate) {
+            if (process?.env.BUILD_DATE && (+process.env.BUILD_DATE + 1000 * 60) < +latestDate) {
               const refresh = await this.$root.rModalConfirm("Update available", "Refresh page", "Later", "New version of RFlows has been published.");
               // eslint-disable-next-line no-restricted-globals
               if (refresh) location.reload(true);
