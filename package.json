@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service serve",
     "build:version": "pug < VERSION.pug > dist/VERSION",
-    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && mkdirp dist && yarn run build:version && vue-cli-service build && cp _redirects ./dist/_redirects"
+    "build": "mkdirp src/assets && stylus src/main.styl -o src/assets/main.css && tsc && vue-cli-service build && yarn run build:version && cp _redirects ./dist/_redirects"
   },
   "dependencies": {
     "@rzuppur/rvc": "^0.36.1",
