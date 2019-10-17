@@ -109,7 +109,7 @@
         this.updateProps();
       },
     },
-    async mounted() {
+    mounted() {
       this.$events.$on("openSettings", () => {
         this.$refs.settingsModal?.open();
         this.updateProps();
@@ -121,17 +121,7 @@
 
       } else if (process?.env.BUILD_DATE) {
         this.buildDate = this.utils.dayjsDate(+process.env.BUILD_DATE - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
-
-        try {
-          const latest = await fetch("/VERSION");
-          const latestDate = await latest.text();
-
-          if (latestDate) {
-            this.latestBuildDate = this.utils.dayjsDate(+latestDate - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
-          }
-        } catch {
-          this.latestBuildDate = "Error";
-        }
+        this.checkLatestBuild();
       }
 
     },
@@ -156,6 +146,26 @@
           } else if (Notification.permission !== "granted") {
             this.$events.$emit("notify", "Can't enable notifications, possibly blocked from browser");
           }
+        }
+      },
+      async checkLatestBuild() {
+        try {
+          const latest = await fetch("/VERSION");
+          const latestDate = await latest.text();
+
+          if (latestDate) {
+            this.latestBuildDate = this.utils.dayjsDate(+latestDate - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
+
+            if (process?.env.BUILD_DATE && +process.env.BUILD_DATE < +latestDate) {
+              const refresh = await this.$root.rModalConfirm("Update available", "Refresh page", "Later", "New version of RFlows has been published.");
+              // eslint-disable-next-line no-restricted-globals
+              if (refresh) location.reload(true);
+            } else {
+              setTimeout(this.checkLatestBuild, 1000 * 60 * 2);
+            }
+          }
+        } catch {
+          this.latestBuildDate = "Error";
         }
       },
     },
