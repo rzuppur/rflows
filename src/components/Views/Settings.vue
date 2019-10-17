@@ -161,7 +161,7 @@
               // eslint-disable-next-line no-restricted-globals
               if (refresh) location.reload(true);
             } else {
-              setTimeout(this.checkLatestBuild, 1000 * 60 * 2);
+              setTimeout(this.checkLatestBuild, 1000 * 60 * 5);
             }
           }
         } catch {

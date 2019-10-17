@@ -15,8 +15,8 @@
       form(v-else @submit.prevent="login")
 
         .field(style="margin-bottom: 20px;")
-          h2 RFlows
-          .subtitle.is-6.has-text-grey Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials
+          h1.title-3 RFlows
+          p.text-muted Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials.
 
         .field
           label.label Email
