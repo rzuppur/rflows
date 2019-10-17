@@ -117,20 +117,23 @@
 
       if (process?.env.NODE_ENV === "development") {
         this.buildDate = "Development";
+        this.latestBuildDate = "Development";
+
       } else if (process?.env.BUILD_DATE) {
         this.buildDate = this.utils.dayjsDate(+process.env.BUILD_DATE - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
-      }
 
-      try {
-        const latest = await fetch("/VERSION");
-        const latestDate = await latest.text();
+        try {
+          const latest = await fetch("/VERSION");
+          const latestDate = await latest.text();
 
-        if (latestDate) {
-          this.latestBuildDate = this.utils.dayjsDate(+latestDate - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
+          if (latestDate) {
+            this.latestBuildDate = this.utils.dayjsDate(+latestDate - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
+          }
+        } catch {
+          this.latestBuildDate = "Error";
         }
-      } catch {
-        this.latestBuildDate = "Error";
       }
+
     },
     methods: {
       updateProps() {
