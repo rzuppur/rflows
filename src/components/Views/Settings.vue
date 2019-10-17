@@ -109,7 +109,7 @@
         this.updateProps();
       },
     },
-    mounted() {
+    async mounted() {
       this.$events.$on("openSettings", () => {
         this.$refs.settingsModal?.open();
         this.updateProps();
@@ -118,7 +118,18 @@
       if (process?.env.NODE_ENV === "development") {
         this.buildDate = "Development";
       } else if (process?.env.BUILD_DATE) {
-        this.buildDate = process.env.BUILD_DATE.split(" - ")[0];
+        this.buildDate = this.utils.dayjsDate(+process.env.BUILD_DATE - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
+      }
+
+      try {
+        const latest = await fetch("/VERSION");
+        const latestDate = await latest.text();
+
+        if (latestDate) {
+          this.latestBuildDate = this.utils.dayjsDate(+latestDate - (new Date().getTimezoneOffset()) * 60000).format("D MMM YYYY, HH:mm");
+        }
+      } catch {
+        this.latestBuildDate = "Error";
       }
     },
     methods: {

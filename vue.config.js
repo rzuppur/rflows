@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require("webpack");
-const dayjs = require("dayjs");
 
 module.exports = {
   productionSourceMap: false,
@@ -8,7 +7,7 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         "process.env": {
-          BUILD_DATE: `"${dayjs().add(new Date().getTimezoneOffset(), "minutes").add(3, "hours").format("MMM D, YYYY, HH:mm")} - ${dayjs().unix()}"`,
+          BUILD_DATE: `"${Date.now() + (new Date().getTimezoneOffset()) * 60000}"`,
         },
       }),
     ],
