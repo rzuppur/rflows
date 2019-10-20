@@ -2,7 +2,7 @@
 
   .email-display
 
-    r-modal(v-if="message" :title="message.subject" size="medium" ref="emailModal" @close="message = null")
+    r-modal(v-if="message" :title="message.subject" size="large" ref="emailModal" @close="message = null" :buttons="false")
 
       .details
         p
@@ -11,18 +11,14 @@
           | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
         p.text-muted.text-small.margin-top-small {{ utils.fullDateTime(message.createDate) }}
 
-      .buttons.margin-top-medium(v-if="hasImages && imagesHidden")
+      .buttons.margin-top-medium.margin-bottom-small(v-if="hasImages && imagesHidden")
         r-button(borderless gray  icon="images" :action="showImages") Show images
 
-      .margin-top-medium
+      file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text" :key="file.id")
 
       .email-frame-container
 
         iframe.email-frame(:srcdoc="messageSrcDoc" onload="this.style.height=(this.contentDocument.body.scrollHeight+45) +'px';")
-
-
-      template(v-slot:buttons)
-        file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text" :key="file.id")
 
 </template>
 
@@ -88,7 +84,6 @@
     background $color-light-gray-background
 
   .email-frame-container
-    margin 0 -24px -12px
-    //width 100%
+    margin 24px -24px -24px
 
 </style>

@@ -7,7 +7,7 @@
 
   .settings
 
-    r-modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal")
+    r-modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal" :buttons="false")
 
       template(v-if="settingsLoaded")
         h4.title-caps
@@ -51,9 +51,6 @@
           br
           b Build status: #{""}
           img(src="https://api.netlify.com/api/v1/badges/f1eec3f7-38ef-4a5a-946d-a5b00a4595e4/deploy-status" style="position: relative; top: 4px; display: inline-block;" alt="")
-
-      template(v-slot:buttons)
-        div(style="margin-bottom: 10px")
 
 </template>
 
