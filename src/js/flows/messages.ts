@@ -35,6 +35,10 @@ class Messages {
         if (prop === "keys") {
           return Object.keys(_messages);
         }
+        if (!/^\d+$/.test(prop)) {
+          console.warn("Invalid key:", prop);
+          return undefined;
+        }
         if (!Object.keys(_messages).includes(prop)) {
           Vue.set(_messages, prop, {v: 0});
           _messages[prop].d = [];

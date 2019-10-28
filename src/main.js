@@ -101,7 +101,6 @@ function alwaysFullHeightSetSize(fixAnchor) {
       elements[i].setAttribute("style", `height:${height}; max-height:${height}`);
     }
   }
-  events.$emit("debouncedResize");
 }
 
 new Vue({
@@ -119,13 +118,21 @@ new Vue({
 
     const resizeHandler = () => {
       this.updateFullHeight();
-      this.$events.$emit("windowResize");
+      this.$events.$emit("windowResize"); // TODO: remove after popup menu in RVC
     };
 
     window.addEventListener("resize", () => {
       clearTimeout(resizeDebounceTimeout);
       resizeDebounceTimeout = setTimeout(resizeHandler, RESIZE_DEBOUNCE_TIME);
     });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this.$events.$emit("documentHidden");
+      } else {
+        this.$events.$emit("documentVisible");
+      }
+    }, false);
 
     this.mobileMediaQueryList = window.matchMedia("(max-width: 700px)");
     this.mqListener = (q) => { this.mqMobileMatches = q.matches; };

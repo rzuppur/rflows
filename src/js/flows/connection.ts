@@ -21,6 +21,10 @@ class Connection {
     this.store = flows.store;
     this.events = flows.events;
 
+    this.events.$on("documentVisible", () => {
+      if (this.tryToReconnect) this.reconnect();
+    });
+
     autoBind(this);
   }
 

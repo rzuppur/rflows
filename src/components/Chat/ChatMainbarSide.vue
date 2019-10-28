@@ -162,6 +162,8 @@
 
   const flagged = (props, context) => {
     const flaggedMessages = computed(() => {
+      if (!props.chatId) return [];
+
       context.root.$store.flows.messagesFlagged.v;
       context.root.$store.flows.messages[props.chatId].v;
 

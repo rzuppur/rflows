@@ -112,6 +112,11 @@
         this.$flows.chats.getChats();
         this.$flows.users.getUsers();
         this.$flows.settings.getSettings();
+
+        // Load last messages from all chats in store to avoid new messages being lost while disconnected
+        this.$store.flows.messages.keys.forEach((chatId) => {
+          this.$flows.messages.getChatMessages(chatId, { amount: 50 });
+        });
       },
       async loginIfHasToken() {
         const loginToken = this.$flows.localstorage.getSessionToken();
