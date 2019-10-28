@@ -4,7 +4,7 @@
 
     r-modal(v-if="message" :title="message.subject" size="large" ref="emailModal" @close="message = null" :buttons="false")
 
-      .details
+      .details.margin-bottom-medium
         p
           | #[b From:] {{ message.from.name }} <{{ message.from.address }}>
           br
