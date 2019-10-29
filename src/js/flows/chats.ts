@@ -7,6 +7,7 @@ import STORE from "@/js/store";
 import utils from "@/js/flows/utils";
 import { mapChat } from "@/js/model/Chat";
 import { mapChatUser } from "@/js/model/ChatUser";
+import { mapChatProperty } from "@/js/model/ChatProperty";
 import { mapWorkspace } from "@/js/model/Workspace";
 import { mapChatWorkspace } from "@/js/model/ChatWorkspace";
 import { mapWorkspaceAccess } from "@/js/model/WorkspaceAccess";
@@ -96,11 +97,13 @@ class Chats {
     this.flows.connection.subscribeUserTopic("TopicUser");
     this.flows.connection.subscribeUserTopic("Organization");
     this.flows.connection.subscribeUserTopic("TopicLocation");
+    this.flows.connection.subscribeUserTopic("TopicProperty");
     await Promise.all([
       this.flows.connection.findByUser("Topic"),
       this.flows.connection.findByUser("TopicUser"),
       this.flows.connection.findByUser("Organization"),
       this.flows.connection.findByUser("TopicLocation"),
+      this.flows.connection.findByUser("TopicProperty"),
     ]);
   }
 
@@ -201,6 +204,14 @@ class Chats {
     this.flows.updateStoreArray("chatWorkspaces", chatWorkspaces.map(mapChatWorkspace));
   }
 
+  parseChatProperties(chatProperties: any[], action: FrameAction) {
+    if (action === "deleted") {
+      this.flows.deleteStoreArrayItems("chatProperties", chatProperties);
+      return;
+    }
+    this.flows.updateStoreArray("chatProperties", chatProperties.map(mapChatProperty));
+  }
+
   parseChatWorkspaceAccesses(workspaceAccesses: any[], action: FrameAction) {
     if (action === "deleted") {
       this.flows.deleteStoreArrayItems("workspaceAccesses", workspaceAccesses);
@@ -249,6 +260,9 @@ class Chats {
           changed = true;
         }
       }
+
+      // @ts-ignore
+      chat.props = this.store.flows.chatProperties.d.filter(prop => prop.chatId === chat.id).reduce((obj, item) => { obj[item.name] = item.value; return obj; }, {});
     });
 
     if (changed) {

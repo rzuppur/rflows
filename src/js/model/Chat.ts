@@ -1,4 +1,5 @@
 import Id from "@/js/model/Id";
+import ChatProperty from "@/js/model/ChatProperty";
 
 interface Chat extends Id {
   guid: string;
@@ -10,6 +11,7 @@ interface Chat extends Id {
   unreadImportant?: number;
   unreadAtme?: number;
   flagged?: number;
+  props?: ChatProperty;
 }
 
 export default Chat;

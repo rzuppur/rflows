@@ -3,7 +3,11 @@
   button.button-reset.chat(
     @click="() => { props.action && props.action(); }"
     :aria-label="props.chat && props.chat.name"
-    :class="[data.staticClass, { unread: !!(props.chat && props.chat.unread), active: (props.chat && props.chat.id === props.store.currentChatId) }]"
+    :class="[data.staticClass, { \
+      unread: !!(props.chat && props.chat.unread), \
+      active: (props.chat && props.chat.id === props.store.currentChatId), \
+      recent: props.chat && props.chat.props && props.chat.props['1h_itemcount'] \
+    }]"
     :style="[data.style, data.staticStyle]"
   )
 
@@ -47,6 +51,9 @@
 
       .chat-unread
         display block
+
+      &.recent
+        background alpha($color-yellow, 0.08)
 
     &:hover
       background rgba(255, 255, 255, 0.05)

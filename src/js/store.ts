@@ -8,6 +8,7 @@ import WorkspaceAccess from "@/js/model/WorkspaceAccess";
 import Message from "@/js/model/Message";
 import MessagesRead from "@/js/model/MessagesRead";
 import MessageFlagged from "@/js/model/MessagesFlagged";
+import ChatProperty from "@/js/model/ChatProperty";
 
 class STORE {
   currentChatId: null | number = null;
@@ -38,6 +39,10 @@ class STORE {
       d: [],
     },
     chatUsers: {
+      v: 0,
+      d: [],
+    },
+    chatProperties: {
       v: 0,
       d: [],
     },
@@ -77,6 +82,7 @@ class STORE {
 interface StoreFlows {
   chats: { v: number, d: Chat[] };
   chatUsers: { v: number, d: ChatUser[] };
+  chatProperties: { v: number, d: ChatProperty[] };
   users: { v: number, d: User[] };
   userProperties: { v: number, d: UserProperty[] };
   workspaces: { v: number, d: Workspace[] };
@@ -101,4 +107,4 @@ interface ConnectionStatus {
 
 export default STORE;
 
-export type StoreFlowsKey = ("chats" | "chatUsers" | "users" | "userProperties" | "workspaces" | "chatWorkspaces" | "workspaceAccesses" | "messagesRead" | "messagesFlagged");
+export type StoreFlowsKey = ("chats" | "chatUsers" | "chatProperties" | "users" | "userProperties" | "workspaces" | "chatWorkspaces" | "workspaceAccesses" | "messagesRead" | "messagesFlagged");

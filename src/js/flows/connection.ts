@@ -262,6 +262,10 @@ class Connection {
         if (filteredBody.length) this.flows.messages.parseChatMessagesFlagged(filteredBody, action);
         break;
       }
+      case "TopicProperty": {
+        if (filteredBody.length) this.flows.chats.parseChatProperties(filteredBody, action);
+        break;
+      }
       case "UserAccess": {
         if (filteredBody.length) this.flows.chats.parseChatWorkspaceAccesses(filteredBody, action);
         break;
@@ -287,7 +291,7 @@ class Connection {
       }
       default: {
         console.warn("Unknown frame type " + type);
-        console.log(frame);
+        console.log(frame, frameBody);
       }
     }
     /* if (this.store.debugMode) {
@@ -321,7 +325,7 @@ class Connection {
   }
 }
 
-type GlobalUserTopic = ("TopicUser" | "UserProperty" | "Topic" | "Organization" | "TopicLocation" | "User" | "OrganizationContact" | "UserAccess");
+type GlobalUserTopic = ("TopicUser" | "UserProperty" | "Topic" | "Organization" | "TopicLocation" | "User" | "OrganizationContact" | "UserAccess" | "TopicProperty");
 type ChatTopic = ("TopicItem" | "TopicUser" | "TopicItemUserProperty" | "TopicItemRead");
 export type FrameAction = ("modified" | "deleted" | null);
 
