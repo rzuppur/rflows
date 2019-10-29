@@ -46,17 +46,20 @@
           b Current build: #{""}
           | {{ buildDate }}
           br
-          b Latest build: #{""}
-          | {{ latestBuildDate }}
-          br
+          template(v-if="!isDev")
+            b Latest build: #{""}
+            | {{ latestBuildDate }}
+            br
           b Build status: #{""}
-          img(src="https://api.netlify.com/api/v1/badges/f1eec3f7-38ef-4a5a-946d-a5b00a4595e4/deploy-status" style="position: relative; top: 4px; display: inline-block;" alt="")
+          img(:src="deployStatusUrl" style="position: relative; top: 4px; display: inline-block;" alt="")
 
 </template>
 
 <script>
   import CheckboxSwitch from "@/components/UI/CheckboxSwitch.vue";
   import UserDisplay from "@/components/UserDisplay.vue";
+
+  const DEPLOY_STATUS_BASE_URL = "https://api.netlify.com/api/v1/badges/f1eec3f7-38ef-4a5a-946d-a5b00a4595e4/deploy-status";
 
   export default {
     name: "Settings",
@@ -70,6 +73,8 @@
 
         buildDate: "Unknown",
         latestBuildDate: "Unknown",
+        deployStatusUrl: DEPLOY_STATUS_BASE_URL,
+        isDev: process?.env.NODE_ENV === "development",
       };
     },
     computed: {
@@ -110,17 +115,17 @@
       this.$events.$on("openSettings", () => {
         this.$refs.settingsModal?.open();
         this.updateProps();
+        this.deployStatusUrl = `${DEPLOY_STATUS_BASE_URL}?d=${Date.now()}`;
+        if (!this.isDev) {
+          this.checkLatestBuild();
+        }
       });
 
-      if (process?.env.NODE_ENV === "development") {
+      if (this.isDev) {
         this.buildDate = "Development";
-        this.latestBuildDate = "Development";
-
       } else if (process?.env.BUILD_DATE) {
         this.buildDate = this.utils.dayjsDate(+process.env.BUILD_DATE).format("D MMM YYYY, HH:mm");
-        this.checkLatestBuild();
       }
-
     },
     methods: {
       updateProps() {
@@ -146,6 +151,7 @@
         }
       },
       async checkLatestBuild() {
+        clearTimeout(this.buildCheckTimeout);
         try {
           const latest = await fetch(`/VERSION?v=${Date.now()}`);
           const latestDate = await latest.text();
@@ -158,7 +164,7 @@
               // eslint-disable-next-line no-restricted-globals
               if (refresh) location.reload(true);
             } else {
-              setTimeout(this.checkLatestBuild, 1000 * 60 * 5);
+              this.buildCheckTimeout = setTimeout(this.checkLatestBuild, 1000 * 60 * 5);
             }
           }
         } catch {
