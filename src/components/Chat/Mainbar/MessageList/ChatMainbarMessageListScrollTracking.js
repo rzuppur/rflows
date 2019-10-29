@@ -3,11 +3,15 @@ import { ref, onMounted, onUnmounted } from "@vue/composition-api";
 import { SCROLL_DEBOUNCE_TIME } from "@/js/consts";
 
 function scrollTracking(props, context) {
+
+  /*
+  SCROLL
+   */
+
   const height = ref(0);
   const viewportHeight = ref(0);
   const top = ref(0);
   const lastScrollTop = {};
-  const chatFirstScrollDone = {};
   const keepScrollBottom = {};
   let scrollThrottle = null;
   let resizeThrottle = null;
@@ -21,43 +25,6 @@ function scrollTracking(props, context) {
     const messagesEl = context.refs.messages;
     setTimeout(() => { if (messagesEl) messagesEl.scrollTop = lastScrollTop[chatId]; }, 0);
   };
-
-  const scrollToNew = () => {
-    const unreadSepEl = context.refs.unread?.[0];
-    unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  const scrollToNewInstant = () => {
-    const unreadSepEl = context.refs.unread?.[0];
-    unreadSepEl?.scrollIntoView({ block: "start" });
-  };
-
-  const scrollToBottomInstant = () => {
-    const messagesEl = context.refs.messages;
-    if (messagesEl) messagesEl.scrollTop = height.value;
-  };
-  context.root.$events.$on("MESSAGELIST_scrollToBottomInstant", scrollToBottomInstant);
-
-  const scrollToNewOrBottomInstant = () => {
-    const unreadSepEl = context.refs.unread?.[0];
-    if (unreadSepEl) {
-      unreadSepEl.scrollIntoView({ block: "start" });
-    } else {
-      const messagesEl = context.refs.messages;
-      if (messagesEl) messagesEl.scrollTop = height.value;
-    }
-  };
-
-  const markChatAsNew = (chatId) => {
-    chatFirstScrollDone[chatId] = false;
-    keepScrollBottom[chatId] = true;
-    height.value = 0;
-    top.value = 0;
-  };
-
-  /*
-  SCROLL
-   */
 
   const keepScrollBottomThreshold = 20;
 
@@ -79,6 +46,35 @@ function scrollTracking(props, context) {
     clearTimeout(scrollThrottle);
   });
 
+  const scrollToNew = () => {
+    const unreadSepEl = context.refs.unread?.[0];
+    unreadSepEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const scrollToNewInstant = () => {
+    const unreadSepEl = context.refs.unread?.[0];
+    unreadSepEl?.scrollIntoView({ block: "start" });
+  };
+
+  const scrollToBottomInstant = () => {
+    const messagesEl = context.refs.messages;
+    if (messagesEl) {
+      messagesEl.scrollTop = height.value;
+      scrollUpdate();
+    }
+  };
+  context.root.$events.$on("MESSAGELIST_scrollToBottomInstant", scrollToBottomInstant);
+
+  const scrollToNewOrBottomInstant = () => {
+    const unreadSepEl = context.refs.unread?.[0];
+    if (unreadSepEl) {
+      unreadSepEl.scrollIntoView({ block: "start" });
+    } else {
+      const messagesEl = context.refs.messages;
+      if (messagesEl) messagesEl.scrollTop = height.value;
+    }
+  };
+
   /*
   RESIZE
    */
@@ -90,10 +86,6 @@ function scrollTracking(props, context) {
       top.value = Math.round(messagesEl.scrollTop);
       height.value = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
       viewportHeight.value = Math.round(messagesEl.clientHeight);
-    }
-    if (!chatFirstScrollDone[props.chatId] && height.value > 0) {
-      setTimeout(scrollToNewOrBottomInstant, 0);
-      chatFirstScrollDone[props.chatId] = true;
     }
     if (keepScrollBottom[props.chatId]) {
       messagesEl.scrollTop = height.value;
@@ -117,6 +109,30 @@ function scrollTracking(props, context) {
   });
 
   /*
+  SAVE
+   */
+
+  let lastHeight;
+
+  const saveHeight = () => {
+    const messagesEl = context.refs.messages;
+    if (messagesEl) {
+      lastHeight = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
+    }
+  };
+
+  const restoreScrollTop = () => {
+    if (keepScrollBottom[props.chatId]) return;
+
+    const messagesEl = context.refs.messages;
+    if (messagesEl) {
+      const newHeight = Math.round(messagesEl.scrollHeight - messagesEl.clientHeight);
+      messagesEl.scrollTop += (newHeight - lastHeight);
+      scrollUpdate();
+    }
+  };
+
+  /*
   EXPORT
    */
 
@@ -125,11 +141,13 @@ function scrollTracking(props, context) {
     height,
     top,
     onMessagesScroll,
-    markChatAsNew,
     saveScrollPosition,
     restoreScrollPosition,
     scrollToNew,
     scrollToNewInstant,
+    scrollToBottomInstant,
+    saveHeight,
+    restoreScrollTop,
   };
 }
 

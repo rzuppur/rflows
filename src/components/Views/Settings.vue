@@ -154,7 +154,7 @@
             this.latestBuildDate = this.utils.dayjsDate(+latestDate).format("D MMM YYYY, HH:mm");
 
             if (process?.env.BUILD_DATE && (+process.env.BUILD_DATE + 1000 * 60) < +latestDate) {
-              const refresh = await this.$root.rModalConfirm("Update available", "Refresh page", "Later", "New version of RFlows has been published.");
+              const refresh = await this.$root.rModalConfirm("Update available", "Refresh page", "Later", "New version of RFlows is available.");
               // eslint-disable-next-line no-restricted-globals
               if (refresh) location.reload(true);
             } else {

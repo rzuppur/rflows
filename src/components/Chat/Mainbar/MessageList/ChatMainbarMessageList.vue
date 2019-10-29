@@ -10,8 +10,12 @@
 
       .unread-container(v-if="firstUnreadMessageId === message.id" ref="unread")
         hr.unread
-        .unread-separator(:class="{ rised: i === 0 }" )
+        .unread-separator(:class="{ rised: i === 0 }")
           .text new
+      .loaded-container(v-else-if="prevLoadSeparatorId === message.id" ref="loaded")
+        hr.loaded
+        .loaded-separator(:class="{ rised: i === 0 }")
+          .text loaded
 
       message(
         :message="message"
@@ -68,7 +72,7 @@
 
   import scrollTracking from "./ChatMainbarMessageListScrollTracking";
 
-  const MESSAGE_PAGE_SIZE = 50;
+  const MESSAGE_PAGE_SIZE = 40;
 
   export default {
     name: "ChatMainbarMessageList",
@@ -80,6 +84,7 @@
     data() {
       return {
         lastLoadedMessageId: {},
+        prevLastLoadedMessageId: {},
         canLoadMore: {},
         messagesLoading: {},
         firstUnread: {},
@@ -99,6 +104,9 @@
       },
       startNextLoadFromId() {
         return this.lastLoadedMessageId[this.chatId];
+      },
+      prevLoadSeparatorId() {
+        return this.prevLastLoadedMessageId[this.chatId];
       },
       hasOlderMessages() {
         return this.canLoadMore[this.chatId];
@@ -216,6 +224,7 @@
 
           this.$flows.messages.getChatReadAndFlagged(chatId);
           this.restoreScrollPosition(chatId);
+          this.prevLastLoadedMessageId = {}; // clear load marker on chat change
 
           if (!this.lastLoadedMessageId[chatId]) {
             this.loadMessages(chatId);
@@ -239,6 +248,9 @@
               this.chatId,
             );
           }
+
+          this.saveHeight();
+          this.$nextTick(this.restoreScrollTop);
         },
       },
     },
@@ -263,19 +275,19 @@
         message.highlight();
       },
       async loadMessages(chatId) {
+        const isFirstLoad = !this.lastLoadedMessageId[chatId];
+        if (isFirstLoad) this.scrollToBottomInstant();
+
         try {
           this.$set(this.messagesLoading, chatId, true);
-          const filter = this.lastLoadedMessageId[chatId] ? { amount: MESSAGE_PAGE_SIZE, from: { id: this.lastLoadedMessageId[chatId] - 1 } } : { amount: MESSAGE_PAGE_SIZE };
 
+          const filter = isFirstLoad ? { amount: MESSAGE_PAGE_SIZE } : { amount: MESSAGE_PAGE_SIZE, from: { id: this.lastLoadedMessageId[chatId] - 1 } };
           const messagesLoaded = await this.$flows.messages.getChatMessages(chatId, filter);
 
           if (messagesLoaded.length) {
-            if (!this.lastLoadedMessageId[chatId]) {
-              this.markChatAsNew(chatId);
-            }
+            this.$set(this.prevLastLoadedMessageId, chatId, this.lastLoadedMessageId[chatId]);
             this.$set(this.lastLoadedMessageId, chatId, messagesLoaded[0].id);
           }
-
           this.$set(this.canLoadMore, chatId, (messagesLoaded.length >= MESSAGE_PAGE_SIZE));
         } finally {
           this.$set(this.messagesLoading, chatId, false);
@@ -362,7 +374,8 @@
     position relative
 
   hr.day,
-  hr.unread
+  hr.unread,
+  hr.loaded
     position absolute
     top 13px
     left 0
@@ -373,12 +386,21 @@
     #app &
       background lighten($color-red, 20)
 
+  hr.loaded
+    #app &
+      background desaturate(lighten($color-focus-blue, 40), 50)
+
   .unread-container
     position relative
     top -2px
 
+  .loaded-container
+    position relative
+    top -3px
+
   .day-separator,
-  .unread-separator
+  .unread-separator,
+  .loaded-separator
     position relative
     z-index 10
     margin 10px 0
@@ -402,7 +424,8 @@
     .text
       color $color-blue
 
-  .unread-separator
+  .unread-separator,
+  .loaded-separator
     text-align right
 
     &.rised
@@ -414,6 +437,9 @@
       color #fff
       position relative
       box-shadow none
+
+  .loaded-separator .text
+    background $color-focus-blue
 
 </style>
 
