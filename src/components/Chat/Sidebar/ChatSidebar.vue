@@ -69,7 +69,7 @@
 
 <script>
   import { BLANK_DATA_SVG_IMAGE, DEVCHAT_ID } from "@/js/consts";
-  import ChatSidebarChatDisplay from "@/components/Chat/ChatSidebarChatDisplay.vue";
+  import ChatSidebarChatDisplay from "@/components/Chat/Sidebar/ChatDisplay/ChatSidebarChatDisplay.vue";
   import PopupMenu from "@/components/UI/PopupMenu.vue";
   import UserDisplay from "@/components/UserDisplay.vue";
   import ConnectionStatus from "@/components/App/ConnectionStatus.vue";

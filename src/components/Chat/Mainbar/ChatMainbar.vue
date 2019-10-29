@@ -87,11 +87,11 @@
 <script>
 
   import { DEVCHAT_ID } from "@/js/consts";
-  import ChatMainbarMessageList from "@/components/Chat/ChatMainbarMessageList.vue";
-  import ChatMainbarSide from "@/components/Chat/ChatMainbarSide.vue";
+  import ChatMainbarMessageList from "@/components/Chat/Mainbar/MessageList/ChatMainbarMessageList.vue";
+  import ChatMainbarSide from "@/components/Chat/Mainbar/Side/ChatMainbarSide.vue";
   import Editor from "@/components/UI/Editor.vue";
   import FileUpload from "@/components/FileUpload.vue";
-  import UserList from "@/components/Chat/UserList.vue";
+  import UserList from "@/components/Chat/Mainbar/UserList/ChatMainbarUserList.vue";
   import ConnectionStatus from "@/components/App/ConnectionStatus.vue";
 
   import members from "./ChatMainbarMembers";

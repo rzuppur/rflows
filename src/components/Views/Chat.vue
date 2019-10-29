@@ -12,8 +12,8 @@
 </template>
 
 <script>
-  import ChatMainbar from "@/components/Chat/ChatMainbar.vue";
-  import ChatSidebar from "@/components/Chat/ChatSidebar.vue";
+  import ChatMainbar from "@/components/Chat/Mainbar/ChatMainbar.vue";
+  import ChatSidebar from "@/components/Chat/Sidebar/ChatSidebar.vue";
 
   export default {
     name: "Chat",
