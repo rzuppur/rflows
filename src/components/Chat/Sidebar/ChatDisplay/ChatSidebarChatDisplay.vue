@@ -52,7 +52,7 @@
       .chat-unread
         display block
 
-      &.recent
+      &.recent:not(.active)
         background alpha($color-yellow, 0.08)
 
     &:hover
