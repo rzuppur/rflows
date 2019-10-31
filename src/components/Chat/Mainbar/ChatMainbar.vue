@@ -195,7 +195,7 @@
         const isTyping = this.utils.editorTextNotEmpty(text);
 
         if (isTyping !== this.isTyping) {
-          if (isTyping) {
+          if (isTyping && !this.$store.currentChatReplyToId) {
             this.$events.$emit("MESSAGELIST_scrollToBottomInstant");
           }
           try {
