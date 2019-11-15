@@ -15,7 +15,7 @@
         )
           span.icon.unread-total(v-if="$store.unreadMessagesTotal") {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
-        r-button(v-if="!isDevChat && !mqMobile" :disabled="!chatId" borderless v-rtip.bottom="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite" :icon="isStarred ? 'star' : 'star outline'" :icon-color="isStarred ? 'gold' : 'light-gray'")
+        r-button(v-if="!isDevChat && !mqMobile" :disabled="!chatId" borderless v-rtip.bottom="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite" :icon="isStarred ? 'star' : 'star outline'" :icon-color="isStarred ? 'gold' : 'gray'")
 
         .name.ellipsis {{ $store.currentChatName }}
           .placeholder(v-if="!$store.currentChatName")

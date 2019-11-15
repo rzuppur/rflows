@@ -7,8 +7,28 @@ IntelliJ conf:
 */
 
 @import "style/bulma.styl"
-
 @import "shared.styl"
+
+/*
+OVERRIDES
+ */
+
+$color-button-cta = lighten($color-blue, 10%)
+$color-blue = #2097e8
+$color-text = #363d4c
+
+$font-weight-sans-bold = 500
+
+/*
+RVC
+ */
+
+@import "../node_modules/@rzuppur/rvc/src/styles/main.styl"
+
+/*
+OTHER
+ */
+
 @import "style/utils.styl"
 
 html, body
