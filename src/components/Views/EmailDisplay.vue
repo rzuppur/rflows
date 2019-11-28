@@ -9,7 +9,7 @@
           | #[b From:] {{ message.from.name }} <{{ message.from.address }}>
           br
           | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
-        p.text-muted.text-small.margin-top-small {{ utils.fullDateTime(message.createDate) }}
+        p.text-color-quiet.text-small.margin-top-small {{ utils.fullDateTime(message.createDate) }}
 
       .buttons.margin-top-medium.margin-bottom-small(v-if="hasImages && imagesHidden")
         r-button(borderless gray  icon="images" :action="showImages") Show images

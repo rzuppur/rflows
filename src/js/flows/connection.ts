@@ -125,6 +125,7 @@ class Connection {
       localstorage.clearSession();
       this.store.currentUser = null;
       this.store.currentChatId = null;
+      this.tryToReconnect = false;
       Object.keys(this.store.flows).forEach(key => {
         if (key === "_messages") return;
         if (key === "messages") {

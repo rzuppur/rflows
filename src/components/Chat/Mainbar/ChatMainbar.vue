@@ -33,11 +33,11 @@
 
         .text-small.top-info-text(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
-        .flex.chat-inputs
+        .flex-container.chat-inputs
 
-          .field.is-grouped.flex1
+          .field.is-grouped.flex1.flex-container
 
-            .control(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
+            .flex0.margin-right-tiny(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
 
               r-button.expand-button(
                 borderless
@@ -46,7 +46,7 @@
                 :label="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'"
                 :icon="showEditorToolbar ? 'close' : 'add text'")
 
-            .control.is-expanded(v-show="!uploadExpanded")
+            .flex1.margin-right-tiny(v-show="!uploadExpanded" style="min-width: 0;")
 
               editor(
                 ref="editor"
@@ -72,11 +72,11 @@
 
             template(v-if="!uploadExpanded")
 
-              .control(v-if="replyToId")
+              .flex0.margin-right-tiny(v-if="replyToId")
                 r-button(:action="replyCancel" :icon="mqMobile ? 'close' : null")
                   template(v-if="!mqMobile") Cancel
 
-              .control
+              .flex0
                 r-button(:primary="!!replyToId" :action="sendChatMessage" :icon="mqMobile ? 'send' : null")
                   template(v-if="!mqMobile") Send
 
@@ -300,10 +300,16 @@
 
   .chat-bottom
     position relative
-    z-index 20
+    z-index 201
     background #fff
     padding 10px 20px 8px
     box-shadow 0 -1px 0 alpha(#000, .05)
+
+    @media (max-width $media-mobile-width)
+      margin-right -60px
+      padding-left 10px
+      padding-right 10px
+      box-shadow 0 -1px 0 alpha(#000, .05), 0 0 8px alpha(#000, 10%)
 
     .top-info-text
       position absolute

@@ -47,7 +47,7 @@
 
         //- NAME DATE
 
-        b.text-error.text-small(v-if="message.error") {{ message.error }} #{""}
+        b.text-color-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
         .name-date.flex(v-if="!message.noauthor || compact")
 
@@ -62,7 +62,7 @@
 
           .date.flex0(v-if="dateDisplay" v-rtip="dateTooltip") {{ dateDisplay }}
 
-          //-span.text-small.text-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
+          //-span.text-small.text-color-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
         //- REPLY TO
 
@@ -122,7 +122,7 @@
 
           //- UNKNOWN
 
-          p.text-content.text-error(v-else) Unknown message type: {{ message.type }}
+          p.text-content.text-color-error(v-else) Unknown message type: {{ message.type }}
 
       .buttons-container(@dblclick.native.stop)
         .buttons-grouped

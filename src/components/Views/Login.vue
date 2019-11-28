@@ -16,23 +16,19 @@
 
         .field(style="margin-bottom: 20px;")
           h1.title-3 RFlows
-          p.text-muted Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials.
+          p.text-color-quiet Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials.
 
-        .field
-          label.label Email
-          .control
-            input.input#email(v-model.trim="loginData.email" type="email" autofocus name="email" required autocomplete="email" :disabled="loginLoading")
+        .r-form-group
+          r-text-input(label="Email" v-model.trim="loginData.email" type="email" autofocus required autocomplete="email" :disabled="loginLoading")
 
-        .field(style="margin-bottom: 30px;")
-          label.label Password
-          .control
-            input.input#password(@keyup.enter="login" v-model="loginData.password" type="password" name="password" required autocomplete="password" :disabled="loginLoading")
+        .r-form-group
+          r-text-input(label="Password" @keyup.enter="login" v-model="loginData.password" type="password" required autocomplete="password" :disabled="loginLoading")
 
         .field
           .control
             r-button(submit fullwidth primary :loading="loginLoading") Sign in
 
-      .text-error(v-if="$store.connection.error") {{ $store.connection.errorMsg }}
+      .text-color-error(v-if="$store.connection.error") {{ $store.connection.errorMsg }}
 
 </template>
 
@@ -101,7 +97,7 @@
       margin 0 auto
       box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
 
-    .text-error
+    .text-color-error
       margin 15px 0 -10px
 
 </style>

@@ -4,10 +4,10 @@
 
     r-modal(v-if="open" title="Saved messages" size="medium" ref="savedModal" @close="open = false" :buttons="false")
 
-      .text-muted.margin-bottom-medium(v-if="!messages") Loading
+      .text-color-quiet.margin-bottom-medium(v-if="!messages") Loading
         r-button.icon-only(borderless small loading style="position: relative; top: -4px;")
 
-      .text-muted.margin-bottom-medium(v-else-if="messages.length === 0") No saved messages
+      .text-color-quiet.margin-bottom-medium(v-else-if="messages.length === 0") No saved messages
 
       .messages(v-else)
 

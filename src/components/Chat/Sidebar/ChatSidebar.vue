@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .sidebar-content
+  .sidebar-content.darkMode
 
     connection-status
 
@@ -13,30 +13,27 @@
 
         r-button(borderless v-rtip.bottom="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
-      h4.title-caps.has-text-centered(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
-      h4.title-caps.has-text-centered(v-if="$store.debugMode && !this.$store.connection.error" style="padding: 10px; color: #ff4b4b;" @click="$flows.connection.socket.close()") Close socket
-      h4.title-caps.has-text-centered(v-if="$store.debugMode && this.$store.connection.error" style="padding: 10px; color: #4babff;" @click="$flows.connection.reconnect()") Reconnect
+      h4.title-caps.text-center(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+      h4.title-caps.text-center(v-if="$store.debugMode && !this.$store.connection.error" style="padding: 10px; color: #ff4b4b;" @click="$flows.connection.socket.close()") Close socket
+      h4.title-caps.text-center(v-if="$store.debugMode && this.$store.connection.error" style="padding: 10px; color: #4babff;" @click="$flows.connection.reconnect()") Reconnect
 
       .search
-        .control.has-icons-right
-          input.input(type="search" placeholder="Search chats" v-model="searchText")
-          span.icon.is-right
-            r-icon.white(icon="search")
+        input.r-input-text.fullwidth(type="search" placeholder="Search chats" v-model="searchText")
+        r-icon.white(icon="search")
 
       .workspace-filter(v-if="showWorkspaceFilter")
         popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
           template(v-slot:trigger="open")
-            button.button(type="button" @pointerdown.prevent @click.stop="open.menuOpenClickStop")
-              .workspace
+            button.r-button.fullwidth.borderless.gray(type="button" @pointerdown.prevent @click.stop="open.menuOpenClickStop")
+              span.workspace
                 img.logo(v-if="activeWorkspace.id" :src="$flows.utils.getLogoFromWorkspace(activeWorkspace)" :alt="activeWorkspace.name")
                 .name {{ activeWorkspace.name }}
-              span.icon
-                r-icon.white(icon="chevron down")
+              r-icon.white(icon="chevron down")
 
       .actions.darkMode
-        r-button(v-if="savedMessagesCount > 0" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) All saved messages #[span.counter {{ savedMessagesCount }}]
+        r-button(v-if="savedMessagesCount > 0" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) Saved messages #[span.counter {{ savedMessagesCount }}]
 
-    .sidebar-chats.scrollbar-style.scrollbar-style-light
+    .sidebar-chats.r-styled-scrollbar
 
       template(v-if="!searchText.length")
 
@@ -253,35 +250,27 @@
           background alpha(#fff, 0.1)
 
     .workspace-filter
-      .button
-        width 100%
+
+      .r-button
+        .workspace
+          width 100%
+          display flex
+
+        .r-icon
+          margin-left auto
 
       & /deep/ .popup-menu-container
         position relative
-        top -50px
+        top -45px
 
       @media (min-width $media-mobile-width + 1px)
-        .button,
+        .r-button,
         & /deep/ .popup-menu
           width $sidebar-width - 20px
           max-width $sidebar-width - 20px
 
         & /deep/ .popup-menu-container
           width $sidebar-width - 20px
-
-      .button
-        padding-top 0
-        padding-bottom 0
-        height 48px
-        border-color transparent
-        background alpha(#fff, .08)
-        color alpha(#fff, 0.6)
-        justify-content space-between
-        padding-left 9px
-
-        &:hover
-          background alpha(#fff, .12)
-          color alpha(#fff, 0.8)
 
       .workspace
         margin 0
@@ -293,34 +282,18 @@
           margin-right 10px
           width 24px
           height @width
+          border-radius 2px
 
   .search
-    input
-      height 48px
+    position relative
 
-    .control.has-icons-right .icon
-      top 6px
-      right 5px
-
-    .input
-      background transparent
-      transition all 0.1s
-      border-color alpha(#fff, 0.2)
-      color #fff
-
-      &::placeholder
-        color #fff
-        opacity 0.6
-
-      &:hover
-        background alpha(#fff, 0.05)
-
-      &:focus
-        background #fff
-        color $color-text
-
-        &::placeholder
-          color $color-text
+    .r-icon
+      position absolute
+      top 8px
+      right 7px
+      opacity 0.7
+      user-select none
+      pointer-events none
 
   .actions .r-button
     width $sidebar-width - 20px

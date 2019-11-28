@@ -193,31 +193,27 @@
 
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
+  @import "../../../node_modules/@rzuppur/rvc/src/styles/shared.styl"
 
   .menubar
+    //margin-left -46px
 
     .buttons-grouped
       margin-bottom 0
 
   .editor /deep/
     .ProseMirror
-      min-height 36px
+      control()
+      control-fullwidth()
+      align-items flex-start
+      justify-content flex-start
+      height auto
+      min-height 40px
       max-height 60vh
       overflow-x hidden
       overflow-y auto
-      padding 6px 6px 5px
-      background #fff
-      border-radius $border-radius
-      border 1px solid $color-gray-border
-
-    .ProseMirror-focused
-      outline none
-      border 1px solid $color-focus-blue
-      box-shadow 0 0 0 2px alpha($color-focus-blue, 0.15)
-
-    .ProseMirror-selectednode
-      outline 1px solid $color-focus-blue
-      box-shadow 0 0 0 3px alpha($color-focus-blue, 0.15)
+      padding-top 8px
+      padding-bottom 8px
 
     p.is-empty:first-child
       white-space nowrap

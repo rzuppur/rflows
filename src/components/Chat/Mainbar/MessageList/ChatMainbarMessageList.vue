@@ -27,7 +27,7 @@
 
   .messages-container(
     ref="messages"
-    :class="{ replyActive, limitContainerWidth, 'scrollbar-style': !mqMobile }"
+    :class="{ replyActive, limitContainerWidth, 'r-styled-scrollbar': !mqMobile }"
     @scroll="onMessagesScroll"
   )
 
@@ -36,7 +36,7 @@
       .text-center.margin-top-large.margin-bottom-large(v-if="chatId && !isLoadingMessages && !hasOlderMessages && messages.length !== 0")
         .title-4 🌴 ⛵
           .margin-top-tiny Chat created
-        .text-small.text-muted(v-if="chatWorkspaceLocation") {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
+        .text-small.text-color-quiet(v-if="chatWorkspaceLocation") {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
 
       .day(v-for="day, key in messagesByDay[0]")
         +chatMessagesList()
@@ -55,7 +55,7 @@
       .text-center.margin-top-large(v-else-if="chatId && messages.length === 0")
         .title-4 📭 🐢
           .margin-top-tiny No messages
-        .text-small.text-muted(v-if="chatWorkspaceLocation") Created on {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
+        .text-small.text-color-quiet(v-if="chatWorkspaceLocation") Created on {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
 
     portal(to="scrollToShortcuts")
 

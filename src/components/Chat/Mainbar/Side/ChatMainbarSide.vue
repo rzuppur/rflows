@@ -1,12 +1,12 @@
 <template lang="pug">
 
-  .side.scrollbar-style(:class="{ collapsed: showCollapsedSidebar }")
+  .side.r-styled-scrollbar(:class="{ collapsed: showCollapsedSidebar }")
 
     template(v-if="chatWorkspaces.length")
       .workspace(v-for="workspace in chatWorkspaces")
         .text.show-wide
           b {{ workspace.name }}
-          .text-small.text-muted {{ workspace.type.toLowerCase() | capitalize }} workspace · {{ workspace.role.toLowerCase() | capitalize }}
+          .text-small.text-color-quiet {{ workspace.type.toLowerCase() | capitalize }} workspace · {{ workspace.role.toLowerCase() | capitalize }}
         img.logo(:src="$flows.utils.getLogoFromWorkspace(workspace)" :alt="workspace.name")
 
     .workspace(v-else)

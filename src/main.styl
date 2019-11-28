@@ -6,14 +6,12 @@ IntelliJ conf:
   Pattern: file:src/main.styl||file:src/shared.styl||file:src/style/*.styl
 */
 
-@import "style/bulma.styl"
-@import "shared.styl"
 
 /*
 OVERRIDES
  */
 
-$color-button-cta = lighten($color-blue, 10%)
+$color-button-cta = lighten(#356a9c, 10%)
 $color-blue = #2097e8
 $color-text = #363d4c
 
@@ -29,6 +27,7 @@ RVC
 OTHER
  */
 
+@import "shared.styl"
 @import "style/utils.styl"
 
 html, body
@@ -58,6 +57,8 @@ html, body
   user-focus none
   pointer-events none
 
-@import "style/scrollbar.styl"
+a
+  text-decoration none
+
 @import "style/typo.styl"
 @import "style/ui.styl"
