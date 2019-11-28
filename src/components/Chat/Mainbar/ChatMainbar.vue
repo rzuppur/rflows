@@ -37,14 +37,14 @@
 
           .field.is-grouped.flex1.flex-container
 
-            .flex0.margin-right-tiny(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
+            //-.flex0.margin-right-tiny(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
 
               r-button.expand-button(
                 borderless
-                :class="{ expanded: showEditorToolbar }"
-                :action="() => { showEditorToolbar = !showEditorToolbar; }"
-                :label="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'"
-                :icon="showEditorToolbar ? 'close' : 'add text'")
+                v-bind:class="{ expanded: showEditorToolbar }"
+                v-bind:action="() => { showEditorToolbar = !showEditorToolbar; }"
+                v-bind:label="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'"
+                v-bind:icon="showEditorToolbar ? 'close' : 'add text'")
 
             .flex1.margin-right-tiny(v-show="!uploadExpanded" style="min-width: 0;")
 
