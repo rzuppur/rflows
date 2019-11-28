@@ -13,7 +13,7 @@
           :action="() => { $events.$emit('showSidebar') }"
           :icon="$store.unreadMessagesTotal ? null : 'arrow left'"
         )
-          span.icon.unread-total(v-if="$store.unreadMessagesTotal") {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
+          .r-icon.unread-total(v-if="$store.unreadMessagesTotal") {{ $store.unreadMessagesTotal.replace(/\(|\)/g, "") }}
 
         r-button(v-if="!isDevChat && !mqMobile" :disabled="!chatId" borderless v-rtip.bottom="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite" :icon="isStarred ? 'star' : 'star outline'" :icon-color="isStarred ? 'gold' : 'gray'")
 

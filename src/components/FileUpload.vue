@@ -14,7 +14,7 @@
         input.r-input-text.fullwidth(
           type="text"
           ref="fileName"
-          :class="{ 'text-error': currentStatus === 'ERROR' }"
+          :class="{ 'text-color-error': currentStatus === 'ERROR' }"
           v-model="fileName"
           placeholder="File name"
           @keydown.enter.prevent="upload")
