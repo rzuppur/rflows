@@ -77,6 +77,6 @@
       border-radius 50%
 
       .darkMode &
-        background-color #50596f
+        background-color lighten($color-background-4-darkmode, 20%)
 
 </style>
