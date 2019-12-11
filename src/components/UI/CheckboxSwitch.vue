@@ -32,10 +32,9 @@
   .switch-input
     display none
 
-    &:checked
-      + .switch-toggle:after
-        background-color $color-light-blue
-        transform translate(80%, -50%)
+    &:checked + .switch-toggle:after
+      background-color $color-light-blue
+      transform translate(80%, -50%)
 
   .switch-toggle
     position relative
@@ -78,6 +77,6 @@
       border-radius 50%
 
       .darkMode &
-        background-color lighten($color-background-4-darkmode, 20%)
+        background-color #50596f
 
 </style>
