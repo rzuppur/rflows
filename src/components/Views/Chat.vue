@@ -54,8 +54,6 @@
     min-width 0
 
   .sidebar
-    background $color-sidebar-background
-    color #fff
     flex 1 1 auto
 
     @media (min-width $media-mobile-width + 1px)

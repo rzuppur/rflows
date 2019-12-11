@@ -29,9 +29,15 @@
     overflow hidden
     max-width 100%
 
+    .darkMode &
+
     &:hover,
     &:focus
       background darken($color-light-blue-background, 1)
+      background $color-background-2-darkmode
+
+      .darkMode &
+        background $color-background-3-darkmode
 
     &:focus
       outline none

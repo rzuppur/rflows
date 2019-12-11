@@ -11,7 +11,7 @@
           | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
         p.text-color-quiet.text-small.margin-top-small {{ utils.fullDateTime(message.createDate) }}
 
-      .buttons.margin-top-medium.margin-bottom-small(v-if="hasImages && imagesHidden")
+      .r-buttons.margin-top-medium.margin-bottom-small(v-if="hasImages && imagesHidden")
         r-button(borderless gray  icon="images" :action="showImages") Show images
 
       file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text" :key="file.id")

@@ -88,8 +88,11 @@
   .message-preview
     padding 5px 20px 5px 10px
     transition all 0.1s
-    background alpha($color-light-blue-background, 0.6)
     border-radius $border-radius
+    background alpha($color-light-blue-background, 60%)
+
+    .darkMode &
+      background alpha($color-light-blue-background, 8%)
 
     &.clickable
       &:hover,
@@ -97,11 +100,17 @@
         background darken($color-light-blue-background, 1)
         outline none
 
+        .darkMode &
+          background alpha($color-light-blue-background, 10%)
+
     &.sidebar-saved
       margin-bottom 7px
 
     &.reply-original
       border-left 4px solid #71aee3
+
+      .darkMode &
+        border-color #5285ab
 
       &:focus
         .name,

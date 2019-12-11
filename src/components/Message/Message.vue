@@ -17,7 +17,7 @@
           @keydown.native.capture.esc="cancelEdit"
         )
 
-        .buttons
+        .r-buttons
 
           r-button(primary :action="saveEdit" icon="check") Save
 

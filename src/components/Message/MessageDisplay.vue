@@ -12,9 +12,9 @@
           .avatar.avatar-small.placeholder(v-else)
 
       .content-container
-        .name-date.flex
+        .name-date.flex.text-color-quiet
 
-          .name.ellipsis.flex0(v-if="writingUser && writingUser.name") {{ writingUser.name }}
+          .name.ellipsis.flex0.text-color-body(v-if="writingUser && writingUser.name") {{ writingUser.name }}
           .name.placeholder.flex1(v-else)
 
         .writing-dots(v-if="writingUser")
@@ -49,7 +49,7 @@
 
         b.text-color-error.text-small(v-if="message.error") {{ message.error }} #{""}
 
-        .name-date.flex(v-if="!message.noauthor || compact")
+        .name-date.flex.text-color-quiet(v-if="!message.noauthor || compact")
 
           .is-reply.flex0(v-if="message.replyTo && !showReplyMessage")
             r-icon.icon-text.blue(icon="reply")
@@ -57,7 +57,7 @@
 
           .email-from.flex0(v-if="message.type === 'EMAIL'") From:&nbsp;
 
-          .name.ellipsis.flex0 {{ authorName }}
+          .name.ellipsis.flex0.text-color-body {{ authorName }}
             r-icon.blue.icon-text.saved-icon(v-if="!compact && message.flagged" icon="pin" v-rtip="'Message is in saved messages'")
 
           .date.flex0(v-if="dateDisplay" v-rtip="dateTooltip") {{ dateDisplay }}
@@ -75,7 +75,7 @@
 
           //- EVENT
 
-          p.event-content(v-if="message.type === 'EVENT'") {{ message.text }}
+          p.event-content.text-color-quiet(v-if="message.type === 'EVENT'") {{ message.text }}
 
           //- CHAT
 
@@ -98,11 +98,11 @@
 
           template(v-else-if="isEmail")
 
-            p.event-content(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
+            p.event-content.text-color-quiet(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
 
             template(v-else-if="isEmail && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
 
-              p.event-content #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
+              p.event-content.text-color-quiet #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
               .commit(v-for="commit in utils.commitEmailParse(message.text)")
                 a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
                   .commit-title #[b  {{ commit.name }}]
@@ -117,7 +117,7 @@
 
                 .title-5.margin-bottom-tiny(v-else) {{ message.subject }}
 
-                p.text-content.email-plain(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+                p.text-content.email-plain.r-elevation-2(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
                 r-button.view-email-button.margin-bottom-tiny(v-else small borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") View email
 
           //- UNKNOWN
@@ -125,8 +125,8 @@
           p.text-content.text-color-error(v-else) Unknown message type: {{ message.type }}
 
       .buttons-container(@dblclick.native.stop)
-        .buttons-grouped
-          .button-group
+        .r-buttons-grouped
+          .r-button-group.r-elevation-4.r-border-radius
             slot(name="buttons")
 
 </template>
@@ -234,7 +234,10 @@
 
     &:hover,
     &:focus-within
-      background alpha($color-light-blue-background, 0.6) !important
+      background alpha($color-light-blue-background, 60%) !important
+
+      .darkMode &
+        background alpha($color-light-blue-background, 7%) !important
 
       .buttons-container
         display block
@@ -274,7 +277,10 @@
       animation highlight-soft 5s
 
     &.message-unread
-      background alpha($color-unread-background, 0.1)
+      background alpha($color-unread-background, 10%)
+
+      .darkMode &
+        background alpha($color-unread-background, 6%)
 
     &.message-error
       background alpha($color-red, 0.05)
@@ -287,7 +293,6 @@
       margin-top -3px
       margin-bottom -3px
       margin-left 10px
-      border-radius $border-radius
       display block
 
       // -
@@ -296,7 +301,6 @@
       position absolute
       z-index 20
       display none
-      box-shadow 0 2px 4px -2px rgba(0,0,0,0.2)
 
     /*
     AVATAR
@@ -315,6 +319,9 @@
         top 10px
         margin-bottom -4px
         background-color $color-light-gray-background
+
+        .darkMode &
+          background $color-background-4-darkmode
 
       .date
         font-sans($font-size-small)
@@ -345,11 +352,9 @@
 
     .name-date
       font-sans($font-size-small)
-      color $color-gray-text
 
       .name
         font-sans($font-size-small, $font-weight-sans-bold)
-        color $color-text
         margin-right 5px
         flex-shrink 1
 
@@ -384,7 +389,6 @@
       min-width 0
 
     .event-content
-      color $color-gray-text
       font-style italic
 
     .email-meta
@@ -395,12 +399,14 @@
         color #4a4a4a
 
     .email-plain
-      border 1px solid #ddd
       padding 10px
       border-radius 4px
       max-width 700px
       margin-bottom 10px
-      background #fff
+      border 1px solid $color-border-medium
+
+      .darkMode &
+        border-color $color-border-medium-darkmode
 
     .text-clamped
       overflow hidden
@@ -447,6 +453,9 @@
       max-width 700px
       margin-bottom 10px
 
+      .darkMode &
+        background alpha(#fff, 3%)
+
       &.name
         height 12px
         max-width 120px
@@ -465,11 +474,15 @@
       .dot1,
       .dot2,
       .dot3
-        background $color-gray-border
         width 8px
         height @width
         margin-right @width
         border-radius (@width / 2)
+        background $color-gray-border
+
+        .darkMode &
+          background darken($color-text-quiet-darkmode, 40%)
+
 
       .dot1
         animation dotJump $duration ease-in-out 0ms infinite

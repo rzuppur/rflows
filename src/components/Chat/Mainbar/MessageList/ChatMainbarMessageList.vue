@@ -25,13 +25,13 @@
         :ref="'message-' + message.id"
       )
 
-  .messages-container(
+  .messages-container.r-elevation-2(
     ref="messages"
     :class="{ replyActive, limitContainerWidth, 'r-styled-scrollbar': !mqMobile }"
     @scroll="onMessagesScroll"
   )
 
-    .messages(ref="messagesInner")
+    .messages.r-elevation-3(ref="messagesInner")
 
       .text-center.margin-top-large.margin-bottom-large(v-if="chatId && !isLoadingMessages && !hasOlderMessages && messages.length !== 0")
         .title-4 🌴 ⛵
@@ -317,7 +317,6 @@
   .messages-container
     flex 1
     overflow-y scroll
-    background $color-light-gray-background
 
     &.limitContainerWidth
       .messages
@@ -357,7 +356,6 @@
   .messages
     padding 20px 0
     position relative
-    background #fff
     min-height 100%
 
     .load-more-container
@@ -386,9 +384,15 @@
     #app &
       background lighten($color-red, 20)
 
+    #app.darkMode &
+      background desaturate($color-red, 40%)
+
   hr.loaded
     #app &
       background desaturate(lighten($color-focus-blue, 40), 50)
+
+    #app.darkMode &
+      background desaturate($color-focus-blue, 50%)
 
   .unread-container
     position relative
@@ -416,6 +420,11 @@
       position relative
       box-shadow 0 0 0 2px alpha(#000, .05)
 
+      .darkMode &
+        background $color-background-3-darkmode
+        color #45a8ec
+        box-shadow 0 0 0 2px alpha(#fff, 7%)
+
   .day-separator
     position sticky
     top -4px
@@ -437,6 +446,11 @@
       color #fff
       position relative
       box-shadow none
+
+      .darkMode &
+        background $color-red
+        color #fff
+        box-shadow none
 
   .loaded-separator .text
     background $color-focus-blue

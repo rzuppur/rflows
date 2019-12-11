@@ -77,8 +77,11 @@
       position absolute
       right -3px
       top -2px
-      border 2px solid #fff
       display none
+      border 2px solid #fff
+
+      .darkMode &
+        border-color $color-background-3-darkmode
 
     &[status="AWAY"]
       .online-status
@@ -93,6 +96,9 @@
       .avatar[status="OPEN"],
       .avatar[status="TYPING"]
         box-shadow 0 0 0 1px #fff, 0 0 0 3px #83c843
+
+        .darkMode &
+          box-shadow 0 0 0 1.5px $color-background-3-darkmode, 0 0 0 3px #83c843
 
     .avatar
       margin 0 0 0 10px

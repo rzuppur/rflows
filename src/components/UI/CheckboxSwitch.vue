@@ -22,7 +22,8 @@
       name: String,
       disabled: Boolean,
     },
-  }
+  };
+
 </script>
 
 <style lang="stylus" scoped>
@@ -66,11 +67,17 @@
       background-color darken($color-light-blue-background, 4)
       border-radius 8px
 
+      .darkMode &
+        background-color $color-background-4-darkmode
+
     &:after
       left 0
       width 20px
       height 20px
       background-color #eaecff
       border-radius 50%
+
+      .darkMode &
+        background-color lighten($color-background-4-darkmode, 20%)
 
 </style>

@@ -11,6 +11,8 @@ import MessageFlagged from "@/js/model/MessagesFlagged";
 import ChatProperty from "@/js/model/ChatProperty";
 
 class STORE {
+  darkMode: boolean = false;
+
   currentChatId: null | number = null;
   currentChatName: string = "";
   currentChatReplyToId: null | number = null;

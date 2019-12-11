@@ -4,7 +4,7 @@
 
     .mainbar
 
-      .chat-title
+      .chat-title.r-elevation-3
 
         r-button.icon-only(
           borderless
@@ -29,9 +29,9 @@
 
       chat-mainbar-message-list(:chatId="chatId" :chatMembersWriting="chatMembersWriting")
 
-      .chat-bottom
+      .chat-bottom.r-elevation-3
 
-        .text-small.top-info-text(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
+        .text-small.top-info-text.text-color-quiet.r-elevation-3(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
         .flex-container.chat-inputs
 
@@ -249,6 +249,7 @@
   .chat
     display flex
     height 100%
+    border-left 2px solid $color-background-4-darkmode
 
   .mainbar
     flex 3
@@ -260,7 +261,6 @@
   .chat-title
     position relative
     z-index 100
-    background #fff
     box-shadow 0 1px 0 alpha(#000, .05)
     height 56px
     min-height 56px
@@ -269,6 +269,9 @@
     display flex
     align-items center
     padding 0 20px 0 17px
+
+    .darkMode &
+      box-shadow 0 1px 0 alpha(#fff, 7%)
 
     @media (max-width $media-mobile-width)
       padding 0 10px
@@ -301,7 +304,6 @@
   .chat-bottom
     position relative
     z-index 201
-    background #fff
     padding 10px 20px 8px
     box-shadow 0 -1px 0 alpha(#000, .05)
 
@@ -311,14 +313,15 @@
       padding-right 10px
       box-shadow 0 -1px 0 alpha(#000, .05), 0 0 8px alpha(#000, 10%)
 
+    .darkMode &
+      box-shadow 0 -1px 0 alpha(#fff, 7%)
+
     .top-info-text
       position absolute
       top -15px
       padding 2px 6px 5px
       border-top-left-radius $border-radius
       border-top-right-radius $border-radius
-      background #fff
-      color $color-gray-text
 
     .chat-inputs
       margin-bottom 6px

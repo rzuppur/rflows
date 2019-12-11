@@ -7,8 +7,8 @@
       :action="() => { commands."+command+"; }"
       v-rtip="'"+tooltip+"'"
       icon=icon
+      :icon-color=("isActive." + command + " ? 'blue' : 'gray'")
     )
-      block
 
   mixin editorButtonWithoutActive(command, tooltip, icon)
     r-button(
@@ -17,7 +17,6 @@
       v-rtip="'"+tooltip+"'"
       icon=icon
     )
-      block
 
 
   .editor(v-if="editor")
@@ -25,20 +24,20 @@
     slide-in-out(:inDuration="60" :outDuration="60")
       editor-menu-bar(v-if="showMenuBar" :editor="editor")
         .menubar(slot-scope="{ commands, isActive }")
-          .buttons-grouped
-            .button-group
+          .r-buttons-grouped.margin-bottom-tiny
+            .r-button-group.r-elevation-3
               +editorButton("bold()", "Bold", "text bold")
               +editorButton("italic()", "Italic", "text italic")
               +editorButton("underline()", "Underline", "text underline")
-            .button-group
+            .r-button-group.r-elevation-3
               +editorButton("heading({ level: 1 })", "Heading 1", "text h1")
               +editorButton("heading({ level: 2 })", "Heading 2", "text h2")
               +editorButton("heading({ level: 3 })", "Heading 3", "text h3")
-            .button-group
+            .r-button-group.r-elevation-3
               +editorButton("blockquote()", "Quote", "text quote")
               +editorButton("code()", "Inline code", "text code")
               +editorButton("code_block()", "Code block", "text code block")
-            .button-group
+            .r-button-group.r-elevation-3
               +editorButtonWithoutActive("undo()", "Undo", "undo")
               +editorButtonWithoutActive("redo()", "Redo", "redo")
 
@@ -193,18 +192,12 @@
 
 <style lang="stylus" scoped>
   @import "~@/shared.styl"
-  @import "../../../node_modules/@rzuppur/rvc/src/styles/shared.styl"
-
-  .menubar
-    //margin-left -46px
-
-    .buttons-grouped
-      margin-bottom 0
 
   .editor /deep/
     .ProseMirror
       control()
       control-fullwidth()
+      display block
       align-items flex-start
       justify-content flex-start
       height auto

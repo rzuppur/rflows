@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  .side.r-styled-scrollbar(:class="{ collapsed: showCollapsedSidebar }")
+  .side.r-elevation-3.r-styled-scrollbar(:class="{ collapsed: showCollapsedSidebar }")
 
     template(v-if="chatWorkspaces.length")
       .workspace(v-for="workspace in chatWorkspaces")
@@ -15,7 +15,7 @@
 
     hr
 
-    .buttons
+    .r-buttons
 
       r-button(v-if="!mqSideCollapse" fullwidth :action="() => { sideCollapsed = !sideCollapsed; }" v-rtip.left="showCollapsedSidebar ? 'Expand side' : null" :icon="showCollapsedSidebar ? 'chevron left' : 'chevron right'")
         template(v-if="!showCollapsedSidebar") #{""} Collapse side
@@ -280,6 +280,9 @@
     z-index 200
     padding 15px 20px
 
+    .darkMode &
+      box-shadow inset 2px 0 0 alpha(#fff, 6%)
+
     @media (max-width 1000px)
       padding 10px 10px
 
@@ -304,6 +307,9 @@
     .workspace .logo
       background $color-light-gray-background
 
+      .darkMode &
+        background $color-background-4-darkmode
+
     .flagged h4
       margin-bottom 10px
       margin-top 20px
@@ -318,7 +324,7 @@
         margin 10px -10px
 
 
-    .buttons
+    .r-buttons
       margin-bottom 0
 
     .r-button.fullwidth:not(.icon-only)
@@ -327,8 +333,11 @@
     .sidebar-saved
       margin-bottom 8px
       padding 8px 10px 6px
-      background alpha($color-light-blue-background, 0.6)
+      background alpha($color-light-blue-background, 60%)
       border-radius $border-radius
+
+      .darkMode &
+        background alpha($color-light-blue-background, 10%)
 
       & /deep/ .buttons-container
         right 0

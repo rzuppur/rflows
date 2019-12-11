@@ -1,6 +1,6 @@
 <template lang="pug">
 
-  #app(v-cloak @click="documentClick")
+  #app(v-cloak @click="documentClick" :class="{ darkMode }")
 
     //- NO RENDER
 
@@ -56,8 +56,13 @@
       modalsOpen() {
         return this.$store.modalsOpen.length;
       },
+      darkMode() {
+        return this.$store.darkMode;
+      },
     },
     mounted() {
+      const darkMode = localStorage.getItem("darkMode");
+      if (darkMode) this.$store.darkMode = JSON.parse(darkMode);
       this.$events.$on("notify", this.$rNotifyToast);
     },
     methods: {

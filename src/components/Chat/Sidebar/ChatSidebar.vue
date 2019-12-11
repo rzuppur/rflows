@@ -1,10 +1,10 @@
 <template lang="pug">
 
-  .sidebar-content.darkMode
+  .sidebar-content.darkMode.r-elevation-1
 
     connection-status
 
-    .sidebar-fixed
+    .sidebar-fixed.r-elevation-2
 
       user-display(:user="currentUserDisplay" :withName="true")
 

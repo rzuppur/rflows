@@ -13,20 +13,23 @@
         h4.title-caps
           span Messages
         +settings("autoMarkAsRead")
-          .label Auto-read
-            .description {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
+          .r-form-label.text-medium Auto-read
+            .text-small.text-color-quiet {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
         +settings("desktopNotifications")
-          .label Browser notifications
-            .description {{ notificationStatus }}
+          .r-form-label.text-medium Browser notifications
+            .text-small.text-color-quiet {{ notificationStatus }}
 
         h4.title-caps
           span Interface
         +settings("showWorkspaceSwitcher")
-          .label Workspace filter
-            .description {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
+          .r-form-label.text-medium Workspace filter
+            .text-small.text-color-quiet {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
         +settings("compactMode")
-          .label Compact messages
-            .description {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
+          .r-form-label.text-medium Compact messages
+            .text-small.text-color-quiet {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
+        .setting-block
+          checkbox-switch(:value="$store.darkMode" @input="toggleDarkmode($event)" name="darkMode")
+            .r-form-label.text-medium Dark mode
 
       p.text-color-quiet.margin-top-medium(v-else) Settings not available
 
@@ -171,6 +174,21 @@
           this.latestBuildDate = "Error";
         }
       },
+      enableDarkmode() {
+        this.$store.darkMode = true;
+        localStorage.setItem("darkMode", JSON.stringify(true));
+      },
+      disableDarkmode() {
+        this.$store.darkMode = false;
+        localStorage.setItem("darkMode", JSON.stringify(false));
+      },
+      toggleDarkmode(value) {
+        if (value) {
+          this.enableDarkmode();
+        } else {
+          this.disableDarkmode();
+        }
+      },
     },
   };
 </script>
@@ -184,17 +202,23 @@
     &:before
       content ""
       height 2px
-      background $color-light-border
+      background $color-border-light
       position absolute
       left 0
       right 0
       top 8px
+
+      .darkMode &
+        background $color-border-medium-darkmode
 
     span
       position relative
       z-index 1
       background #fff
       padding-right 5px
+
+      .darkMode &
+        background $color-background-3-darkmode
 
   .setting-block
     margin-bottom 20px

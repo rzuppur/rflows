@@ -1,14 +1,14 @@
 <template lang="pug">
 
-  .login-container.alwaysFullHeight
+  .login-container.alwaysFullHeight.r-elevation-2
 
-    .login-content
+    .login-content.r-elevation-3
 
       template(v-if="$store.currentUser")
 
         user-display(:user="currentUserDisplay" :withName="true")
 
-        .buttons.margin-top-large
+        .r-buttons.margin-top-large
           r-button(fullwidth primary :action="openChat") Continue
           r-button(fullwidth :action="$flows.connection.logout") Log out
 
@@ -84,14 +84,12 @@
   @import "~@/shared.styl"
 
   .login-container
-    background  $color-light-blue-background
     min-height 100%
     padding 30px 0
     overflow-y auto
 
     .login-content
       padding 30px
-      background #fff
       border-radius 4px
       max-width 400px
       margin 0 auto

@@ -8,7 +8,7 @@
     .popup-menu-container(ref="container")
       portal(to="popupMenu")
         slide-in-out(:inDuration="70" :outDuration="0")
-          .popup-menu(v-if="menuOpen" :style="{ 'min-width': minWidth, top, left, '--top': top, }")
+          .popup-menu.r-elevation-4(v-if="menuOpen" :style="{ 'min-width': minWidth, top, left, '--top': top, }")
             template(v-for="action in actions")
 
               .popup-menu-item.item-title(
@@ -21,7 +21,7 @@
 
               user-display(v-else-if="action.user" :user="action.user" :withName="true")
 
-              button.popup-menu-item.item-clickable(
+              button.popup-menu-item.item-clickable.r-elevation-3(
                 v-else-if="action.func"
                 type="button"
                 @click="menuItemSelect(action.func)"
@@ -108,15 +108,11 @@
     overflow-x hidden
     overflow-y auto
     padding 5px 0
-    background #fff
-    border 1px solid $color-gray-border
     border-radius $border-radius
-    box-shadow 0 4px 5px -1px alpha(#000, 0.1)
     z-index 10001
 
     .popup-menu-item
       display block
-      color $color-text
       user-select none
       white-space nowrap
       text-align left

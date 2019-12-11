@@ -39,7 +39,7 @@
     right 0
     top 0
     bottom 0
-    background alpha(#fff, .96)
+    background alpha(#fff, 96%)
     display flex
     align-items center
     flex-direction row
@@ -49,6 +49,9 @@
     transition all 0.15s
     z-index -1000
     opacity 0
+
+    .darkMode &
+      background alpha(#000, 60%)
 
     &.dropping
       z-index 1000

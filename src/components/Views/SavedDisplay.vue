@@ -87,6 +87,9 @@
     padding 20px
     margin-bottom 10px
 
+    .darkMode &
+      box-shadow inset 0 0 0 2px $color-border-medium-darkmode
+
     .chat-message
       margin-left -20px
       margin-right -20px

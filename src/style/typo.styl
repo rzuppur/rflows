@@ -8,17 +8,6 @@ a:hover
   color #3273dc
   text-decoration underline
 
-.label
-  font-sans($font-size-normal, $font-weight-sans-bold)
-  color $color-text
-
-  &:not(:last-child)
-    margin-bottom 4px
-
-  .description
-    font-sans($font-size-small)
-    color $color-gray-text
-
 b.text-small
   font-sans($font-size-small, $font-weight-sans-bold)
 
@@ -51,9 +40,12 @@ b.text-small
 
   pre, code
     font-sans($font-size-small)
-    background  $color-light-blue-background
     border-radius $border-radius
     line-height 1.1
+    background $color-light-blue-background
+
+    .darkMode &
+      background $color-background-2-darkmode
 
   pre
     margin 10px 0
@@ -77,12 +69,14 @@ b.text-small
   table
     border-collapse collapse
     width 100%
-    background alpha(white, 0.7)
     //table-layout fixed
 
     td, th
       padding 4px 8px
       border 1px solid $color-gray-border
+
+      .darkMode &
+        border-color $color-border-medium-darkmode
 
       &,
       p
@@ -99,7 +93,6 @@ b.text-small
 
   hr
     margin 10px 0
-    background $color-gray-border
 
   .ProseMirror-gapcursor
     display: none;

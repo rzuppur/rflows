@@ -14,7 +14,11 @@ input[type="search"]::-webkit-search-results-decoration
     height 40px
 
   &.placeholder
-    background alpha(#000, 0.05)
+    background alpha(#000, 5%)
+
+    .darkMode &
+      background alpha(#fff, 3%)
+
 
 .user-with-name
   display flex
@@ -106,37 +110,6 @@ p.disabled
   background rgba(255, 31, 75, 0.05)
   color #c15d71
 
-$_buttons_margin = 10px
-
-.buttons
-  margin-right -($_buttons_margin)
-  margin-bottom -($_buttons_margin)
-
-  &.align-right
-    text-align right
-
-  .r-button
-    margin-right $_buttons_margin
-    margin-bottom $_buttons_margin
-
-.buttons-grouped
-  margin-right -($_buttons_margin)
-  margin-bottom -($_buttons_margin)
-
-  .button-group
-    display inline-block
-    margin-right $_buttons_margin
-    margin-bottom $_buttons_margin
-
-    .r-button + .r-button
-      border-top-left-radius 0
-      border-bottom-left-radius 0
-      border-left none
-
-    .r-button:not(:last-child)
-      border-top-right-radius 0
-      border-bottom-right-radius 0
-
 .button-reset
   display block
   border none
@@ -161,7 +134,8 @@ $_buttons_margin = 10px
 #app .r-button.gray
   background #e9eaf0
 
-#app .darkMode .r-button.gray
+#app .darkMode .r-button.gray,
+#app.darkMode .r-button.gray
   background alpha(#fff, 0.1)
 
 .counter
@@ -176,5 +150,3 @@ $_buttons_margin = 10px
   height 20px
   align-self center
 
-#app hr
-  background $color-light-border
