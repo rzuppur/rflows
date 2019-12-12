@@ -250,12 +250,15 @@
      */
 
     &.message-highlight
-      box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(68, 85, 114, 0.2)
+      box-shadow 0 1px 3px 1px rgba(0, 0, 0, 0.15), 0 5px 13px rgba(0, 0, 0, 0.1), 0 0 0 4000px rgba(30, 40, 58, 0.2)
       margin 0 13px
       padding 5px 7px
       border-radius $border-radius
-      background #fff !important
       z-index 20
+      background #fff !important
+
+      .darkMode &
+        background $color-background-4-darkmode !important
 
       .buttons-container
         right 2px
