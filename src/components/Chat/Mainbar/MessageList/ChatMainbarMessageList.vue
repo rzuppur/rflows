@@ -455,6 +455,9 @@
   .loaded-separator .text
     background $color-focus-blue
 
+    .darkMode &
+      background $color-focus-blue
+
 </style>
 
 <style lang="stylus">

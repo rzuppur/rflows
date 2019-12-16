@@ -23,7 +23,7 @@
   .file-preview
     display inline-block
     vertical-align top
-    margin 3px 8px 8px 0
+    margin 6px 8px 8px 0
     background  $color-light-blue-background
     border-radius $border-radius
     overflow hidden

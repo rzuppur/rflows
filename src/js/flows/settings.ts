@@ -115,6 +115,50 @@ class Settings {
       value: property.value,
     };
   }
+
+  /*
+
+  setUserName(fname, lname) {
+    const { currentUser } = this.store;
+    if (!currentUser) return this._debug("! No currentUser in store");
+    fname = fname.toString();
+    lname = lname.toString();
+    if (fname === currentUser.firstName && lname === currentUser.lastName) return this._debug("Name hasn't changed, not saving");
+    this.store.currentUser.firstName = fname;
+    this.store.currentUser.lastName = lname;
+    this.socket.message("/app/User.save", {
+      id: currentUser.id,
+      email: currentUser.email,
+      firstName: fname,
+      lastName: lname,
+      password: null,
+      gender: currentUser.gender,
+    }, true)
+    .then(() => this.eventBus.$emit("notify", "Name saved"))
+    .catch(() => this.eventBus.$emit("notift", "Error saving name"));
+  }
+
+  removeAvatar() {
+    const { currentUser } = this.store;
+    if (!currentUser) return this._debug("! No currentUser in store");
+    if (currentUser.avatarUrl) this.deleteFile(currentUser.avatarUrl);
+    this.store.currentUser.avatarUrl = null;
+    this.socket.message("/app/User.save", {
+      id: currentUser.id,
+      email: currentUser.email,
+      firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
+      password: null,
+      gender: currentUser.gender,
+      avatarUrl: false,
+    }, true)
+    .then(() => this.eventBus.$emit("notify", "Avatar removed"))
+    .catch(() => this.eventBus.$emit("notify", "Error removing avatar"));
+  }
+
+  // TODO: avatar upload
+
+   */
 }
 
 export default Settings;
