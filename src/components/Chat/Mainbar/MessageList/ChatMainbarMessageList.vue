@@ -466,7 +466,4 @@
     &.message-highlight
       padding $verticalPadding 17px !important
 
-    p
-      line-height 1.6
-
 </style>

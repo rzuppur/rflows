@@ -283,7 +283,7 @@
       background alpha($color-unread-background, 10%)
 
       .darkMode &
-        background alpha($color-unread-background, 6%)
+        background alpha($color-blue, 10%)
 
     &.message-error
       background alpha($color-red, 0.05)
