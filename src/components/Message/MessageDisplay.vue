@@ -237,7 +237,7 @@
       background alpha($color-light-blue-background, 60%) !important
 
       .darkMode &
-        background alpha($color-light-blue-background, 7%) !important
+        background alpha($color-light-blue-background, 4%) !important
 
       .buttons-container
         display block

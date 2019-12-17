@@ -127,4 +127,7 @@
       color $color-gray-text
       font-sans($font-size-small)
 
+      .darkMode &
+        color $color-text-quiet-darkmode
+
 </style>
