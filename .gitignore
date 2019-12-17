@@ -2,6 +2,7 @@
 node_modules/
 dist/
 src/assets/main.css
+public/VERSION
 
 # local env files
 .env.local
