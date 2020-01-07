@@ -2,5 +2,7 @@
 
 Contriber Flows unofficial client
 
+More info: https://reinozuppur.com/rflows/
+
 
 ![RFlows](https://reinozuppur.com/screens/rflows-5.png "")
