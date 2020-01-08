@@ -6,7 +6,7 @@
       .workspace(v-for="workspace in chatWorkspaces")
         .text.show-wide
           b {{ workspace.name }}
-          .text-small.text-color-quiet {{ workspace.type.toLowerCase() | capitalize }} workspace · {{ workspace.role.toLowerCase() | capitalize }}
+          .r-text-small.r-text-color-quiet {{ workspace.type.toLowerCase() | capitalize }} workspace · {{ workspace.role.toLowerCase() | capitalize }}
         img.logo(:src="$flows.utils.getLogoFromWorkspace(workspace)" :alt="workspace.name")
 
     .workspace(v-else)
@@ -35,7 +35,7 @@
     hr
 
     .show-wide
-      h4.title-caps(v-if="flaggedMessages.length")
+      h4.r-title-caps(v-if="flaggedMessages.length")
         r-icon.blue.icon-text(icon="pin")
         | #{""} Saved messages
 

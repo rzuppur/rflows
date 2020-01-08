@@ -10,39 +10,39 @@
     r-modal(v-if="$store.currentUser && !$store.connection.error" title="Settings" ref="settingsModal" :buttons="false")
 
       template(v-if="settingsLoaded")
-        h4.title-caps
+        h4.r-title-caps
           span Messages
         +settings("autoMarkAsRead")
-          .r-form-label.text-medium Auto-read
-            .text-small.text-color-quiet {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
+          .r-form-label.r-text-medium Auto-read
+            .r-text-small.r-text-color-quiet {{ autoMarkAsRead ? "Mark messages as read when opened" : "Messages have to be marked as read manually" }}
         +settings("desktopNotifications")
-          .r-form-label.text-medium Browser notifications
-            .text-small.text-color-quiet {{ notificationStatus }}
+          .r-form-label.r-text-medium Browser notifications
+            .r-text-small.r-text-color-quiet {{ notificationStatus }}
 
-        h4.title-caps
+        h4.r-title-caps
           span Interface
         +settings("showWorkspaceSwitcher")
-          .r-form-label.text-medium Workspace filter
-            .text-small.text-color-quiet {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
+          .r-form-label.r-text-medium Workspace filter
+            .r-text-small.r-text-color-quiet {{ showWorkspaceSwitcher ? "Show" : "Hide" }} workspace filter on sidebar
         +settings("compactMode")
-          .r-form-label.text-medium Compact messages
-            .text-small.text-color-quiet {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
+          .r-form-label.r-text-medium Compact messages
+            .r-text-small.r-text-color-quiet {{ compactMode ? "Maximize the number of messages displayed" : "More space around messages" }}
         .setting-block
           checkbox-switch(:value="$store.darkMode" @input="toggleDarkmode($event)" name="darkMode")
-            .r-form-label.text-medium Dark mode
+            .r-form-label.r-text-medium Dark mode
 
-      p.text-color-quiet.margin-top-medium(v-else) Settings not available
+      p.r-text-color-quiet.r-margin-top-medium(v-else) Settings not available
 
-      h4.title-caps
+      h4.r-title-caps
         span Profile
 
       user-display(:user="currentUser" :withName="true")
 
-      r-button.margin-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
+      r-button.r-margin-top-medium(:action="$flows.connection.logout" tip="Log out" tloc="right" icon="log out") Log out
 
       template(v-if="$store.currentUser && $store.currentUser.id === 2352")
 
-        h4.title-caps
+        h4.r-title-caps
           span About
 
         p

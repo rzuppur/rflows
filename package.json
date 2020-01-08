@@ -11,7 +11,7 @@
     "build": "yarn run build:styles && tsc && yarn run build:version && vue-cli-service build && cp _redirects ./dist/_redirects"
   },
   "dependencies": {
-    "@rzuppur/rvc": "0.46.1",
+    "@rzuppur/rvc": "^0.47.5",
     "@vue/composition-api": "^0.2.1",
     "auto-bind": "^2.1.0",
     "dayjs": "^1.8.16",

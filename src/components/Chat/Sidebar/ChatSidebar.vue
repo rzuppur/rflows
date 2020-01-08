@@ -13,9 +13,9 @@
 
         r-button(borderless v-rtip.bottom="'Settings'" :action="() => { $events.$emit('openSettings') }" icon="settings" icon-color="white")
 
-      h4.title-caps.text-center(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
-      h4.title-caps.text-center(v-if="$store.debugMode && !this.$store.connection.error" style="padding: 10px; color: #ff4b4b;" @click="$flows.connection.socket.close()") Close socket
-      h4.title-caps.text-center(v-if="$store.debugMode && this.$store.connection.error" style="padding: 10px; color: #4babff;" @click="$flows.connection.reconnect()") Reconnect
+      h4.r-title-caps.r-text-center(v-if="$store.debugMode" style="padding: 10px; color: #ffc94b;background:#0005" @click="$store.debugMode = false") ⭐⭐⭐ DEBUG MODE ⭐⭐⭐
+      h4.r-title-caps.r-text-center(v-if="$store.debugMode && !this.$store.connection.error" style="padding: 10px; color: #ff4b4b;" @click="$flows.connection.socket.close()") Close socket
+      h4.r-title-caps.r-text-center(v-if="$store.debugMode && this.$store.connection.error" style="padding: 10px; color: #4babff;" @click="$flows.connection.reconnect()") Reconnect
 
       .search
         input.r-input-text.fullwidth(type="search" placeholder="Search chats" v-model="searchText")
@@ -38,19 +38,19 @@
       template(v-if="!searchText.length")
 
         template(v-if="allChats.length === 0")
-          h4.title-caps
+          h4.r-title-caps
           chat-sidebar-chat-display(v-for="i in 7" :style="{ opacity: 1 - (i*.11), pointerEvents: 'none' }" :key="i")
 
-        h4.title-caps(v-if="favChats.length") #[r-icon.icon-text.red(icon="star")] Favorites
+        h4.r-title-caps(v-if="favChats.length") #[r-icon.icon-text.red(icon="star")] Favorites
         chat-sidebar-chat-display(v-for="chat in favChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
-        h4.title-caps(v-if="unreadChats.length") #[r-icon.icon-text.red(icon="notification")] Unread
+        h4.r-title-caps(v-if="unreadChats.length") #[r-icon.icon-text.red(icon="notification")] Unread
         chat-sidebar-chat-display(v-for="chat in unreadChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
-        h4.title-caps(v-if="recentChats.length") #[r-icon.icon-text.red(icon="history")] Recent
+        h4.r-title-caps(v-if="recentChats.length") #[r-icon.icon-text.red(icon="history")] Recent
         chat-sidebar-chat-display.recentChat(v-for="chat in recentChats" :chat="chat" :store="$store" :recentRemove="recentRemove" :action="() => { chatClick(chat.id); }" :key="chat.id")
 
-        h4.title-caps(v-if="allChats.length")
+        h4.r-title-caps(v-if="allChats.length")
           button.button-reset(@click="toggleAllChats" aria-label="Toggle all chats")
             r-icon.icon-text.red(:icon="showAllChats ? 'chevron up' : 'chevron down'")
             | &nbsp;All chats{{ allChats.length ? ' (' + allChats.length + ')' : '' }}
@@ -60,7 +60,7 @@
           chat-sidebar-chat-display(v-for="chat in allChats" :chat="chat" :store="$store" :action="() => { chatClick(chat.id); }" :key="chat.id + 10000000")
 
 
-      .margin-top-medium
+      .r-margin-top-medium
 
 </template>
 
@@ -324,7 +324,7 @@
     overflow-y scroll
     flex 1 1 0
 
-  .title-caps[class]
+  .r-title-caps[class]
     padding 20px 10px 5px
     color $color-red-text
     margin-top 0

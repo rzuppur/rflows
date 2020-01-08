@@ -4,14 +4,14 @@
 
     r-modal(v-if="message" :title="message.subject" size="large" ref="emailModal" @close="message = null" :buttons="false")
 
-      .details.margin-bottom-medium
+      .details.r-margin-bottom-medium
         p
           | #[b From:] {{ message.from.name }} <{{ message.from.address }}>
           br
           | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
-        p.text-color-quiet.text-small.margin-top-small {{ utils.fullDateTime(message.createDate) }}
+        p.r-text-color-quiet.r-text-small.r-margin-top-small {{ utils.fullDateTime(message.createDate) }}
 
-      .r-buttons.margin-top-medium.margin-bottom-small(v-if="hasImages && imagesHidden")
+      .r-buttons.r-margin-top-medium.r-margin-bottom-small(v-if="hasImages && imagesHidden")
         r-button(borderless gray  icon="images" :action="showImages") Show images
 
       file-display(v-for="file in attachments" :url="$flows.utils.relativeToFullPath(file.url)" :text="file.text" :key="file.id")

@@ -33,10 +33,10 @@
 
     .messages.r-elevation-3(ref="messagesInner")
 
-      .text-center.margin-top-large.margin-bottom-large(v-if="chatId && !isLoadingMessages && !hasOlderMessages && messages.length !== 0")
-        .title-4 🌴 ⛵
-          .margin-top-tiny Chat created
-        .text-small.text-color-quiet(v-if="chatWorkspaceLocation") {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
+      .r-text-center.r-margin-top-large.r-margin-bottom-large(v-if="chatId && !isLoadingMessages && !hasOlderMessages && messages.length !== 0")
+        .r-title-4 🌴 ⛵
+          .r-margin-top-tiny Chat created
+        .r-text-small.r-text-color-quiet(v-if="chatWorkspaceLocation") {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
 
       .day(v-for="day, key in messagesByDay[0]")
         +chatMessagesList()
@@ -52,10 +52,10 @@
       template(v-if="!chatId || isLoadingMessages && messages.length === 0")
         message-display(v-for="i in 3" :style="{ opacity: 1 - (i*.2) }" :key="'skeleton-message-' + i")
 
-      .text-center.margin-top-large(v-else-if="chatId && messages.length === 0")
-        .title-4 📭 🐢
-          .margin-top-tiny No messages
-        .text-small.text-color-quiet(v-if="chatWorkspaceLocation") Created on {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
+      .r-text-center.r-margin-top-large(v-else-if="chatId && messages.length === 0")
+        .r-title-4 📭 🐢
+          .r-margin-top-tiny No messages
+        .r-text-small.r-text-color-quiet(v-if="chatWorkspaceLocation") Created on {{ utils.fullDate(chatWorkspaceLocation.createDate) }}
 
     portal(to="scrollToShortcuts")
 

@@ -753,10 +753,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@rzuppur/rvc@0.46.1":
-  version "0.46.1"
-  resolved "https://registry.yarnpkg.com/@rzuppur/rvc/-/rvc-0.46.1.tgz#985e2c9f9096ffc51fa46246c8ab917aa970c3bc"
-  integrity sha512-anT1aKNcOxFBapRwyJM/pZT7uheqX7yC2o5i3x80qUs5thp8yqORLijtIpXZXRnLbm6AsQq/cOayTJhK9wFKdQ==
+"@rzuppur/rvc@^0.47.5":
+  version "0.47.5"
+  resolved "https://registry.yarnpkg.com/@rzuppur/rvc/-/rvc-0.47.5.tgz#556e9d9aeaa5922969242d0ed664607b1de83911"
+  integrity sha512-Bzbu8wRbWPvCYMLxPtoAok91fFBdj7Bnd7g4uLZAleiYBMOsje5LNmuASuTOkhNJvArVkiz1gStPVFz3F90X8Q==
   dependencies:
     core-js "^2.6.5"
     portal-vue "^2.1.6"

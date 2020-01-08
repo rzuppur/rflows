@@ -12,10 +12,10 @@
           .avatar.avatar-small.placeholder(v-else)
 
       .content-container
-        .name-date.flex.text-color-quiet
+        .name-date.r-flex-container.r-text-color-quiet
 
-          .name.ellipsis.flex0.text-color-body(v-if="writingUser && writingUser.name") {{ writingUser.name }}
-          .name.placeholder.flex1(v-else)
+          .name.r-ellipsis.r-flex-0.r-text-color-body(v-if="writingUser && writingUser.name") {{ writingUser.name }}
+          .name.placeholder.r-flex-1(v-else)
 
         .writing-dots(v-if="writingUser")
           .dot1
@@ -47,22 +47,22 @@
 
         //- NAME DATE
 
-        b.text-color-error.text-small(v-if="message.error") {{ message.error }} #{""}
+        b.r-text-color-error.r-text-small(v-if="message.error") {{ message.error }} #{""}
 
-        .name-date.flex.text-color-quiet(v-if="!message.noauthor || compact")
+        .name-date.r-flex-container.r-text-color-quiet(v-if="!message.noauthor || compact")
 
-          .is-reply.flex0(v-if="message.replyTo && !showReplyMessage")
+          .is-reply.r-flex-0(v-if="message.replyTo && !showReplyMessage")
             r-icon.icon-text.blue(icon="reply")
             | &nbsp;
 
-          .email-from.flex0(v-if="message.type === 'EMAIL'") From:&nbsp;
+          .email-from.r-flex-0(v-if="message.type === 'EMAIL'") From:&nbsp;
 
-          .name.ellipsis.flex0.text-color-body {{ authorName }}
+          .name.r-ellipsis.r-flex-0.r-text-color-body {{ authorName }}
             r-icon.blue.icon-text.saved-icon(v-if="!compact && message.flagged" icon="pin" v-rtip="'Message is in saved messages'")
 
-          .date.flex0(v-if="dateDisplay" v-rtip="dateTooltip") {{ dateDisplay }}
+          .date.r-flex-0(v-if="dateDisplay" v-rtip="dateTooltip") {{ dateDisplay }}
 
-          //-span.text-small.text-color-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
+          //-span.r-text-small.r-text-color-error(v-if="message.customData && Object.keys(message.customData).length") &nbsp; customData: {{ message.customData }}
 
         //- REPLY TO
 
@@ -75,7 +75,7 @@
 
           //- EVENT
 
-          p.event-content.text-color-quiet(v-if="message.type === 'EVENT'") {{ message.text }}
+          p.event-content.r-text-color-quiet(v-if="message.type === 'EVENT'") {{ message.text }}
 
           //- CHAT
 
@@ -98,31 +98,31 @@
 
           template(v-else-if="isEmail")
 
-            p.event-content.text-color-quiet(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
+            p.event-content.r-text-color-quiet(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
 
             template(v-else-if="isEmail && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
 
-              p.event-content.text-color-quiet #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
+              p.event-content.r-text-color-quiet #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
               .commit(v-for="commit in utils.commitEmailParse(message.text)")
                 a.commit-preview(:href="commit.url" target="_blank" rel="noopener noreferrer nofollow")
                   .commit-title #[b  {{ commit.name }}]
 
             template(v-else)
 
-              .email-meta.text-small(v-if="!compact") To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
+              .email-meta.r-text-small(v-if="!compact") To: {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
 
               .email-content-wrapper
 
-                .text-bold.margin-bottom-tiny(v-if="compact") {{ message.subject }}
+                .r-text-bold.r-margin-bottom-tiny(v-if="compact") {{ message.subject }}
 
-                .title-5.margin-bottom-tiny(v-else) {{ message.subject }}
+                .r-title-5.r-margin-bottom-tiny(v-else) {{ message.subject }}
 
                 p.text-content.email-plain.r-elevation-2(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
-                r-button.view-email-button.margin-bottom-tiny(v-else small borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") View email
+                r-button.view-email-button.r-margin-bottom-tiny(v-else small borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") View email
 
           //- UNKNOWN
 
-          p.text-content.text-color-error(v-else) Unknown message type: {{ message.type }}
+          p.text-content.r-text-color-error(v-else) Unknown message type: {{ message.type }}
 
       .buttons-container(@dblclick.native.stop)
         .r-buttons-grouped

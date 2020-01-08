@@ -4,11 +4,11 @@
 
     .connection-status(v-if="connectionStatus")
 
-      .flex1 No connection
+      .r-flex-1 No connection
 
-        .text-small {{ connectionStatus }}
+        .r-text-small {{ connectionStatus }}
 
-      .flex0
+      .r-flex-0
 
         r-button(borderless label="'Reconnect'" :action="$flows.connection.reconnect" :loading="$store.connection.connecting" icon="sync" icon-color="white")
 
@@ -41,11 +41,11 @@
     align-items center
     z-index 100
 
-    .flex1
+    .r-flex-1
       font-weight $font-weight-sans-bold
       padding-right 10px
 
-    .text-small
+    .r-text-small
       opacity .8
 
 </style>

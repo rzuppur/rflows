@@ -24,7 +24,7 @@
     slide-in-out(:inDuration="60" :outDuration="60")
       editor-menu-bar(v-if="showMenuBar" :editor="editor")
         .menubar(slot-scope="{ commands, isActive }")
-          .r-buttons-grouped.margin-bottom-tiny
+          .r-buttons-grouped.r-margin-bottom-tiny
             .r-button-group.r-elevation-3
               +editorButton("bold()", "Bold", "text bold")
               +editorButton("italic()", "Italic", "text italic")

@@ -8,15 +8,15 @@
 
         user-display(:user="currentUserDisplay" :withName="true")
 
-        .r-buttons.margin-top-large
+        .r-buttons.r-margin-top-large
           r-button(fullwidth primary :action="openChat") Continue
           r-button(fullwidth :action="$flows.connection.logout") Log out
 
       form(v-else @submit.prevent="login")
 
         .field(style="margin-bottom: 20px;")
-          h1.title-3 RFlows
-          p.text-color-quiet Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials.
+          h1.r-title-3 RFlows
+          p.r-text-color-quiet Use your #[a(href="https://world.contriber.com/" target="_blank" rel="noopener noreferrer nofollow") Contriber Flows] credentials.
 
         .r-form-group
           r-text-input(label="Email" v-model.trim="loginData.email" type="email" autofocus required autocomplete="email" :disabled="loginLoading")
@@ -28,7 +28,7 @@
           .control
             r-button(submit fullwidth primary :loading="loginLoading") Sign in
 
-      .text-color-error(v-if="$store.connection.error") {{ $store.connection.errorMsg }}
+      .r-text-color-error(v-if="$store.connection.error") {{ $store.connection.errorMsg }}
 
 </template>
 
@@ -95,7 +95,7 @@
       margin 0 auto
       box-shadow 0 0 0 2px rgba(0, 0, 0, 0.05)
 
-    .text-color-error
+    .r-text-color-error
       margin 15px 0 -10px
 
 </style>

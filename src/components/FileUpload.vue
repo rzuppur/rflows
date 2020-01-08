@@ -1,16 +1,16 @@
 <template lang="pug">
   .file-upload
 
-    .text-color-quiet(v-if="fileQueue.length" style="margin: -5px 0 3px;") +{{ fileQueue.length }} more file#[span(v-if="fileQueue.length > 1") s] in queue
+    .r-text-color-quiet(v-if="fileQueue.length" style="margin: -5px 0 3px;") +{{ fileQueue.length }} more file#[span(v-if="fileQueue.length > 1") s] in queue
 
     img.image-preview(v-if="previewUrl" :src="previewUrl")
 
-    form.flex-container(
+    form.r-flex-container(
       enctype="multipart/form-data"
       novalidate
       @submit.prevent)
 
-      .flex1.margin-right-tiny(v-show="expanded" style="min-width: 0;")
+      .r-flex-1.r-margin-right-tiny(v-show="expanded" style="min-width: 0;")
         input.r-input-text.fullwidth(
           type="text"
           ref="fileName"
@@ -19,7 +19,7 @@
           placeholder="File name"
           @keydown.enter.prevent="upload")
 
-      .flex0.margin-right-tiny(v-show="!expanded || !mqMobile")
+      .r-flex-0.r-margin-right-tiny(v-show="!expanded || !mqMobile")
 
         r-button(
           borderless
@@ -36,11 +36,11 @@
           @change="_filesChange($event.target.files)"
           style="display: none")
 
-      .flex0.margin-right-tiny(v-if="expanded && formData")
+      .r-flex-0.r-margin-right-tiny(v-if="expanded && formData")
         r-button(:action="_reset" icon="close")
           template(v-if="!mqMobile") Cancel
 
-      .flex0(v-show="expanded")
+      .r-flex-0(v-show="expanded")
         r-button(primary :action="upload" :loading="currentStatus === 'UPLOADING'" icon="upload")
           template(v-if="!mqMobile") Upload
 

@@ -13,9 +13,9 @@
         .unreads(v-if="user.unreadItemsCount") {{ user.role === 'NOTIFICATION_RECEIVER' ? '@' : user.unreadItemsCount }}
 
     .text(v-if="withName")
-      .name.ellipsis {{ user.name }}
-      .details.ellipsis(v-if="user.email") {{ user.email }}
-      .details.ellipsis(v-else-if="user.role")
+      .name.r-ellipsis {{ user.name }}
+      .details.r-ellipsis(v-if="user.email") {{ user.email }}
+      .details.r-ellipsis(v-else-if="user.role")
         span(v-if="userStatus") {{ userStatus ? userStatus : "" }}
         span(v-if="user.role === 'ADMIN'") &nbsp;· Admin
 

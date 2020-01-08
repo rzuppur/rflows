@@ -2,7 +2,7 @@
 
   a.file-preview(:href="props.url" target="_blank" rel="noopener noreferrer nofollow")
 
-    .file-title.ellipsis #[r-icon.blue.icon-text(icon="file" style="vertical-align: text-top; transform: rotate(45deg);")] {{ props.text }}
+    .file-title.r-ellipsis #[r-icon.blue.icon-text(icon="file" style="vertical-align: text-top; transform: rotate(45deg);")] {{ props.text }}
 
     .image-preview(v-if="props.preview")
       img(:src="props.url")

@@ -4,16 +4,16 @@
 
     r-modal(v-if="open" title="Saved messages" size="medium" ref="savedModal" @close="open = false" :buttons="false")
 
-      .text-color-quiet.margin-bottom-medium(v-if="!messages") Loading
+      .r-text-color-quiet.r-margin-bottom-medium(v-if="!messages") Loading
         r-button.icon-only(borderless small loading style="position: relative; top: -4px;")
 
-      .text-color-quiet.margin-bottom-medium(v-else-if="messages.length === 0") No saved messages
+      .r-text-color-quiet.r-margin-bottom-medium(v-else-if="messages.length === 0") No saved messages
 
       .messages(v-else)
 
         .chat(v-for="chat in chatsWithSaved")
 
-          h2.title-6 {{ chat.name }}
+          h2.r-title-6 {{ chat.name }}
 
           message-display(v-for="message in messages[chat.id]" :message="message" :showReplyMessage="false" :showFullDate="true" :compact="true" :key="message.id")
 
@@ -24,7 +24,7 @@
                 v-rtip="'Remove from saved'"
                 icon="close")
 
-          //-r-button.margin-top-medium(small borderless gray) Open chat
+          //-r-button.r-margin-top-medium(small borderless gray) Open chat
 
           r-button.icon-only(v-if="messages[chat.id].length === 0" borderless small loading style="position: relative; top: -4px; left: -6px")
 

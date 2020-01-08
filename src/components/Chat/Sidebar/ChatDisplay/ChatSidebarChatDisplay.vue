@@ -11,8 +11,8 @@
     :style="[data.style, data.staticStyle]"
   )
 
-    .chat-title.ellipsis(v-if="props.chat && props.chat.name") {{ props.store.EMOJIFY[props.chat.id] }} {{ props.chat.name }}
-    .chat-title.ellipsis.placeholder(v-else :style="{ maxWidth: `${120 + 50*(data.key*999999.8 % 2.4)}px` }")
+    .chat-title.r-ellipsis(v-if="props.chat && props.chat.name") {{ props.store.EMOJIFY[props.chat.id] }} {{ props.chat.name }}
+    .chat-title.r-ellipsis.placeholder(v-else :style="{ maxWidth: `${120 + 50*(data.key*999999.8 % 2.4)}px` }")
 
     .chat-flagged(v-if="props.chat && props.chat.flagged > 0")
       r-icon.icon-text.blue(icon="pin" style="opacity: 0.5;")

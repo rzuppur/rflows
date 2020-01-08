@@ -17,10 +17,10 @@
 
         r-button(v-if="!isDevChat && !mqMobile" :disabled="!chatId" borderless v-rtip.bottom="isStarred ? 'Remove from favorites' : 'Add to favorites'" :action="toggleFavourite" :icon="isStarred ? 'star' : 'star outline'" :icon-color="isStarred ? 'gold' : 'gray'")
 
-        .name.ellipsis {{ $store.currentChatName }}
+        .name.r-ellipsis {{ $store.currentChatName }}
           .placeholder(v-if="!$store.currentChatName")
 
-        .flex0
+        .r-flex-0
           portal-target(name="scrollToShortcuts")
 
         user-list(:users="chatMembers")
@@ -31,13 +31,13 @@
 
       .chat-bottom.r-elevation-3
 
-        .text-small.top-info-text.text-color-quiet.r-elevation-3(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
+        .r-text-small.top-info-text.r-text-color-quiet.r-elevation-3(v-if="!mqMobile && !showEditorToolbar && editorFocused") ↵ Enter for new line &nbsp;·&nbsp; Shift + Enter to send
 
-        .flex-container.chat-inputs
+        .r-flex-container.chat-inputs
 
-          .field.is-grouped.flex1.flex-container
+          .field.is-grouped.r-flex-1.r-flex-container
 
-            //-.flex0.margin-right-tiny(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
+            //-.r-flex-0.r-margin-right-tiny(v-show="!uploadExpanded && (showEditorToolbar || !mqMobile)")
 
               r-button.expand-button(
                 borderless
@@ -46,7 +46,7 @@
                 v-bind:label="showEditorToolbar ? 'Hide editing toolbar' : 'Show editing toolbar'"
                 v-bind:icon="showEditorToolbar ? 'close' : 'add text'")
 
-            .flex1.margin-right-tiny(v-show="!uploadExpanded" style="min-width: 0;")
+            .r-flex-1.r-margin-right-tiny(v-show="!uploadExpanded" style="min-width: 0;")
 
               editor(
                 ref="editor"
@@ -72,11 +72,11 @@
 
             template(v-if="!uploadExpanded")
 
-              .flex0.margin-right-tiny(v-if="replyToId")
+              .r-flex-0.r-margin-right-tiny(v-if="replyToId")
                 r-button(:action="replyCancel" :icon="mqMobile ? 'close' : null")
                   template(v-if="!mqMobile") Cancel
 
-              .flex0
+              .r-flex-0
                 r-button(:primary="!!replyToId" :action="sendChatMessage" :icon="mqMobile ? 'send' : null")
                   template(v-if="!mqMobile") Send
 
@@ -249,7 +249,6 @@
   .chat
     display flex
     height 100%
-    border-left 2px solid $color-background-4-darkmode
 
   .mainbar
     flex 3
@@ -326,7 +325,7 @@
     .chat-inputs
       margin-bottom 6px
 
-      .flex0,
+      .r-flex-0,
       .control
         align-self flex-end
 
