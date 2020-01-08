@@ -59,9 +59,9 @@
 
     portal(to="scrollToShortcuts")
 
-      r-button(v-if="showNewShortcut" ref="newbutton" borderless v-rtip.bottom="'Scroll to new'" :action="scrollToNewInstant" label="Scroll to new" icon="new message" icon-color="red")
-
       r-button(v-if="!scrolledToBottom" ref="bottombutton" borderless v-rtip.bottom="'Scroll to bottom'" :action="() => { $events.$emit('MESSAGELIST_scrollToBottomInstant'); }" label="Scroll to bottom" icon="arrow down" icon-color="blue")
+
+      r-button(v-if="showNewShortcut" ref="newbutton" borderless v-rtip.bottom="'Scroll to new'" :action="scrollToNewInstant" label="Scroll to new" icon="new message" icon-color="red")
 
 </template>
 
@@ -199,17 +199,19 @@
       showNewShortcut: {
         async get() {
           if (this.firstUnreadMessageId <= 0) return false;
-          if (this.autoReadEnabled) return false;
+          // if (this.autoReadEnabled) return false;
 
-          this.top;
-          this.viewportHeight;
-          await this.$nextTick();
+          // this.top;
+          // this.viewportHeight;
+          // await this.$nextTick();
 
           const unread = this.$refs.unread && this.$refs.unread[0];
           if (!unread) return false;
 
-          const offset = this.top - unread.offsetTop;
-          return offset > 100 || offset < -this.viewportHeight;
+          // const offset = this.top - unread.offsetTop;
+          // return offset > 100 || offset < -this.viewportHeight;
+
+          return true;
         },
         default: false,
       },
