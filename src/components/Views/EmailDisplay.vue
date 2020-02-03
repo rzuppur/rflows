@@ -2,13 +2,13 @@
 
   .email-display
 
-    r-modal(v-if="message" :title="message.subject" size="large" ref="emailModal" @close="message = null" :buttons="false")
+    r-modal(v-if="message" :title="message.subject || 'No subject'" size="large" ref="emailModal" @close="message = null" :buttons="false")
 
       .details.r-margin-bottom-medium
         p
-          | #[b From:] {{ message.from.name }} <{{ message.from.address }}>
-          br
-          | #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
+          template(v-if="message.from") #[b From:] {{ message.from.name }} <{{ message.from.address }}>
+            br
+          template(v-if="message.to") #[b To:] {{ message.to.map(to => to.name ? `${to.name} <${to.address}>` : to.address).join(", ") }}
         p.r-text-color-quiet.r-text-small.r-margin-top-small {{ utils.fullDateTime(message.createDate) }}
 
       .r-buttons.r-margin-top-medium.r-margin-bottom-small(v-if="hasImages && imagesHidden")

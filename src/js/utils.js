@@ -51,6 +51,7 @@ const utils = {
    */
   textToHTML(text) {
     if (text) return this.escapeHTML(text).replace(/&#10;/g, "<br>").replace(/\n/g, "<br>");
+    return "";
   },
 
   /**

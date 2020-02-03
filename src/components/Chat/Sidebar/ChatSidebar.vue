@@ -21,6 +21,10 @@
         input.r-input-text.fullwidth(type="search" placeholder="Search chats" v-model="searchText")
         r-icon.white(icon="search")
 
+      .actions.darkMode
+        r-button(icon="search file" :action="() => { $events.$emit('openSearch') }" borderless gray) Search messages
+        r-button(v-if="savedMessagesCount > 0" icon="pin" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) Saved messages #[span.counter {{ savedMessagesCount }}]
+
       .workspace-filter(v-if="showWorkspaceFilter")
         popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
           template(v-slot:trigger="open")
@@ -29,9 +33,6 @@
                 img.logo(v-if="activeWorkspace.id" :src="$flows.utils.getLogoFromWorkspace(activeWorkspace)" :alt="activeWorkspace.name")
                 .name {{ activeWorkspace.name }}
               r-icon.white(icon="chevron down")
-
-      .actions.darkMode
-        r-button(v-if="savedMessagesCount > 0" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) Saved messages #[span.counter {{ savedMessagesCount }}]
 
     .sidebar-chats.r-styled-scrollbar
 
@@ -298,7 +299,7 @@
   .actions .r-button
     width $sidebar-width - 20px
 
-    & > span
+    & > span:not(.r-icon)
       width 100%
       display flex
 

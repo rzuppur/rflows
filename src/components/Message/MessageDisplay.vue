@@ -100,7 +100,7 @@
 
             p.event-content.r-text-color-quiet(v-if="isEmail && message.subject === '[Netlify] We just published a new Production deploy for rflows' && message.from.address === 'team@netlify.com'") #[r-icon.icon-text.green(icon="check")] Successfully deployed to Netlify
 
-            template(v-else-if="isEmail && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from.address === 'noreply@github.com'")
+            template(v-else-if="isEmail && message.subject && message.subject.indexOf('[rzuppur/RFlows] ') === 0 && message.from && message.from.address === 'noreply@github.com'")
 
               p.event-content.r-text-color-quiet #[r-icon.icon-text.gray(icon="add")] New commits in branch {{ utils.commitEmailBranch(message.text) }}
               .commit(v-for="commit in utils.commitEmailParse(message.text)")
@@ -117,7 +117,7 @@
 
                 .r-title-5.r-margin-bottom-tiny(v-else) {{ message.subject }}
 
-                p.text-content.email-plain.r-elevation-2(v-if="!message.contentType || message.contentType.toLowerCase() !== 'text/html'" v-html="utils.textToHTML(message.text)")
+                p.email-plain.r-elevation-2(v-if="(!message.contentType || message.contentType.toLowerCase() !== 'text/html') && message.text[0] !== '<'" v-html="utils.textToHTML(message.text)")
                 r-button.view-email-button.r-margin-bottom-tiny(v-else small borderless gray :action="() => { $events.$emit('openEmail', message) }" icon="mail") View email
 
           //- UNKNOWN
@@ -176,9 +176,10 @@
         return this.$store.flows.users.d.find(user => user.id === this.message.userId);
       },
       authorName() {
-        if (this.message.type === "EMAIL") {
+        if (this.message.type === "EMAIL" && this.message.from) {
           return `${this.message.from.name} <${this.message.from.address}>`;
         }
+        if (!this.author) return "?";
         return this.$flows.utils.getFullNameFromUser(this.author);
       },
       authorNameShort() {

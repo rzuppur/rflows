@@ -42,6 +42,7 @@
       };
     },
     computed: {
+      // TODO: saved by date (this week, last 3 months, older)
       chatsWithSaved() {
         this.$store.flows.chats.v;
 

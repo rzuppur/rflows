@@ -287,6 +287,7 @@ class Connection {
         }
         break;
       }
+      case "FilteredTopicItem":
       case "SubscribeResponse": {
         break;
       }

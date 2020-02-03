@@ -28,6 +28,8 @@
 
     settings
 
+    search
+
     overlays
 
 </template>
@@ -40,6 +42,7 @@
   import SavedDisplay from "@/components/Views/SavedDisplay.vue";
   import Settings from "@/components/Views/Settings.vue";
   import Overlays from "@/components/UI/Overlays.vue";
+  import Search from "@/components/Views/Search.vue";
 
   export default {
     name: "App",
@@ -51,6 +54,7 @@
       EmailDisplay,
       Settings,
       Overlays,
+      Search,
     },
     computed: {
       modalsOpen() {
