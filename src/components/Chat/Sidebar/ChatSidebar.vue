@@ -23,7 +23,7 @@
 
       .actions.darkMode
         r-button(icon="search file" :action="() => { $events.$emit('openSearch') }" borderless gray) Search messages
-        r-button(v-if="savedMessagesCount > 0" icon="pin" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) Saved messages #[span.counter {{ savedMessagesCount }}]
+        r-button(v-if="savedMessagesCount > 0" icon="pin" :action="() => { $events.$emit('openAllSavedMessages') }" borderless gray) View saved #[span.counter {{ savedMessagesCount }}]
 
       .workspace-filter(v-if="showWorkspaceFilter")
         popup-menu(menu-id="workspace-switcher" :actions="workspaceMenu")
