@@ -1,11 +1,11 @@
-export const SOCKET_URL = "https://app2.contriber.com/client";
+export const SOCKET_URL = "https://app1.contriber.com/client";
 
-export const FILE_UPLOAD_BASE_64_URL = "https://app2.contriber.com/storage/upload_file_base64_v2";
+export const FILE_UPLOAD_BASE_64_URL = "https://app1.contriber.com/storage/upload_file_base64_v2";
 /* TODO:
 token: [...]
 image: data:image/png;base64,iVBORw0SU [...]
  */
-export const AVATAR_UPLOAD_BASE_64_URL = "https://app2.contriber.com/storage/upload_avatar_base64";
+export const AVATAR_UPLOAD_BASE_64_URL = "https://app1.contriber.com/storage/upload_avatar_base64";
 /*
 token: [...]
 image: data:image/jpeg;base64,/9j/4AAQ [...]
