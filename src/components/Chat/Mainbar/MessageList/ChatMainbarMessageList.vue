@@ -194,26 +194,10 @@
 
         return this.$store.flows.chatWorkspaces.d.find(chatWorkspace => chatWorkspace.chatId === this.chatId);
       },
-    },
-    asyncComputed: {
-      showNewShortcut: {
-        async get() {
-          if (this.firstUnreadMessageId <= 0) return false;
-          // if (this.autoReadEnabled) return false;
-
-          // this.top;
-          // this.viewportHeight;
-          // await this.$nextTick();
-
-          const unread = this.$refs.unread && this.$refs.unread[0];
-          if (!unread) return false;
-
-          // const offset = this.top - unread.offsetTop;
-          // return offset > 100 || offset < -this.viewportHeight;
-
-          return true;
-        },
-        default: false,
+      showNewShortcut() {
+        if (this.firstUnreadMessageId <= 0) return false;
+        const unread = this.$refs.unread && this.$refs.unread[0];
+        return !!unread;
       },
     },
     watch: {

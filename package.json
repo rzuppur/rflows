@@ -46,7 +46,7 @@
     "stylus-loader": "^3.0.2",
     "tiptap-commands": "^1.11.0",
     "typescript": "^3.6.2",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.11"
   },
   "engines": {
     "node": ">= 8.11.0",
