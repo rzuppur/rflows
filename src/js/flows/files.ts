@@ -4,6 +4,8 @@ import { Vue } from "vue/types/vue";
 
 import Flows2 from "@/js/flows/main";
 import STORE from "@/js/store";
+// @ts-ignore
+import { SUBDOMAIN } from "@/js/consts";
 
 class Files {
   flows: Flows2;
@@ -36,7 +38,7 @@ class Files {
     formData.append("text", fileName);
     if (replyToId) formData.append("referenceFromTopicItemId", replyToId.toString());
 
-    return fetch("https://app1.contriber.com/storage/upload_file", {
+    return fetch(`https://${SUBDOMAIN}.contriber.com/storage/upload_file`, {
       method: "POST",
       body: formData,
     });
@@ -53,7 +55,7 @@ class Files {
     const formData = new FormData();
     formData.append("token", token);
     formData.append("src", url);
-    return fetch("https://app1.contriber.com/storage/delete_file_v2", {
+    return fetch(`https://${SUBDOMAIN}.contriber.com/storage/delete_file_v2`, {
       method: "POST",
       body: formData,
     });
