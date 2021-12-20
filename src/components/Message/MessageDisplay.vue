@@ -124,7 +124,7 @@
 
           p.text-content.r-text-color-error(v-else) Unknown message type: {{ message.type }}
 
-      .buttons-container(@dblclick.native.stop)
+      .buttons-container(@dblclick.stop)
         .r-buttons-grouped
           .r-button-group.r-elevation-4.r-border-radius
             slot(name="buttons")

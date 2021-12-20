@@ -1,14 +1,16 @@
 <template lang="pug" functional>
 
-  a.file-preview(:href="props.url" target="_blank" rel="noopener noreferrer nofollow")
+  div
 
-    .file-title.r-ellipsis #[r-icon.blue.icon-text(icon="file" style="vertical-align: text-top; transform: rotate(45deg);")] {{ props.text }}
+    a.file-preview(:href="props.url" target="_blank" rel="noopener noreferrer nofollow")
 
-    .image-preview(v-if="props.preview")
-      img(:src="props.url")
+      .file-title.r-ellipsis #[r-icon.blue.icon-text(icon="file" style="vertical-align: text-top; transform: rotate(45deg);")] {{ props.text }}
+
+    .preview(v-if="props.preview")
+      video(v-if="props.url.endsWith('.mp4')" :src="props.url" controls playsinline)
+      img(v-else :src="props.url" alt)
 
 </template>
-
 <script>
 
   export default {
@@ -16,8 +18,8 @@
   };
 
 </script>
-
 <style lang="stylus" scoped>
+
   @import "~@/shared.styl"
 
   .file-preview
@@ -48,10 +50,15 @@
     .file-title
       padding 5px 10px
 
-    .image-preview
-      padding 0 10px 10px
+  .preview
 
-      img
-        display block
-        max-height 200px
+    video
+      width 100%
+      max-height 400px
+      max-width 700px
+
+    img
+      display block
+      max-height 200px
+
 </style>

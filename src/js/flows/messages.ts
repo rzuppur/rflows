@@ -352,7 +352,7 @@ class Messages {
     if (message.originalFileName === "mime") return true;
     let ext: any = message.url.split(".");
     ext = ext[ext.length - 1];
-    return ["png", "jpg", "gif", "jpeg", "svg"].indexOf(ext.toLowerCase()) >= 0;
+    return ["png", "jpg", "gif", "jpeg", "svg", "mp4"].indexOf(ext.toLowerCase()) >= 0;
   };
 }
 
