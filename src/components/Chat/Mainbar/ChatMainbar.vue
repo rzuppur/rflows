@@ -307,7 +307,6 @@
     box-shadow 0 -1px 0 alpha(#000, .05)
 
     @media (max-width $media-mobile-width)
-      margin-right -60px
       padding-left 10px
       padding-right 10px
       box-shadow 0 -1px 0 alpha(#000, .05), 0 0 8px alpha(#000, 10%)
