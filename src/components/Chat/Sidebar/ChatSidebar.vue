@@ -154,8 +154,8 @@
         this.$store.flows.chatWorkspaces.v;
 
         if (this.searchText.length) {
-          const text = this.searchText.toLowerCase();
-          return this.$store.flows.chats.d.filter(chat => chat.name.toLowerCase().includes(text));
+          const text = this.searchText.toLocaleLowerCase();
+          return this.$store.flows.chats.d.filter(chat => chat.name && chat.name.toLocaleLowerCase().includes(text));
         }
         if (this.showWorkspaceFilter && this.filterWorkspaceId) {
           return this.$store.flows.chatWorkspaces.d
